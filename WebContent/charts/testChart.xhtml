@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"> 
+
+<h:head></h:head> 
+<body>
+    <rich:panel>
+       <h:form>
+		<h:panelGroup layout="block">
+			<h:outputLabel value="Choisissez l'intervale" />
+			<h:panelGrid columns="4">
+				<h:outputLabel value="Mois" for="startDate"/>
+				<h:selectOneMenu value="#{chartBean.mois}">
+					<f:selectItems value="#{chartBean.monthList}"></f:selectItems>
+				</h:selectOneMenu>
+				<h:outputLabel value="Annee" for="endDate"/>
+				<rich:inputNumberSpinner value="#{chartBean.annee}"></rich:inputNumberSpinner>
+			</h:panelGrid>
+		</h:panelGroup>
+    	<a4j:outputPanel id="chart-container">
+		<jsflot:resources></jsflot:resources>
+	    <jsflot:flotChart id="valueTimeChart"
+	        value="#{chartBean.produitVenduChartSeries}"
+	        actionListener="#{chartBean.chartActionListener}"
+	        testChartDraggedAction="#{chartBean.chartDraggedListener}"
+	        chartDraggable="#{chartBean.produitVenduChartData.chartDraggable}"
+	        chartClickable="#{chartBean.produitVenduChartData.chartClickable}"
+	        chartZoomable="#{chartBean.produitVenduChartData.chartZoomable}"
+	        reRender="clickedPanel"
+	        showLines="#{chartBean.produitVenduChartData.showLines}"
+	        fillLines="#{chartBean.produitVenduChartData.fillLines}"
+	        showDataPoints="#{chartBean.produitVenduChartData.showDataPoints}"
+	        legendColumns="#{chartBean.produitVenduChartData.legendColumns}"
+	        legendOpacity="#{chartBean.produitVenduChartData.legendOpacity}"
+	        legendPosition="#{chartBean.produitVenduChartData.legendPosition}"
+	        legendColor="#{chartBean.produitVenduChartData.legendColor}"
+	        height="#{chartBean.produitVenduChartData.height}"
+	        width="#{chartBean.produitVenduChartData.width}"
+	        showTooltip="#{chartBean.produitVenduChartData.showTooltip}"
+	        tooltipPosition="#{chartBean.produitVenduChartData.tooltipPosition}"
+	        tooltipFollowMouse="#{chartBean.produitVenduChartData.tooltipFollowMouse}"
+	        mode="#{chartBean.produitVenduChartData.mode}"
+	        timeFormat="#{chartBean.produitVenduChartData.timeFormat}"
+	        title="#{chartBean.produitVenduChartData.title}"
+	        subtitle="#{chartBean.produitVenduChartData.subtitle}"
+	        chartType="#{chartBean.produitVenduChartData.chartType}"
+	        showXaxisLabels="#{chartBean.produitVenduChartData.showXaxisLabels}"
+	        xaxisTitle="#{chartBean.produitVenduChartData.xaxisTitle}"
+	        xaxisTitleRotation="#{chartBean.produitVenduChartData.xaxisTitleRotation}"
+	        xaxisLabelRotation="#{chartBean.produitVenduChartData.xaxisLabelRotation}"
+	        showYaxisLabels="#{chartBean.produitVenduChartData.showYaxisLabels}"
+	        yaxisTitle="#{chartBean.produitVenduChartData.yaxisTitle}"
+	        yaxisTitleRotation="#{chartBean.produitVenduChartData.yaxisTitleRotation}"
+	        yaxisLabelRotation="#{chartBean.produitVenduChartData.yaxisLabelRotation}"
+	        numberOfXAxisTicks="#{chartBean.produitVenduChartData.numberOfXAxisTicks}"
+	        xaxisMinValue="#{chartBean.produitVenduChartData.xaxisMinValue}"
+	        xaxisMaxValue="#{chartBean.produitVenduChartData.xaxisMaxValue}"
+	        numberOfYAxisTicks="#{chartBean.produitVenduChartData.numberOfYAxisTicks}"
+	        yaxisMinValue="#{chartBean.produitVenduChartData.yaxisMinValue}"
+	        markers="#{chartBean.produitVenduChartData.markers}"
+	        markerPosition="#{chartBean.produitVenduChartData.markerPosition}"
+	        yaxisMaxValue="#{chartBean.produitVenduChartData.yaxisMaxValue}"
+	        crosshair="#{chartBean.produitVenduChartData.crosshair}">
+	    </jsflot:flotChart>
+	    </a4j:outputPanel> 
+		</h:form>
+	</rich:panel>
+</body> 
+</html>

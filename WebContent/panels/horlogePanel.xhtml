@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+		<script type="text/javascript">
+			function adaptToChartSize() {
+				$("#chartPanel_content, ").css('width','640').css('height','510');
+				$("#chartPanel_content iframe").css('width','620').css('height','510');
+				$("#chartPanel_content iframe canvas").css('cursor','pointer');
+			}
+		</script>
+		<rich:popupPanel id="chartPanel" autosized="true">
+			<f:facet name="header">#{chartBean.panelTitle}</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup layout="block">
+					<h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"
+					onclick="#{rich:component('chartPanel')}.hide();return false;" style="cursor:pointer"/>
+				</h:panelGroup>
+			</f:facet>
+			<a4j:outputPanel layout="block" id="chart-container">
+				<iframe src="#{chartBean.chartUrl}" frameborder="0" align="middle"></iframe>
+			</a4j:outputPanel>
+			
+		</rich:popupPanel>
+
+</ui:composition>

@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<ui:include src="/template/lang.xhtml" />
+	<ui:include src="/template/userAccount.xhtml" />
+	<div>
+		<h:graphicImage value="/images/pharmacie.png" height="80" id="logoImage" alt="image"/>
+		<h1 style="display: inline-block; vertical-align: top; padding-top:20px;">
+			#{uiMessages.applicationTitle}
+		</h1>
+	</div>
+	<div>
+		<a4j:outputPanel id="notification" layout="block">
+		<a4j:outputPanel layout="block" rendered="#{userBean.user.pharmacien}">
+			<rich:notify styleClass="notification" rendered="#{!empty venteBean.notificationMessage}"
+			  stayTime="1000" showShadow="true" nonblocking="false" showCloseButton="true">
+				<f:facet name="detail">
+					<h:panelGroup layout="block">
+						<h:graphicImage value="#{venteBean.notificationIcon}" />
+						<h:outputText value="#{venteBean.notificationMessage}" />
+					</h:panelGroup>
+				</f:facet>
+			</rich:notify>
+		</a4j:outputPanel>
+		<a4j:outputPanel layout="block" rendered="#{userBean.user.gerant or userBean.user.patron}">
+			<rich:notify styleClass="notification" rendered="#{!empty commandeBean.notificationMessage}"
+			  stayTime="1000" showShadow="true" nonblocking="false" showCloseButton="true">
+				<f:facet name="detail">
+					<h:panelGroup layout="block">
+						<h:graphicImage value="#{commandeBean.notificationIcon}" />
+						<h:outputText value="#{commandeBean.notificationMessage}" />
+					</h:panelGroup>
+				</f:facet>
+			</rich:notify>
+		</a4j:outputPanel>
+		</a4j:outputPanel>
+		
+	</div>
+	
+	<ui:include src="/template/status.xhtml"></ui:include>
+
+</ui:composition>

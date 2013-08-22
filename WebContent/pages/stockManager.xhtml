@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<a4j:outputPanel id="notificationstock" layout="block">
+		<a4j:outputPanel layout="block">
+			<rich:notify styleClass="notification" rendered="#{!empty stockBean.notificationMessage}"
+			  stayTime="3000" showShadow="true" nonblocking="false" showCloseButton="true">
+				<f:facet name="detail">
+					<h:panelGroup layout="block">
+						<h:graphicImage value="#{stockBean.notificationIcon}" />
+						<h:outputText value="#{stockBean.notificationMessage}" />
+					</h:panelGroup>
+				</f:facet>
+			</rich:notify>
+		</a4j:outputPanel>
+	</a4j:outputPanel>
+	
+	<a4j:jsFunction name="sortTable" render="tableMedicamentStock" action="#{sortingBean.sort}">
+		<a4j:param name="param1" assignTo="#{sortingBean.sortProperty}"></a4j:param>
+	</a4j:jsFunction>
+	<script type="text/javascript">
+		function showControls() {
+			$("#stock-controls").fadeIn('slow');
+		}
+
+		function hideControls() {
+			$('#stock-controls').fadeOut('slow');
+		}
+		function isEdited() {
+			return $('#stock-controls').css('display')!='none';
+		}
+	</script>
+    <div style="width:100%;margin:auto;overflow:auto;">
+      
+	 <rich:dataTable style="font-size:12px;width:100%;text-align:center" id="tableMedicamentStock" value="#{stockBean.listMedicaments}" var="medic" rows="20" rowKeyVar="key"
+		rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'"
+		>
+			<f:facet name="header">#{uiMessages.medicList}</f:facet>				
+			<f:facet name="noData">
+				<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+					#{uiMessages.noDataLabel}
+				</div>
+			</f:facet>
+			<rich:column sortBy="#{medic.nomMedicament}" sortOrder="#{sortingBean.sortOrders['nomMedicament']}">
+				<f:facet name="header">
+					<div onclick="sortTable('nomMedicament')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['nomMedicament']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['nomMedicament']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.tab_nomMedicament}" >
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.nomMedicament}
+			</rich:column>				
+			<rich:column sortBy="#{medic.batch}" sortOrder="#{sortingBean.sortOrders['batch']}" >
+				<f:facet name="header">
+					<div onclick="sortTable('batch')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['batch']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['batch']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.lot}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:inplaceInput value="#{medic.batch}" required="true" requiredMessage="#{uiMessages.required}" disabled="#{userBean.user.gerant}">
+					<a4j:ajax event="change" oncomplete="showControls()"></a4j:ajax>
+				</rich:inplaceInput>
+				
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['dateArrive']}" comparator="#{sortingBean.dateArriveComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('dateArrive')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['dateArrive']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['dateArrive']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.dateArrive}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:calendar value="#{medic.dateArrive}" disabled="#{userBean.user.gerant}" 
+				dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv"
+				required="true" requiredMessage="#{uiMessages.required}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:calendar>
+				
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['manifactureDate']}" comparator="#{sortingBean.manufactureDateComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('manifactureDate')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['manifactureDate']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['manifactureDate']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.manifactureDate}">
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:calendar value="#{medic.manifactureDate}" dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv"
+				required="true" requiredMessage="#{uiMessages.required}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:calendar>
+				
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['expiryDate']}" comparator="#{sortingBean.expiryDateComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('expiryDate')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['expiryDate']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['expiryDate']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.ExpiryDate}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:calendar value="#{medic.expiryDate}"
+				required="true" requiredMessage="#{uiMessages.required}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:calendar>
+				
+			</rich:column>
+			<rich:column sortBy="#{medic.quantiteStock}" sortOrder="#{sortingBean.sortOrders['quantiteStock']}">
+				<f:facet name="header">
+					<div onclick="sortTable('quantiteStock')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['quantiteStock']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['quantiteStock']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.quantite}" >
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				
+				<rich:inplaceInput value="#{medic.quantiteStock}" required="true" requiredMessage="#{uiMessages.required}" disabled="#{userBean.user.gerant}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:inplaceInput>
+			</rich:column>
+			<rich:column sortBy="#{medic.prix}" sortOrder="#{sortingBean.sortOrders['prix']}">
+				<f:facet name="header">
+					<div onclick="sortTable('prix')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['prix']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['prix']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.tab_prixUnitaire}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:inplaceInput value="#{medic.prix}" required="true" requiredMessage="#{uiMessages.required}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:inplaceInput> 
+			</rich:column>
+			<rich:column sortBy="#{medic.reduction}" sortOrder="#{sortingBean.sortOrders['reduction']}">
+				<f:facet name="header">					
+					<div onclick="sortTable('reduction')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['reduction']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['reduction']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.reduction} (%)">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<h:panelGroup layout="block" style="display:inline-block;vertical-align:middle;">
+				<rich:inputNumberSpinner style="display:inline-block;vertical-align:middle;" minValue="0" maxValue="100" value="#{medic.reduction}">
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:inputNumberSpinner>
+				
+				</h:panelGroup>
+			</rich:column>
+			<rich:column sortBy="#{medic.idMention}" sortOrder="#{sortingBean.sortOrders['idMention']}">
+				<f:facet name="header">					
+					<div onclick="sortTable('idMention')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['idMention']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['idMention']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.mention}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				<rich:inplaceSelect editEvent="dblclick" value="#{medic.idMention}">
+					<f:selectItems value="#{stockBean.mentions}"/>
+					<a4j:ajax event="change" oncomplete="showControls();"></a4j:ajax>
+				</rich:inplaceSelect>
+				
+			</rich:column>
+			
+			<f:facet name="footer">
+				<rich:dataScroller status="loading" execute="@this" renderIfSinglePage="false"></rich:dataScroller>
+			</f:facet>
+		</rich:dataTable>
+		
+		<div id="stock-controls" style="display:none;">
+		<h:panelGroup layout="block" style="text-align:center;margin-top:5px;">
+	    	<a4j:commandButton value="#{uiMessages.annuler}" action="#{stockBean.cancelUpdate}" status="loading" immediate="true" styleClass="radiusBorder5" oncomplete="zebraStyle();hideControls();" onmouseout="this.style.color='white'" 
+		        	style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" render="notificationstock,tableMedicamentStock" execute="@this" limitRender="true">
+		    </a4j:commandButton>
+			<a4j:commandButton value="#{uiMessages.save}" styleClass="radiusBorder5" action="#{stockBean.confirmUpdate}" oncomplete="zebraStyle();hideControls();" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        	style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="loading" render="notificationstock,tableMedicamentStock" execute="@this" limitRender="true">
+		    </a4j:commandButton>
+	    </h:panelGroup>
+		</div>
+		
+		<a4j:jsFunction name="medicPrice" status="loading" action="#{stockBean.selectByPrice}" render="tableMedicamentStock" limitRender="true">
+			<a4j:param name="param1"  assignTo="#{stockBean.idTypeAchat}"></a4j:param>
+		</a4j:jsFunction>
+		<a4j:jsFunction name="saveNewInfo" status="loading" limitRender="true" render="tableMedicamentStock,notificationstock" action="#{stockBean.confirmUpdate}"></a4j:jsFunction>
+		
+		<a4j:jsFunction name="showDialog" status="loading" oncomplete="#{rich:component('confirmUpdateStock')}.show()" render="updateMeToLoadPanel">
+			<a4j:param name="param1" assignTo="#{controllerBean.panelInfoURI}" value="/panels/confirmUpdateStock.xhtml"></a4j:param>
+		</a4j:jsFunction>
+		
+		<script type="text/javascript">
+		selectFirstToogle();
+		</script>
+	</div>
+	
+</ui:composition>

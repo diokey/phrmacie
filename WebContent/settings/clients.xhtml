@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style type="text/css">
+		.input-uniform{
+			width : 182px;
+		}
+	</style>
+	<script type="text/javascript">
+	
+		function showclientControls() {
+			$('#clients-controls-button').fadeIn('slow');
+		}
+
+		function hideclientControls() {
+			$('#clients-controls-button').fadeOut('slow');
+		}
+		
+	</script>
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;">
+	
+		<h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			#{uiMessages.addchangefournisseur}
+    			<br clear="all"/>		    			
+    		</p>    		
+		</h:panelGroup>
+		
+		<rich:panel style="background:white;"> 
+		<f:facet name="header">
+			#{uiMessages.addChangeClient}
+			<h:panelGroup layout="block">
+				<a4j:status name="changingStatus">
+					<f:facet name="start">
+		   			<div style=" display:inline-block;border:1px solid black; color:black;background-color:yellow; border-radius:6px;">
+		   				<h:panelGroup layout="block" style="display:inline-block;">
+		    				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.loading}					       				
+		  				</h:panelGroup>
+		   			</div>
+					</f:facet>        		
+		    	</a4j:status>
+				<a4j:status name="annulerStatus">
+					<f:facet name="start">
+			  		<div style="display:inline-block;position:absolute; border: 1px solid black; color:black;background-color:yellow; border-radius:6px;">
+			  			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+						<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.canceling}					       				
+			 			</h:panelGroup>
+			  		</div>
+					</f:facet>        		
+				</a4j:status>
+			</h:panelGroup>
+		</f:facet>	
+			
+			<h:panelGroup id="client-form" layout="block" styleClass="partener-info" style="display:inline-block;width:38%;">
+				<fieldset style="margin:5px;">
+					<legend>#{uiMessages.addCustomer}</legend>
+				<a4j:region id="client-region">
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.matricule}" />
+					<h:inputText styleClass="input-uniform" validator="#{settingsBean.validateMatricule}" value="#{settingsBean.client.numeroMatricule}" size="31" id="matricule-client" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" execute="@this" render="matricule-client-msg" limitRender="true"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="matricule-client" id="matricule-client-msg" style="display:inline-block"></rich:message>
+					<br />									
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.name}" />
+					<h:inputText styleClass="input-uniform" value="#{settingsBean.client.nomClient}" size="31" id="nom-client" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" execute="@this" render="nom-client-msg" limitRender="true"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="nom-client" id="nom-client-msg" style="display:inline-block"></rich:message>
+					<br />									
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.surname}" />
+					<h:inputText styleClass="input-uniform" id="prenom-client" size="31" value="#{settingsBean.client.prenomClient}" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" execute="@this" render="prenom-client-msg" limitRender="true"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="prenom-client" id="prenom-client-msg" style="display:inline-block"></rich:message>
+					<br />
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.service}" />
+					<rich:autocomplete styleClass="input-uniform" fetchValue="#{service.nomService}" valueChangeListener="#{settingsBean.serviceChanged}" var="service" autocompleteMethod="#{settingsBean.suggestServices}" id="service-client" value="#{settingsBean.client.nomService}">
+						<div class="auto-complete-box">
+       						<span class="auto-complete-element auto-complete-first-column">
+       						 	<h:outputText value="#{service.nomService}" />
+       						</span>
+        				</div>
+						<a4j:ajax event="change" limitRender="true" execute="@this" render="assureur-client-msg"></a4j:ajax>
+					</rich:autocomplete>
+					<rich:message for="service-client" id="service-client-msg" style="display:inline-block"></rich:message>
+					<br />
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.assureur}" />
+					<rich:select styleClass="input-uniform" defaultLabel="#{uiMessages.chooseAss}" value="#{settingsBean.client.idAssureur}" validatorMessage="#{uiMessages.required}" style="display:inline-block" id="assureur-client" required="true" requiredMessage="#{uiMessages.required}">
+						<f:selectItems value="#{settingsBean.assureurSI}"></f:selectItems>
+						<a4j:ajax event="change" execute="@this" limitRender="true" render="assureur-client-msg"></a4j:ajax>
+					</rich:select>
+					<rich:message for="assureur-client" id="assureur-client-msg" style="display:inline-block"></rich:message>
+					<br />
+				</h:panelGroup>
+				
+				
+				<h:panelGroup layout="block" style="margin:auto; text-align:center">					
+	        		<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.annulerClient}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" limitRender="false" render="client-form" execute="@this" status="annulerStatus">
+	        		</a4j:commandButton>
+	        		<a4j:commandButton value="#{uiMessages.save}" styleClass="radiusBorder5" action="#{settingsBean.saveClient}" oncomplete="if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" limitRender="false" status="savingStatus" render="client-form,clientData,settings-reponse" execute="@region">
+	        		</a4j:commandButton>        		
+        		</h:panelGroup>
+        		</a4j:region>
+        		</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup layout="block" style="display:inline-block;width:60%;vertical-align:top;">
+				<fieldset style="margin:5px;">
+				<legend> #{uiMessages.customerList} </legend>
+				<a4j:region>
+				<rich:dataTable styleClass="zebra-style" value="#{settingsBean.listClients}" style="width:100%;" var="client" id="clientData" noDataLabel="#{uiMessages.noDataLabel}">
+					<f:facet name="header"> #{uiMessages.customerList} </f:facet>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.matricule} </f:facet>
+						<rich:inplaceInput id="matricule-client-col" value="#{client.numeroMatricule}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<a4j:ajax event="change" execute="@this" render="matricule-client-msg" limitRender="true" oncomplete="showclientControls();"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:message for="matricule-client-col" id="matricule-client-msg"></rich:message>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.name}</f:facet>
+						<rich:inplaceInput id="nom-client-col" value="#{client.nomClient}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<a4j:ajax event="change" execute="@this" render="nom-client-msg" limitRender="true" oncomplete="showclientControls();"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:message for="nom-client-col" id="nom-client-msg"></rich:message>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.surname}</f:facet>
+						<rich:inplaceInput id="prenom-client-col" value="#{client.prenomClient}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<a4j:ajax event="change" execute="@this" render="prenom-client-msg" limitRender="true" oncomplete="showclientControls();"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:message for="prenom-client-col" id="prenom-client-msg"></rich:message>
+					</rich:column>
+					
+					<rich:column>
+						<f:facet name="header">#{uiMessages.service} </f:facet>
+						<rich:inplaceInput id="service-client-col" value="#{client.nomService}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<a4j:ajax event="change" execute="@this" render="service-client-msg" limitRender="true" oncomplete="showclientControls();"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:message for="service-client-col" id="service-client-msg"></rich:message>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.assureur}</f:facet>
+						<rich:inplaceSelect id="assureur-client-col" value="#{client.idAssureur}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<f:selectItems value="#{settingsBean.assureurSI}"></f:selectItems>
+							<a4j:ajax event="change" limitRender="true" execute="@this" render="assureur-client-msg" oncomplete="showclientControls();"></a4j:ajax>
+						</rich:inplaceSelect>
+						<rich:message for="assureur-client-col" id="assureur-client-msg"></rich:message>
+					</rich:column>
+				</rich:dataTable>
+				<br clear="all" />
+				<div id="clients-controls-button" style="display:none;">
+				<h:panelGroup layout="block" style="text-align:center">
+					<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.annulerClient}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" limitRender="false" render="clientData" execute="@this" status="annulerStatus" oncomplete="hideclientControls();">
+	        		</a4j:commandButton>
+					<a4j:commandButton value="#{uiMessages.save}" action="#{settingsBean.updateClients}" styleClass="radiusBorder5" oncomplete="if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage();hideclientControls();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" limitRender="false" render="clientData,settings-reponse,assureur-client-col" execute="@region">
+	        		</a4j:commandButton> 
+	        	</h:panelGroup>
+	        	</div>
+	        	</a4j:region>
+				</fieldset>
+			</h:panelGroup>
+			</rich:panel>
+		</rich:panel>
+	
+</ui:composition>

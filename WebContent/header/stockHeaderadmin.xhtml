@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"> 
+      
+      <div class="top-content" style="position:relative;height:50px;">
+      <div class="header">
+      		<h2>#{uiMessages.stock}</h2>
+      </div>
+		
+	<div class="helpIcon" style="display:inline-block;position:absolute; top:1px; left:10px;vertical-align:top;">
+		<h:graphicImage value="/images/help.png" id="helpImgStock"/><br />
+		<h:outputText value="#{uiMessages.helpLabel}"/>
+		<rich:tooltip showEvent="click" target="helpImgStock">
+			<h:panelGroup layout="block" style="width:200px">
+				<h:graphicImage value="/images/rightarrow.png" style="float:left;"/>
+				<h:outputText escape="false" value="#{uiMessages.helpTextStock}" />
+			</h:panelGroup>
+		</rich:tooltip>
+	 </div>
+	 
+	 <div class="toggle-button" style="display:inline-block;position:relative;top:10px; left:60px;vertical-align:top;">
+		 	
+ 		<c:forEach items="#{stockBean.buttons}" var="button" varStatus="status">
+ 			<span class="#{button.classes}" id="#{button.id}">
+ 				<a4j:commandLink value="#{button.label}" onclick="controlSave(#{button.value})" oncomplete="selectElement('#{button.id}')" >
+ 				
+ 				</a4j:commandLink>
+ 			</span>
+ 			
+ 		</c:forEach>	 		
+		 	
+	 	</div>
+	 
+	 </div>
+	 
+	 <script type="text/javascript">
+	 	var valueselected = 1;
+	 	function controlSave(value) {
+		 	if(isEdited()) {
+		 		valueselected = value;
+		 		showDialog();
+			}else{
+		 		medicPrice(value);
+			}
+		}
+
+		function confirmedSave() {
+			medicPrice(valueselected);
+		}
+	 </script>
+</ui:composition>

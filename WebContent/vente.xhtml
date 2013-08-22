@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+<h:head>
+	<title>Pharmacie</title>
+	<link href="style/facture.css" rel="stylesheet" type="text/css" />
+	<link href="style/print.css" rel="stylesheet" type="text/css" />
+	<link href="style/design.css" rel="stylesheet" type="text/css" />
+	<link href="style/all-examples.css" rel="stylesheet" type="text/css"/>
+	
+	
+	<f:loadBundle basename="ui_messages_#{locale.selectedLanguage}" var="uiMessages"/>
+	
+	<style>
+		.odd{
+		background-color: #{richSkin.additionalBackgroundColor};
+		}
+		.hovered{
+		font-weight: bold;
+		background-color: #{richSkin.tableSubHeaderBackgroundColor};
+		}
+		
+		.even{
+		background-color:rgba(235,207,172,0.4);
+		}
+		
+	</style>
+</h:head> 
+<h:body>
+	
+		<a4j:jsFunction name="reloading" status="loading" render="notConnected" actionListener="#{controllerBean.reload}">		
+			<a4j:param name="param1" assignTo="#{venteBean.notificationMessage}" ></a4j:param>			
+		</a4j:jsFunction>	
+		<a4j:jsFunction name="updateMedicamentVente" action="#{venteBean.reloadMedicament}">    	
+    	</a4j:jsFunction>
+    	<a4j:jsFunction name="updateStock" action="#{stockBean.reloadMedicament}" render="tableMedicamentStock"></a4j:jsFunction>
+    	<a4j:jsFunction name="changemainPopUp" render="loadPopup,closecontrol" status="loading">
+    		<a4j:param name="param1" assignTo="#{controllerBean.panelURI}"></a4j:param>
+    		<a4j:param name="param2" assignTo="#{controllerBean.close}" value="true"></a4j:param>
+    	</a4j:jsFunction>
+    	    	
+		<script type="text/javascript">
+			var leftFlechPos=0;
+			
+			$(window).unload(function() {
+				
+				reloading('');
+			});
+			$(window).bind('beforeunload', function(){
+				
+				reloading('');
+				
+			});
+	
+			$(window).load(function(){ 
+				
+				reloading('');
+			});
+			
+			function zebraStyle() {
+				$('.zebra-style tr:even').addClass('even');
+				$('.zebra-style tr:odd').addClass('odd');
+				$('.zebra-style tr').mouseover(function(){
+					$(this).removeClass('even odd');
+					$(this).addClass('hovered');
+				});
+				$('.zebra-style tr').mouseout(function(){
+					$(this).removeClass('hovered');
+					$('.zebra-style tr:even').addClass('even');
+					$('.zebra-style tr:odd').addClass('odd');
+				});
+			}
+			
+			function selectElement(element) {			 	
+			 	$('.toggle-item').removeClass('toggle-selected');
+			 	$('.toggle-item a').css('color','#43BD43');
+			 	$('#'+element).addClass('toggle-selected');
+			 	$('#'+element+' a').css('color','#ef7e05');
+
+			 }
+			var curDt = new Date();
+			function disablementFunction(day){
+				
+				if (curDt==undefined){
+				curDt = day.date.getDate();
+				}
+				if (curDt.getTime() - day.date.getTime() &lt; 0) return false; else return true;
+			}
+			function disabledClassesProv(day){
+				if (curDt.getTime() - day.date.getTime() &lt;= 0) return 'rf-cal-boundary-day';
+				
+			}
+
+			function disablePrevious(day) {
+				if (curDt==undefined){
+					curDt = day.date.getDate();
+					}
+					if (curDt.getTime() - day.date.getTime() &lt; 0) return true; else return false;
+			}
+			
+			function disabledClassesPrev(day) {
+				if (curDt.getTime() - day.date.getTime() &gt;= 0) return 'rf-cal-boundary-day';
+			}
+			function showMessage(id) {
+	            $('#'+id).show().trigger('shown');                         
+	        }
+	        
+			function printElement(id) {
+				$('#'+id).printElement({pageTitle:'Facture du '+new Date(),
+										overrideElementCSS:[{href:'style/print.css',media:'print'}],
+										printBodyOptions:
+							            {
+							            styleToAdd:'padding:30px;margin:30px;',
+							            classNameToAdd : ''
+							            }
+	            });
+			}
+			
+			function selectFirstToogle() {
+				
+				$('.toggle-selected a').css('color','#ef7e05');
+				
+			}
+
+			function showPopUp(component) {
+				var windowWidth = $(window).width();
+				var windowHeight = $(window).height();
+				$('#mainPopUp_content .flechehaut').hide();
+				//$('#mainPopUp_content .flechehaut').css('display','block').css('left',leftFlechPos-10+'px');
+				component.show('',{left:40,top:80,height:windowHeight-120, width:windowWidth-80});
+				
+			}
+			
+			
+		</script>
+	<a4j:outputPanel id="connected" rendered="#{userBean.connected and userBean.user.pharmacien}" layout="block">		
+				
+	    <div id="topHeader">	    		    	
+	    	<ui:include src="/template/header.xhtml" />	
+	     	   	
+	    </div>
+	    <div id="leftSide">
+	    	<ui:include src="/template/menu.xhtml"></ui:include>
+	    </div>
+	    <div id="searchWrapper">
+		    <div id="searchBox">
+		    <h:form id="search-form">	
+			    <a4j:outputPanel id="searchOutput" layout="block">
+				    <a4j:outputPanel id="searchBoxPanel" layout="block" rendered="#{controllerBean.vente}">	
+				    	<ui:include src="/template/search.xhtml" />
+				    </a4j:outputPanel>
+				    <a4j:outputPanel id="caisseBoxPanel" layout="block" rendered="#{controllerBean.caisse}">	
+				    	<ui:include src="/header/caisseHeader.xhtml" />
+				    </a4j:outputPanel>
+				    <a4j:outputPanel id="stockBoxPanel" layout="block" rendered="#{controllerBean.stock}">	
+				    	<ui:include src="/header/stockHeader.xhtml" />
+				    </a4j:outputPanel>
+				    <a4j:outputPanel id="creditBoxPanel" layout="block" rendered="#{controllerBean.credit}">	
+				    	<ui:include src="/header/creditHeader.xhtml" />
+				    </a4j:outputPanel>	
+				</a4j:outputPanel>
+			</h:form>	
+		    </div>
+		    
+	    </div>
+	    <div id="middle">  
+	    	<h:form id="main-form">  	
+		    <a4j:outputPanel id="middlePanel" layout="block" ajaxRendered="false">
+		    	
+			    	<a4j:outputPanel rendered="#{controllerBean.vente}" layout="block">		    		
+			    		<ui:include src="/pages/Medicaments.xhtml"></ui:include>	    		
+			    	</a4j:outputPanel>
+			    	<a4j:outputPanel rendered="#{controllerBean.caisse}" layout="block">
+			    		<ui:include src="/pages/caisse.xhtml"></ui:include>	
+			    	</a4j:outputPanel>
+			    	<a4j:outputPanel rendered="#{controllerBean.stock}" layout="block">
+			    		<ui:include src="/pages/stock.xhtml"></ui:include>
+			    	</a4j:outputPanel>
+			    	<a4j:outputPanel rendered="#{controllerBean.credit}" layout="block">
+			    		<ui:include src="/pages/credits.xhtml"></ui:include>
+			    	</a4j:outputPanel>
+		    	
+		    </a4j:outputPanel>
+		    </h:form>
+	    </div>
+	    <div id="rightSide">
+	    	<h:form id="right-form">	    
+	    		<ui:include src="/template/rightBlock.xhtml"></ui:include>
+	    	</h:form>	    
+	    </div>
+	    <div id="stack-options">
+	    	<ui:include src="/template/stack.xhtml" />
+	    </div>
+	    <div id="footer">
+    		<ui:include src="/template/footer.xhtml"></ui:include>
+    	</div>    	
+		
+		<a4j:outputPanel layout="block" id="form-panel">
+			<rich:popupPanel id="mainPopUp" show="#{userBean.user.newUser}" width="660" height="490">		
+				<f:facet name="controls">
+					<h:panelGroup layout="block" id="closecontrol">						
+						<h:graphicImage styleClass="close-img" rendered="#{controllerBean.close}" value="/images/supprimer.png" width="16" height="16" title="#{uiMessages.close}"
+						onclick="$('.auto-close').hide(); #{rich:component('mainPopUp')}.hide();" style="cursor:pointer"/>
+						
+					</h:panelGroup>
+				</f:facet>
+				
+				<div class="flechehaut" style="display:none;"></div>
+				
+				<h:form id="popup-form">					
+					<a4j:outputPanel id="loadPopup" layout="block">						
+						<ui:include src="#{controllerBean.panelURI}" />	
+					</a4j:outputPanel>
+				</h:form>
+			</rich:popupPanel>
+		</a4j:outputPanel>
+		
+		<a4j:outputPanel ajaxRendered="false" id="updateMeToLoadPanel" layout="block">
+			<ui:include src="#{controllerBean.panelInfoURI}" />
+		</a4j:outputPanel>
+					
+					
+		<!-- Workaround for displaying editor in modal panel -->
+		<div style="display:none">
+			<rich:editor></rich:editor>
+		</div>					
+		<!-- End of workaround -->
+		
+   </a4j:outputPanel>
+   
+   	<a4j:outputPanel id="notConnected" layout="block" ajaxRendered="true">   		
+   		<ui:include src="/error.xhtml"></ui:include>
+   		<h:panelGroup layout="block" rendered="#{not userBean.user.pharmacien and userBean.connected}">
+   			<ui:include src="/unauthorized.xhtml"></ui:include>
+   		</h:panelGroup>
+   	</a4j:outputPanel>
+ 	
+ 	<a4j:outputPanel ajaxRendered="true">
+    	<script type="text/javascript" src="scripts/myscript.js"></script>
+    </a4j:outputPanel>
+    <noscript>
+		&lt;style type="text/css"&gt;
+			#dock { top: 0; left: 100px; }
+			a.dock-item { position: relative; float: left; margin-right: 10px; }
+			.dock-item span { display: block; }
+			.stack { top: 0; }
+			.stack ul li { position: relative; }
+		&lt;/style&gt;
+	</noscript>
+	
+	<script type="text/javascript" src="scripts/fisheye-iutil.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery.jqDock.min.js"></script>
+	<script type="text/javascript" src="scripts/dock-example1.js"></script>	
+	<script type="text/javascript" src="scripts/stack-1.js"></script>
+	<script type="text/javascript" src="scripts/stack-2.js"></script>
+	<script type="text/javascript" src="scripts/jquery.printElement.js"></script>
+	<script type="text/javascript" src="scripts/jquery.jqprint.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			var jqDockOpts = {align: 'left', duration: 200, labels: 'tc', size: 48, distance: 85};
+			$('#jqDock').jqDock(jqDockOpts);
+		});
+	</script>
+</h:body> 
+</html>

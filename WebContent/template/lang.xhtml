@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<div id="languageBlock">
+		<h:form>
+			<h:outputText value="#{uiMessages.choixlangue}" />
+			<h:panelGroup layout="block">
+				
+				<h:commandLink action="#{locale.changeLanguage}" id="kirundi">
+					<h:graphicImage value="/images/bi.png" />
+					<f:setPropertyActionListener value="ki_BI" target="#{locale.newLanguage}" />
+					<rich:tooltip target="kirundi">
+						#{uiMessages.messageSelectionKirundi}
+					</rich:tooltip>
+				</h:commandLink>
+			</h:panelGroup>
+			|
+			<h:panelGroup layout="block">
+				
+				<h:commandLink action="#{locale.changeLanguage}" id="francais">
+					<h:graphicImage value="/images/fr.png" />
+					<f:setPropertyActionListener value="fr_FR" target="#{locale.newLanguage}" />
+					<rich:tooltip target="francais">
+						#{uiMessages.messageSelectionFrancais}
+					</rich:tooltip>
+				</h:commandLink>
+			</h:panelGroup>
+			|
+			<h:panelGroup layout="block">
+				
+				<h:commandLink action="#{locale.changeLanguage}" id="english">
+					<h:graphicImage value="/images/us.png" />
+					<f:setPropertyActionListener value="en_US" target="#{locale.newLanguage}" />
+					<rich:tooltip target="english">
+						#{uiMessages.messageSelectionAnglais}
+					</rich:tooltip>
+				</h:commandLink>
+			</h:panelGroup>
+		</h:form>
+		
+	</div>
+</ui:composition>

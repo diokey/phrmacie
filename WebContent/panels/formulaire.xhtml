@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+									
+			<a4j:status name="savingStatus">
+        		<f:facet name="start">
+        			<div class="statusBlock">
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+		       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving} 
+		       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet> 
+        		<f:facet name="error">
+        			<div class="statusBlock">
+        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+	        				<h:outputText value="An error Occured while saving the data. Please try again" style="color:red"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet>        		
+        	</a4j:status>
+        	<div class="auto-close statusBlock" style="display:none;" id="formulaireMessage">
+       				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"/></div>
+       				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="form-reponse">
+	       				<h:graphicImage value="#{userBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+	       				<h:outputText value="#{userBean.message}" style="font-weight:bold;"/>
+       				</h:panelGroup>       				
+       		</div>
+        	
+			<rich:panel styleClass="rf-ddm-lbl rf-ddm-unsel" id="formulaire-panel">
+				
+				<h:panelGroup layout="block">
+					<h3>#{uiMessages.form} #{uiMessages.de} #{venteBean.assureurName}.</h3>
+					<h:graphicImage value="/images/info.png" style="float:left;" />
+					<div style="padding:10px;">
+						<p>#{uiMessages.partenFormIntro} </p>
+						<h3>#{venteBean.assureurName}</h3>
+					</div>
+				</h:panelGroup>	
+				
+					<fieldset style="margin:10px;">	
+						<legend>#{uiMessages.identificationClient}</legend>				
+						<h:panelGrid columns="2" id="client-info">
+							<h:outputLabel value="#{uiMessages.matricule}" for="matricule"/>
+							<h:panelGrid columns="2">
+								<rich:autocomplete id="matricule" value="#{venteBean.client.numeroMatricule}" required="true" requiredMessage="#{uiMessages.required}"
+								autocompleteMethod="#{venteBean.suggestClient}" var="client" fetchValue="#{client.numeroMatricule}" layout="block" 
+								onselectitem="matriculeSelected(#{rich:component('matricule')}.getValue())" onblur="matriculeSelected(#{rich:component('matricule')}.getValue())">
+									<div class="auto-complete-box">
+		        						<span class="auto-complete-element auto-complete-first-column" style="width:15%">
+		        						 	<h:outputText value="#{client.numeroMatricule}" />
+		        						</span>
+		        						<span class="auto-complete-element" style="width:42%">
+		        						 <h:outputText value="#{client.nomClient} #{client.prenomClient}" />
+		        						</span>
+		        						<span class="auto-complete-element" style="width:43%">
+		        						 <h:outputText value="#{client.nomService}" />
+		        						</span>
+        							</div>
+								</rich:autocomplete>
+								<rich:message for="matricule" id="matriculeMsg"></rich:message>
+							</h:panelGrid>
+							<h:outputLabel value="#{uiMessages.name}" for="nom"/>
+							<h:panelGrid columns="2">
+								<h:inputText style="width:182px" disabled="#{venteBean.clientSelected}" value="#{venteBean.client.nomClient}" id="nom" required="true" requiredMessage="#{uiMessages.required}">
+									<a4j:ajax event="blur" limitRender="true" render="nomMsg"></a4j:ajax>
+								</h:inputText>
+								<rich:message for="nom" id="nomMsg"></rich:message>
+							</h:panelGrid>
+							<h:outputLabel value="#{uiMessages.surname}" for="prenom"/>
+							<h:panelGrid columns="2">
+								<h:inputText style="width:182px" disabled="#{venteBean.clientSelected}" value="#{venteBean.client.prenomClient}" id="prenom" required="true" requiredMessage="#{uiMessages.required}">
+									<a4j:ajax event="blur" limitRender="true" render="prenomMsg"></a4j:ajax>
+								</h:inputText>
+								<rich:message for="prenom" id="prenomMsg"></rich:message>
+							</h:panelGrid>
+							<h:outputLabel value="#{uiMessages.fonction}" for="fonction"/>
+							<h:panelGrid columns="2">
+								<rich:autocomplete disabled="#{venteBean.clientSelected}" value="#{venteBean.client.nomService}" autocompleteMethod="#{venteBean.suggestService}" id="fonction" required="true" 
+								 fetchValue="#{service.nomService}" requiredMessage="#{uiMessages.required}" var="service" validator="#{venteBean.validateService}">
+								 <div class="auto-complete-box">
+		        						<span class="auto-complete-element auto-complete-first-column" style="width:100%">
+		        						 	<h:outputText value="#{service.nomService}" />
+		        						</span>		        						
+        							</div>
+        							<a4j:ajax event="blur" limitRender="true" render="fonctionMsg"></a4j:ajax>									
+								</rich:autocomplete>
+								
+								<rich:message escape="false" for="fonction" id="fonctionMsg"></rich:message>
+							</h:panelGrid>
+							
+							
+						</h:panelGrid>
+					</fieldset>
+					
+					<fieldset style="margin:10px;padding:10px;">
+						<legend>#{uiMessages.informationSupplementaire}</legend>
+						<h:panelGrid columns="2">
+							<h:outputLabel value="#{uiMessages.beneficiaire}" for="beneficiaire"/>
+							<h:panelGrid columns="2">
+								<rich:select id="beneficiaire" value="#{venteBean.credit.beneficiaire}" defaultLabel="Selectionner un Beneficiaire"
+								required="true" requiredMessage="#{uiMessages.required}">
+									<f:selectItems value="#{venteBean.beneficiareSI}"/>
+									<a4j:ajax event="change" limitRender="true" render="beneficiarieMsg"></a4j:ajax>
+								</rich:select>
+								<rich:message for="beneficiaire" id="beneficiaireMsg"></rich:message>
+							</h:panelGrid>
+							<h:outputLabel value="#{uiMessages.numeroPharmaceutique}" />
+							<h:inputText size="32" value="#{venteBean.credit.numeroPharmaceutique}" />
+							<h:outputLabel value="#{uiMessages.codeMedecin}" />
+							<h:inputText size="32" value="#{venteBean.credit.codeMedecin}" />
+							<h:outputLabel value="#{uiMessages.codeAgent}" />
+							<h:inputText size="32" value="#{venteBean.credit.codeAgent}" />
+							<h:outputLabel value="#{uiMessages.poste}" />
+							<h:inputText size="32" value="#{venteBean.credit.poste}" />					
+							
+						</h:panelGrid>
+					</fieldset>
+					
+					<h:panelGroup layout="block" style="margin:auto; text-align:center">
+						<a4j:commandButton value="#{uiMessages.annuler}" onclick="resetCredit()" styleClass="radiusBorder5" immediate="true" oncomplete="#{rich:component('mainPopUp')}.hide()" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        		 style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" render="creditOptions">
+		        		</a4j:commandButton>
+		        		<a4j:commandButton value="#{uiMessages.continuer}" action="#{venteBean.saveCredit}" styleClass="radiusBorder5" oncomplete="if(#{venteBean.clientInfocompleted}) #{rich:component('mainPopUp')}.hide()" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="user-reponse,close-control,userForm,UpdateProfileForm" >
+		        		</a4j:commandButton>        		
+        			</h:panelGroup>
+				
+				<a4j:jsFunction name="matriculeSelected" action="#{venteBean.onMatriculeSelect}" render="client-info">
+					<a4j:param name="param1" assignTo="#{venteBean.client.numeroMatricule}"></a4j:param>
+				</a4j:jsFunction>
+				<a4j:jsFunction name="resetCredit" action="#{venteBean.annulerCredit}"></a4j:jsFunction>
+			</rich:panel>
+			
+		
+</ui:composition>

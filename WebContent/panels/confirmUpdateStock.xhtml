@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:popupPanel id="confirmUpdateStock" autosized="true">
+		<f:facet name="header">#{uiMessages.confirmModification}</f:facet>
+		
+		<p style="padding:5px;">
+			#{uiMessages.changesunsaved}
+		</p>
+		<h3 style="padding:10px;">	
+			<span style="font-size:13px;">
+				#{uiMessages.saveChanges}
+			</span>		
+		</h3>
+		
+		<p style="padding:10px; "> 
+			<h:graphicImage value="/images/help.png" style="float:left;"/>
+			
+			
+			<h:outputText escape="false" value="#{uiMessages.saveChangesChoice}" />
+			
+		</p>
+		
+		<h:panelGroup layout="block" style="text-align:center;">
+			<a4j:commandButton status="savingStatus" limitRender="true" execute="@this" styleClass="radiusBorder5" onclick="saveNewInfo();" oncomplete="hideControls();confirmedSave();#{rich:component('confirmUpdateStock')}.hide();"				 
+				 
+				value="#{uiMessages.oui}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" style="height:26px;margin-left:6px;padding-left:12px;padding-right:12px;font-size:13px;" >
+			</a4j:commandButton>
+			<a4j:commandButton limitRender="true" execute="@this" styleClass="radiusBorder5" oncomplete="hideControls();confirmedSave();#{rich:component('confirmUpdateStock')}.hide();"
+				
+				value="#{uiMessages.no}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" style="height:26px;margin-left:6px;padding-left:12px;padding-right:12px;font-size:13px;" >
+			</a4j:commandButton>
+		</h:panelGroup>
+		
+		
+	</rich:popupPanel>
+	
+</ui:composition>

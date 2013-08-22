@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style type="text/css">
+		.clearBckgrd{
+			background:#e9e9e9;
+			color:#005000;
+			border:none;
+		}
+	</style>
+	<script type="text/javascript">
+		function showUserAccountPopUp(component) {
+			var leftPos = $(window).width() - 650;
+			$('#mainPopUp_content .flechehaut').removeAttr('style');
+			$('#mainPopUp_content .flechehaut').css('display','block').css('right','40px');
+			component.show('',{width:640,height:480, top:50, left:leftPos});
+		}
+	</script>
+	
+	<div id="userBlock">
+		<a4j:outputPanel layout="block">
+			<h:form id="userForm">				
+				<rich:toolbar styleClass="clearBckgrd">
+					<rich:dropDownMenu mode="client">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:graphicImage value="/images/#{userBean.user.role}.png" width="24" height="24" style="vertical-align:middle"/>
+								<h:outputText value="#{userBean.user.username}" style="padding:4px;vertical-align:middle;font-size:1.2em;text-decoration:none;" />
+								<h:graphicImage value="/images/s_desc.png" width="16" style="vertical-align:middle"/>
+							</h:panelGroup>
+						</f:facet>
+						
+						<rich:menuGroup icon="/images/editprofil.png" label="#{uiMessages.myProfile}">
+							<rich:menuItem mode="ajax" limitRender="true">
+								<h:panelGroup layout="block" id="user-info">
+									<h:graphicImage value="/images/#{userBean.user.role}.png" style="vertical-align:middle"/>
+									<h:panelGrid columns="2" style="display:inline-table;vertical-align:middle">
+										<h:outputText value="#{uiMessages.username}:" />
+										<h:outputText value="#{userBean.user.username}" />
+										<h:outputText value="#{uiMessages.name}:" />
+										<h:outputText value="#{userBean.user.nom}" />
+										<h:outputText value="#{uiMessages.surname}:" />
+										<h:outputText value="#{userBean.user.prenom}" />
+										<h:outputText value="#{uiMessages.cni}:" />
+										<h:outputText value="#{userBean.user.cni}" />
+										<h:outputText value="#{uiMessages.adress}:" />
+										<h:outputText value="#{userBean.user.adresse}" />
+										<h:outputText value="#{uiMessages.phone}:"/>
+										<h:outputText value="#{userBean.user.tel}" />
+										<h:outputText value="#{uiMessages.email}:" />
+										<h:outputText value="#{userBean.user.email}" />
+									</h:panelGrid>
+									<h:panelGroup layout="block" style="margin:10px;">
+										<a4j:commandLink value="#{uiMessages.editProfil}" execute="@this" status="loading" render="loadPopup,closecontrol" limitRender="true" oncomplete="showUserAccountPopUp(#{rich:component('mainPopUp')})" >
+											<a4j:param name="param1" assignTo="#{controllerBean.panelURI}" value="/panels/updateProfile.xhtml"></a4j:param>
+											<a4j:param name="param2" assignTo="#{controllerBean.close}" value="true"></a4j:param>
+										</a4j:commandLink>
+									</h:panelGroup>
+								</h:panelGroup>
+							</rich:menuItem>
+						</rich:menuGroup>
+						
+						<rich:menuGroup icon="/images/add2.png" rendered="#{userBean.user.patron}" label="#{uiMessages.addUser}" onhide="$('.auto-close').hide()">
+							
+							<rich:menuItem limitRender="true">								
+								<h:panelGroup layout="block" style="postion:absolute;padding:5px; margin:5px;padding-top:15px;">
+									<a4j:status name="savingStatus">
+						        		<f:facet name="start">
+						        			<div class="statusBlock" style="left:10%; right:5%;background:lightyellow">
+						        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+								       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving} 
+								       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+						       					</h:panelGroup>
+						        			</div>
+						        		</f:facet> 
+						        		<f:facet name="error">
+						        			<div class="statusBlock" style="left:10%; right:5%;background:lightyellow">
+						        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+						        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+							       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+							        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+						       					</h:panelGroup>
+						        			</div>
+						        		</f:facet>        		
+        							</a4j:status>
+        							<div class="statusBlock auto-close" style="display:none;left:5%; right:5%;background:lightyellow" id="resultMessage2">
+       									<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+					       				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px; " id="reponse">
+						       				<h:graphicImage value="#{userManagerBean.messageIcon}" width="24" height="24" styleClass="imgStatus" /> 
+						       				<h:outputText value="#{userManagerBean.message}" />
+					       				</h:panelGroup>       				
+       								</div>
+									<h:panelGrid columns="2" id="new-user-data">
+										<h:outputLabel value="#{uiMessages.username}" for="username"/>
+										<h:panelGrid columns="2">
+											<h:inputText style="width:200px;" value="#{userManagerBean.user.username}" id="username" required="true" validator="#{validatorBean.validateUsername}"
+											requiredMessage="#{uiMessages.required}">											
+												<f:validateLength minimum="3"></f:validateLength>
+												<a4j:ajax event="change" limitRender="true" render="usernameMsg" execute="@this"></a4j:ajax>
+											</h:inputText>
+											<rich:message for="username" id="usernameMsg"></rich:message>
+										</h:panelGrid>
+										<h:outputLabel value="#{uiMessages.password}" for="password"/>
+										<h:panelGrid columns="2">
+											<h:inputSecret required="true" style="width:200px;" requiredMessage="#{uiMessages.required}" value="#{userManagerBean.user.password}" id="password">												
+												<a4j:ajax event="change" execute="@this" limitRender="true" render="passwordMsg"></a4j:ajax>
+											</h:inputSecret>
+											<rich:message for="password" id="passwordMsg"></rich:message>										
+										</h:panelGrid>
+										<h:outputLabel value="#{uiMessages.role}" for="role"/>
+										<h:panelGrid columns="2">
+											<h:selectOneRadio id="role" value="#{userManagerBean.user.role}" required="true" requiredMessage="This field is required">											
+												<f:selectItem itemLabel="#{uiMessages.user}" itemValue="user"></f:selectItem>
+												<f:selectItem itemLabel="#{uiMessages.gerant}" itemValue="gerant"/>
+												<f:selectItem itemLabel="#{uiMessages.boss}" itemValue="patron"/>
+											</h:selectOneRadio>
+											<rich:message for="role"></rich:message>
+										</h:panelGrid>
+									</h:panelGrid>
+									<h:panelGroup layout="block" style="margin:auto;text-align:center;margin-top:5px;">
+										<a4j:commandButton value="#{uiMessages.addUser}" styleClass="radiusBorder5" style="height:24px;padding-left:4px;padding-right:4px;font-weight:bold;" limitRender="true" render="reponse,new-user-data"
+											  action="#{userManagerBean.addNewuser}" status="savingStatus" oncomplete="if (#{not empty userManagerBean.message}) showMessage('resultMessage2');" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'">
+										</a4j:commandButton>
+									</h:panelGroup>
+								</h:panelGroup>								
+							</rich:menuItem>
+						</rich:menuGroup>
+						<rich:menuItem icon="/images/Exit.png" mode="ajax" limitRender="true" status="loading" label="#{uiMessages.logOut}" action="#{userBean.logOut}" rendered="#{userBean.connected}">
+						</rich:menuItem>
+						
+					</rich:dropDownMenu>
+				</rich:toolbar>
+				
+			</h:form>
+		</a4j:outputPanel>
+	</div>
+</ui:composition>

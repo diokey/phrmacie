@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"> 
+
+	
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;" id="settings-panel">
+	
+		<h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			Ajouter / Modifier les Prix des Medicaments pour les differents Assureurs
+    			<br clear="all"/>		    			
+    		</p>
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" id="prix-data">
+		<a4j:status name="annulerStatus">
+    		<f:facet name="start">
+	       		<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+	       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+		    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> Annulation...					       				
+	      			</h:panelGroup>
+	       		</div>
+    		</f:facet>        		
+      	</a4j:status>
+		<a4j:region>
+		<div style="width:100%; overflow:auto; margin:auto;">
+			 
+	 	<table class="rf-dt zebra-style" style="width:100%; margin:0; padding:0;overflow:auto;">
+    			<colgroup span="8"></colgroup>
+    				<thead class="rf-dt-thd">
+	    				
+	    					<tr class="rf-dt-hdr rf-dt-hdr-fst">
+	    						<th class="rf-dt-hdr-c" colspan="4" style="color:white;">Identification du Medicament</th>
+	    						<a4j:repeat  value="#{settingsBean.listAllAssureurs}" var="assureur">
+		    						<th class="rf-dt-hdr-c" style="color:white;" colspan="3">#{assureur.nomAssureur}</th>		    						
+		    					</a4j:repeat>
+	    						
+	    					</tr>
+	    					<tr class="rf-dt-hdr">
+    						
+	    						<th class="rf-dt-hdr-c">Code Medicament</th>
+	    						<th class="rf-dt-hdr-c">Nom Medicament</th>
+	    						<th class="rf-dt-hdr-c">Type </th>
+	    						<th class="rf-dt-hdr-c">Lot</th>
+		    					
+		    					<a4j:repeat  value="#{settingsBean.listAllAssureurs}" var="assureur">
+		    						<th class="rf-dt-hdr-c">Prix</th>
+	    							<th class="rf-dt-hdr-c">Reduction</th>
+	    							<th class="rf-dt-hdr-c">Mention</th>		    						
+		    					</a4j:repeat>
+	    					</tr>
+	    					
+	    				</thead>
+	    				
+	    				<a4j:repeat id="assureur-price-repeat" rows="50" style="width:100%" value="#{settingsBean.listMedicaments}" var="medic" rendered="#{not empty settingsBean.listMedicaments}" rowKeyVar="key">
+    				
+    					<tbody class="rf-dt-b">
+	    					<tr class="rf-dt-r rf-dt-fst-r">
+	    						
+	    						<td class="rf-dt-c">	    						
+	    							#{medic.codeMedicament}
+	    						</td>    						
+	    					
+	    						<td class="rf-dt-c">
+	    							#{medic.nomMedicament}
+	    						</td> 	
+	    						<td class="rf-dt-c">
+    								#{medic.typeMedic}
+    							</td>
+    							<td class="rf-dt-c">
+    								#{medic.batch}
+    							</td> 
+    							
+		    					<a4j:repeat value="#{medic.listAssureur}" var="assur">
+			    					<td class="rf-dt-c">
+			    						<rich:inplaceInput id="prix-col" inputWidth="50" value="#{assur.prix.prix}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}"
+			    						validatorMessage="#{uiMessages.incorrectValue}">
+			    							<a4j:ajax event="change" render="prix-col-message" execute="@this" limitRender="true"></a4j:ajax>
+			    							<f:validateLongRange minimum="10" maximum="10000000"></f:validateLongRange>
+			    						</rich:inplaceInput>
+			    						
+			    						<rich:message for="prix-col" id="prix-col-message"></rich:message>
+			    					</td>
+			    					
+			    					<td class="rf-dt-c">
+			    						<rich:inplaceInput id="reduction-col" inputWidth="30" value="#{assur.prix.reduction}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}"
+			    						validatorMessage="#{uiMessages.incorrectValue}">
+			    							<a4j:ajax event="change" render="reduction-col-msg" execute="@this" limitRender="true"></a4j:ajax>
+			    							<f:validateLongRange minimum="0" maximum="100"></f:validateLongRange>
+			    						</rich:inplaceInput>
+			    						 %
+			    						 <rich:message for="reduction-col" id="reduction-col-msg"></rich:message>
+			    					</td>
+			    								    					
+			    					<td class="rf-dt-c">
+			    						<rich:inplaceSelect required="false" value="#{assur.prix.mentionString}" editEvent="dblclick">
+			    							<f:selectItems value="#{settingsBean.mentions}"/>
+			    							<a4j:ajax event="change" execute="@this" limitRender="true"></a4j:ajax>
+			    						</rich:inplaceSelect>
+			    					</td>			    					
+			    					
+		    					</a4j:repeat>
+		    					 						
+    						</tr>
+    					</tbody>   				
+    				
+    				</a4j:repeat>
+    				
+    				<tfoot class="rf-dt-tft">
+    					<tr class="rf-dt-ftr">
+    						<td class="rf-dt-ftr-c" colspan="16">
+    							    							
+    						</td>
+    					</tr>
+    				</tfoot>
+    		</table>   
+		</div>
+		<br clear="all"/>
+		
+	    </a4j:region>
+	    
+	    </h:panelGroup>
+	    <h:panelGroup layout="block" style="text-align:center;">
+	    	<a4j:commandButton value="#{uiMessages.annuler}" status="annulerStatus" immediate="true" styleClass="radiusBorder5" oncomplete="zebraStyle();" onmouseout="this.style.color='white'" 
+		        	style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" render="prix-data" execute="@this" limitRender="true">
+		    </a4j:commandButton>
+			<a4j:commandButton value="#{uiMessages.save}" styleClass="radiusBorder5" action="#{settingsBean.updatePrices}" oncomplete="zebraStyle();if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        	style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="prix-data,settings-reponse" execute="@this" limitRender="true">
+		    </a4j:commandButton>
+	    </h:panelGroup>
+	    
+	</rich:panel>
+	
+</ui:composition>

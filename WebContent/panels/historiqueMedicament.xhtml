@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style type="text/css">
+		.search-box-large input{
+			width : 300px;
+			height : 24px;			
+			font-size:medium;
+			font-family: inherit;
+			background: url("images/search.png");
+			background-repeat:no-repeat;
+			background-position: top right;
+		}
+		.search-box-large label {
+			display:inline-block;
+			margin-right : 20px;
+		}
+		.clear-background {
+			background-color: white;
+		}
+		
+		.box-suggest *.rf-au-lst-scrl{
+			width : 300px;
+		}
+		
+		.box-suggest {
+			width: 300px;
+		}
+		
+	</style>
+	
+	<a4j:status name="savingStatus">
+       	<f:facet name="start">
+   			<div class="statusBlock">
+   				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+    				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> Searching
+    				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+  				</h:panelGroup>
+   			</div>
+       	 </f:facet> 
+       	<f:facet name="error">
+       		<div class="statusBlock">
+			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+					<h:outputText value="An error Occured while saving the data. Please try again" style="color:red"/>
+				</h:panelGroup>
+       		</div>
+       	</f:facet>        		
+    </a4j:status>
+  	<div class="auto-close statusBlock" style="display:none;" id="resultHistoriqueMessage">
+  			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+  			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse">
+   				<h:graphicImage value="#{userManagerBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+   				<h:outputText escape="false" value="#{userManagerBean.message}" style="font-weight:bold;"/>
+  			</h:panelGroup>       				
+  	</div>
+  	
+  	 <rich:panel id="pageContent" style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;">
+        
+        <h3>Historique des Medicaments</h3> 
+	    <h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<h:panelGroup layout="block">
+	    		<p style="padding:6px;font-weight:bold;">
+	    			Cette page vous permet de voir les details des entrees / Sorties d'un medicament.
+	    			<br clear="all"/>
+	    		</p>
+    		</h:panelGroup>
+    		
+	    </h:panelGroup>
+	   
+    	<fieldset>
+    		<legend>Choix du Medicament</legend>
+     		<div class="search-box-large">
+     			<h:panelGrid columns="3">
+     				<h:outputLabel value="Tapez le nom ou le code du medicament" for="medicament"/>
+     				
+     				<rich:autocomplete popupClass="box-suggest" id="medicament" value="#{historiqueBean.selectedMedicament}" minChars="2" autocompleteMethod="#{historiqueBean.suggestMedicament}" var="medicament"
+     				fetchValue="#{medicament.codeMedicament} - #{medicament.nomMedicament}" layout="block" validator="#{historiqueBean.validatetSelectedMedicament}">
+     					<div class="auto-complete-box">
+       						<span class="auto-complete-element auto-complete-first-column">
+       						 	<h:outputText value="#{medicament.codeMedicament}" />
+       						</span>
+       						<span class="auto-complete-element">
+       						 	<h:outputText value="#{medicament.nomMedicament}" />
+       						</span>
+       						<span class="auto-complete-element">
+       						 	<h:outputText value="#{medicament.typeMedic}" />
+       						</span>
+        				</div>
+        				<a4j:ajax event="blur" limitRender="true" render="history-place-holder,medicamentMsg"></a4j:ajax>
+     				</rich:autocomplete>
+     				<rich:message id="medicamentMsg" for="medicament"></rich:message>
+     			</h:panelGrid>
+     			
+     		</div>
+    	</fieldset>
+      	
+      	<a4j:outputPanel layout="block" id="history-place-holder" style="margin-top:20px;">
+	      	<a4j:outputPanel layout="block" rendered="#{not empty historiqueBean.selectedMedicament}">
+	      	<rich:tabPanel switchType="client" id="historique-tab">
+	      		<rich:tab header="Achats" name="achats">
+	      			<rich:panel style="background-color:white;">
+	      				<h:panelGroup layout="block">
+				    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+				    		<h:panelGroup layout="block">
+					    		<p style="padding:6px;font-weight:bold;">
+					    			Historique des achats du medicament #{historiqueBean.selectedMedicament} 
+					    		</p>
+				    		</h:panelGroup>    		
+	    				</h:panelGroup>
+	    				
+	    				<rich:dataTable  style="width: 100%;" value="#{historiqueBean.historiqueAchatMedicament}" var="historique"
+	    				rowClasses="odd, even" onrowmouseover="this.className='hovered'" rowKeyVar="key"
+	    				onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+	    					<f:facet name="noData">
+								<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+									#{uiMessages.noDataLabel}
+								</div>
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">Date Achat</f:facet>
+								#{historique.dateFourniture}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Quantite Achete</f:facet>
+								#{historique.quantite}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Unitaire</f:facet>
+								#{historique.prixUnitaire}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Total</f:facet>
+								#{historique.prixTotal}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Fournisseur</f:facet>
+								#{historique.fournisseur}
+							</rich:column>
+	    				</rich:dataTable>
+	    				
+	      			</rich:panel>
+	      		</rich:tab>
+	      		<rich:tab header="Ventes" name="ventes">
+	      			<rich:panel style="background-color:white;">
+	      				<h:panelGroup layout="block">
+				    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+				    		<h:panelGroup layout="block">
+					    		<p style="padding:6px;font-weight:bold;">
+					    			Historiques des vente du medicament #{historiqueBean.selectedMedicament} 
+					    		</p>
+				    		</h:panelGroup>    		
+	    				</h:panelGroup>
+	    				<rich:dataTable  style="width: 100%;" value="#{historiqueBean.historiqueVenteMedicament}" var="historiqueVente"
+	    				rowClasses="odd, even" onrowmouseover="this.className='hovered'" rowKeyVar="key"
+	    				onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+	    					<f:facet name="noData">
+								<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+									#{uiMessages.noDataLabel}
+								</div>
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">Date Vente</f:facet>
+								#{historiqueVente.dateVente}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Quantite Achete</f:facet>
+								#{historiqueVente.quantite}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Unitaire</f:facet>
+								#{historiqueVente.prixUnitaire}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Total</f:facet>
+								#{historiqueVente.prixTotal}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Type Achat</f:facet>
+								#{historiqueVente.typeAchat}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Reduction</f:facet>
+								#{historiqueVente.reduction}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Unitaire Reduit</f:facet>
+								#{historiqueVente.prixUnitaireReduit}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Prix Total Reduit</f:facet>
+								#{historiqueVente.prixTotalReduit}
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Client</f:facet>
+								#{historiqueVente.client}
+							</rich:column>
+	    				</rich:dataTable>
+	      			</rich:panel>
+	      		</rich:tab>
+	      	</rich:tabPanel>
+	      	</a4j:outputPanel>
+      	</a4j:outputPanel>
+    </rich:panel>
+ 
+</ui:composition>

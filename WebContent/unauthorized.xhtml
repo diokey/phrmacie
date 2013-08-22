@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<rich:popupPanel zindex="2000" autosized="true" modal="true" show="true" id="unauthorizedPanel" moveable="false">
+	
+		<rich:panel styleClass="rf-ddm-lbl rf-ddm-unsel">
+			
+			<fieldset>
+				<legend>#{uiMessages.unauthorizedlegend}</legend>
+				
+				<h3 style="padding:10px;">#{uiMessages.unauthorizedTitle}</h3>
+				<p style="padding:10px;">
+					<h:graphicImage value="/images/warning.png" style="float:left;" width="48"/>
+					<h:outputText value="#{uiMessages.unauthorizedDescription}" escape="false"/>
+				</p>
+				<h:panelGroup layout="block" style="text-align:center;padding:10px;">
+					<h:form>
+					<h:commandLink styleClass="linkButton radiusBorder5" action="#{userBean.logOut}" style="color:white;padding:5px;margin:3px;font-weight: normal;font-style: normal;"
+					 onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" >
+					 <h:panelGroup layout="block">
+							<h:graphicImage value="/images/link-sm.png" />
+							<h:outputText value="#{uiMessages.reconnect}" style="font-weight: normal;font-style: normal;"/>
+						</h:panelGroup>
+					 </h:commandLink>
+					 </h:form>
+				</h:panelGroup>
+			</fieldset>
+			
+		</rich:panel>
+		
+	</rich:popupPanel>
+	
+</ui:composition>

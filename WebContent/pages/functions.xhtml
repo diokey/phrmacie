@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+
+	<script type="text/javascript">
+		function showQuantityPanel(component,parent) {
+			var $parent=$(parent);
+			var topPos=$parent.offset().top;
+			var leftPos=$parent.offset().left;
+			var width = $parent.width();
+			var height=$parent.height();
+			//alert("left:"+topPos+"right"+leftPos);
+			component.show('',{left:leftPos+50,top:topPos+(height/2)});			
+		}
+
+		function hideAchatPanel() {
+			$('#achatPanel').hide('fast');
+		}
+
+		function showCreditForm(leftCompPos, value,component) {
+			changetypeAchat(value);
+			
+			var windowWidth = $(window).width();
+			var popUpWidth = $('#formulairePopUp_container').width();
+			//alert(popUpWidth);
+			if(value!=1){
+				var leftPos = windowWidth - 567;
+				
+				var rightPos = (windowWidth - leftCompPos) -25;
+				
+				$('#formulairePopUp_content .flechehaut').css('right',rightPos+'px');
+				component.show('',{top:'130',left:leftPos-30});
+			}
+		}
+
+		function selectRow(row,value) {
+			changeSelection(value);
+			$('.selected').removeClass('selected');
+			$(row).addClass('selected');
+		}
+
+		function createBlocks() {
+			if($('#main-form\\:masterRichPanel').offset()==null)
+				return;
+			if($('#main-form\\:detailsPanel').offset()==null)
+				return;
+			var masterTop = ($('#main-form\\:masterRichPanel').offset().top)+45; //add 50 px for the footer
+			var detailTop = ($('#main-form\\:detailsPanel').offset().top)+45;
+			var windowHeight=$(window).height();
+			
+			$('#main-form\\:masterRichPanel').height(windowHeight - masterTop);
+			$('#main-form\\:detailsPanel').height(windowHeight - detailTop);
+		}
+		function setUpUI() {
+			selectFirstRow();
+			createBlocks()
+		}	
+		function selectFirstRow() {
+			$('#main-form\\:masterTable .rf-dt-fst-r').addClass('selected');
+			$('.toggle-selected a').css('color','#ef7e05');
+		}
+						
+	</script>
+	
+	<a4j:jsFunction name="removeItem" limitRender="true">
+		<a4j:param name="param1" assignTo="#{venteBean.toBeRemoved}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="showDetailsPanel" status="loading" action="#{venteBean.selectOrderToViewDetails}" 
+	render="tabledetail" oncomplete="#{rich:component('detailVentePanel')}.show()">
+		<a4j:param name="param1" assignTo="#{venteBean.orderId}"></a4j:param>	
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="changetypeAchat" action="#{venteBean.changeTypeAchat}" render="formulaire-panel">
+		<a4j:param name="param1" assignTo="#{venteBean.typeAchat}"></a4j:param>
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="selectedAchat" action="#{creditBean.checkVente}" render="bon" limitRender="true">
+			<a4j:param name="param1" assignTo="#{creditBean.idAchat}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="changeSelection" render="tableDetailAchat" action="#{caisseBean.changeSelectedAchat}">
+			<a4j:param name="param1" assignTo="#{caisseBean.idAchat}"></a4j:param>
+		</a4j:jsFunction>
+		<a4j:jsFunction execute="@this" name="selectTypeAchatToshow" action="#{caisseBean.changeTypeAchat}" limitRender="true" render="masterPanel,detailsPanel" oncomplete="setUpUI();"
+		 status="loading">
+		 	<a4j:param name="param1" assignTo="#{caisseBean.idTypeAchat}" ></a4j:param>
+		 </a4j:jsFunction>
+</ui:composition>

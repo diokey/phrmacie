@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">	
+	
+	<a4j:poll interval="30000" execute="@this" action="#{venteBean.reloadIfNeeded}" enabled="true" limitRender="true" render="allMedicaments"></a4j:poll>	
+	<a4j:outputPanel layout="block" ajaxRendered="true">
+		<a4j:repeat value="#{venteBean.listMedicaments}" rows="50" var="medicament" id="allMedicaments" rowKeyVar="key">				
+			<rich:panel id="medicamentPanel" ondblclick="moveMedicament('#{key}',#{rich:element('medicamentPanel')},'normal')"
+				 style="width:160px; height:70px;display:inline-block;vertical-align:top;margin:3px;padding:0;cursor:move;" styleClass="medic-panel"
+				 onmousedown="selectListGenerique('#{key}')">
+					
+					<rich:dragSource dragIndicator="indicator" type="medicaments" dragValue="#{medicament}" />
+					<h:graphicImage id="medicamentImage" value="/images/medicament.png" style="display:inline-block;vertical-align:middle;">
+						
+					</h:graphicImage>
+					<div id="medicamentInfo" style="display:inline-block;vertical-align:middle;">
+						<b><h:outputText value="#{uiMessages.medicName}: #{medicament.nomMedicShort}" /></b><br />
+						<h:outputText value="#{uiMessages.quantite}: #{medicament.quantiteStock}" style="display:inline-block; vertical-align:middle"/>
+						<h:graphicImage id="mention" value="#{medicament.mentionIcon}" style="display:inline-block; vertical-align:middle">
+							<rich:tooltip target="mention" value="#{medicament.mentionString}" ></rich:tooltip>
+						</h:graphicImage><br />
+						<h:outputText value="#{uiMessages.prix}: #{medicament.prix} Fbu" /><br />
+						<h:outputText value="#{uiMessages.type}: #{medicament.typeMedic}" /><br />
+						
+					</div>					
+				</rich:panel>
+				<rich:dragIndicator id="indicator" acceptClass="rf-ind-acpt" draggingClass="rf-ind-drag" rejectClass="rf-ind-rejt">
+					<rich:panel>
+						<h:graphicImage id="medicamentImage2" value="/images/medicament.png" style="display:inline-block;vertical-align:middle;"/>
+						<div id="medicamentInfo" style="display:inline-block;vertical-align:middle;">
+							<b><h:outputText value="#{uiMessages.medicName}: #{medicament.nomMedicament}" /></b><br />
+							<h:outputText value="#{uiMessages.quantite}: #{medicament.quantiteStock}" /><br />
+							<h:outputText value="#{uiMessages.prix}: #{medicament.prix} Fbu" /><br />
+							<h:outputText value="#{uiMessages.type}: #{medicament.typeMedic}" /><br />
+							
+						</div>
+					</rich:panel>
+				</rich:dragIndicator>
+				<a4j:region>
+				<rich:contextMenu id="ctxMenuOptions" target="medicamentPanel" mode="ajax" style="display:inline-block">
+					<rich:menuItem label="#{uiMessages.addToCart}" mode="client" icon="/images/add2.png" onclick="moveMedicament('#{key}',#{rich:element('medicamentPanel')},'normal')"></rich:menuItem>
+					<rich:menuGroup disabled="#{not medicament.withGenerique}" label="Ajouter Son Generique" iconDisabled="/images/stop16.png" icon="/images/add.png">
+						<rich:menuItem>
+							<a4j:repeat value="#{medicament.medicamentsGenerique}" var="medicMenu">
+								<rich:menuItem mode="client" icon="/images/medicament.png" title="#{medicMenu.nomMedicament}" label="#{medicMenu.idStock} #{medicMenu.nomMedicShort} - #{medicMenu.prix} FBU" limitRender="true" onclick="moveMedicament('#{medicMenu.idStock}',#{rich:element('medicamentPanel')},'generique')"></rich:menuItem>
+							</a4j:repeat>
+						</rich:menuItem>
+					</rich:menuGroup>
+					
+					
+					<rich:menuGroup id="specialiteremboursable" disabled="#{not medicament.remboursable}" title="Ajouter Specialite remboursable a titre generique" label="Remboursable a Titre Generique" icon="/images/refresh16.png" iconDisabled="/images/stop16.png">
+						<rich:menuItem>
+						<a4j:repeat value="#{medicament.medicamentsGenerique}" var="medicMenu">
+							<rich:menuItem mode="client" icon="/images/medicament.png" title="#{medicMenu.nomMedicament}" label="#{medicMenu.idStock} #{medicMenu.nomMedicShort} - #{medicMenu.prix} FBU" onclick="moveMedicament('#{medicMenu.idStock}',#{rich:element('medicamentPanel')},'specialite')" limitRender="true"></rich:menuItem>
+						</a4j:repeat>
+						</rich:menuItem>
+					</rich:menuGroup>
+					<rich:menuItem limitRender="true" label="#{uiMessages.preview}" mode="client" icon="/images/preview.png" onclick="showPanel('#{key}')">						
+						
+					</rich:menuItem>					
+				</rich:contextMenu>
+				</a4j:region>
+		</a4j:repeat>		
+		
+		<div style="display:none;">
+		<div id="printable-facture" style="font-size:16px;">
+			<div>
+				<p style="border-bottom: 1px black dashed;margin:6px;">
+					#{commandeBean.pharmacie.nomOwner}<br />
+					B.P #{pharmacieBean.pharmacie.bp} <br />
+					Tel #{pharmacieBean.pharmacie.tel} 
+										
+				</p>
+					
+				<p style="margin-left : 120px;margin-top:12px;margin-bottom:12px;">
+				Facture
+				</p>
+			</div>
+					<rich:dataTable value="#{venteBean.listMedicamentsAchete}" var="medic" 
+					rendered="#{not empty venteBean.listMedicamentsAchete}">
+						<f:facet name="header">#{uiMessages.cartContentHeaderText}</f:facet>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+							#{medic.nomMedicament}
+						</rich:column>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+							#{medic.quantiteAchete}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixUnitaire}</f:facet>
+							#{medic.prixReduit}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixTotal}</f:facet>
+							#{medic.prixTotalReduit}
+						</rich:column>
+						<f:facet name="footer">
+							<h3 style="text-align:right">#{uiMessages.sommeaPayer}: #{venteBean.sommeTotalReduit} FBU</h3>
+							
+						</f:facet>
+						
+					</rich:dataTable>
+		</div>	
+		</div>
+	</a4j:outputPanel>
+	
+	<h:panelGroup layout="block" style="text-align:center;">
+	<rich:dataScroller for="allMedicaments" renderIfSinglePage="false" style="display:block;position:absolute;bottom:10px;width:100%;margin:auto;"></rich:dataScroller>
+	</h:panelGroup>
+	
+	<a4j:jsFunction name="showPreviewPanel" execute="@this" action="#{venteBean.selectFromId}" render="updateMeToLoadPanel"
+	oncomplete="#{rich:component('previewMedic')}.show()" status="loading">
+		<a4j:param name="param1" assignTo="#{venteBean.tempId}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/previewMedic.xhtml"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="selectMedic" status="addingTocart" execute="@this" action="#{venteBean.addProductToCart}" render="notification">
+		<a4j:param name="param1" assignTo="#{venteBean.selectedMedicament}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="selectGenerique" status="addingTocart" execute="@this" action="#{venteBean.addGeneriqueToCart}" render="notification">
+		<a4j:param name="param1" assignTo="#{venteBean.selectedMedicament}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="selectSpecialite" status="addingTocart" execute="@this" action="#{venteBean.addSpecialiteRemboursable}" render="notification">
+		<a4j:param name="param1" assignTo="#{venteBean.selectedMedicament}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="selectListGenerique" execute="@this" action="#{venteBean.selectListGenerique}"
+	limitRender="true" render="@none">
+		<a4j:param name="param1" assignTo="#{venteBean.rightClicked}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="refreshListGenerique" limitRender="true" render="ctxMenuOptions,menulist">
+	</a4j:jsFunction>
+	
+		<script type="text/javascript">
+
+			function showPanel(value) {
+				showPreviewPanel(value);
+				//component.show();
+			}
+
+			
+			function moveMedicament(idValue, compId,type) {
+
+				var $original = $(compId);
+				
+				var originalX = $original.offset().left;
+				var originalY = $original.offset().top;
+				var pos =  $original.offset();
+				
+				var $selectedMed = $original.clone();						
+				$original.parent().append($selectedMed);
+				$selectedMed.css('position','fixed');
+				$selectedMed.css('z-index','202');
+				$selectedMed.offset(pos);
+				
+				var $cartImage = $('.cartImage');	
+				
+				var posX = 	$cartImage.offset().left;
+				var posY =  $cartImage.offset().top;		
+				
+				$selectedMed.animate({'left': posX,'top':posY}, 'normal',function(){
+					
+					$('#achatPanel').hide('fast');					
+						$(this).fadeOut('slow',function(){									
+							$(this).remove();
+							if(type=='normal') {
+								selectMedic(idValue);
+							}else{
+								if(type=='generique') {
+									selectGenerique(idValue);
+								}else{
+									if(type=='specialite') {
+										selectSpecialite(idValue);
+									}
+								}
+							}										
+						});
+						
+					 });									
+			
+			}
+
+			
+		</script>
+	
+</ui:composition>

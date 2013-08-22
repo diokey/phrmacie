@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:popupPanel id="bon-fourniture" autosized="true" style="background-color:white;">
+		<f:facet name="header">FACTURE DU BON DE FOURNITURE</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"
+				onclick="#{rich:component('bon-fourniture')}.hide();" style="cursor:pointer"/>
+			</h:panelGroup>
+		</f:facet>
+		<style type="text/css">
+		
+			
+		</style>
+		<a4j:outputPanel layout="block" id="all-facture-data" style="width:600px;background-color:white;">
+		<div id="bon-header">
+			<div class="left">
+				<p>
+				#{creditBean.assureur.nomAssureurLong}<br />
+				BP  : #{creditBean.assureur.bp}<br />
+				Tel : #{creditBean.assureur.tel}<br />
+				</p>
+			</div>
+			<div class="right">
+				FACTURE DU BON DE FOURNITURE N°: #{creditBean.numeroFacture}<br />
+				<a4j:outputPanel rendered="#{not empty creditBean.credit.numeroPharmaceutique}">NUMERO PHARMACEUTIQUE		   :  #{creditBean.credit.numeroPharmaceutique}</a4j:outputPanel>
+			</div>
+		</div>
+		<div id="identification-client">
+			<p class="left">
+				MATRICULE N°  : #{creditBean.client.numeroMatricule}<br />
+				Nom et Prenom : #{creditBean.client.nomClient} #{creditBean.client.prenomClient}<br />
+				Beneficiaire  : #{creditBean.credit.beneficiaire}
+			</p>
+			<p class="right">
+				SERVICE : #{creditBean.client.nomService}
+			</p>
+		</div>
+		<div id="identification-pharmacie">
+			<span>#{commandeBean.pharmacie.nomOwner}</span>
+			<span><a4j:outputPanel rendered="#{not empty creditBean.credit.poste}">Poste : </a4j:outputPanel>#{creditBean.credit.poste}</span>
+			<span><a4j:outputPanel rendered="#{not empty creditBean.credit.codeAgent}">Code Agent : </a4j:outputPanel>#{creditBean.credit.codeAgent}</span>
+			<span><a4j:outputPanel rendered="#{not empty creditBean.credit.codeMedecin}">Code Medecin : </a4j:outputPanel>#{creditBean.credit.codeMedecin}</span>
+		</div>
+		
+		<div id="produits-fournis">
+			<table style="width:100%;">
+				<thead>
+					<tr>
+						<th>CODE</th>
+						<th>PRODUITS FOURNIS</th>
+						<th>QUANTITE</th>
+						<th>PU. 100%</th>
+						<th>PT. 100%</th>
+						<th>P. #{creditBean.achat.typeAchat}</th>
+						<th>P. Adherant</th>
+					</tr>
+				</thead>
+				<tbody>
+				<a4j:repeat value="#{creditBean.medicamentsAchete}" var="medicament">
+					<tr>
+						<td>#{medicament.codeMedicament}</td>
+						<td>#{medicament.nomMedicament}</td>
+						<td>#{medicament.quantiteAchete}</td>
+						<td>#{medicament.prix}</td>
+						<td>#{medicament.prixTotal}</td>
+						<td>#{medicament.prixAssureur}</td>
+						<td>#{medicament.prixTotalReduit}</td>
+					</tr>
+				</a4j:repeat>
+				</tbody>
+			</table>
+		</div>
+		<div id="facturation-total">
+			<div class="left">
+				Visa de #{creditBean.assureur.nomAssureurLong} <br />
+				Date et Signature
+			</div>
+			<div class="right">
+				<table style="width:100%;display:inline-table; position:relative; right:-20px;">
+					<thead>
+						<tr>
+							<th>Total 100%</th>
+							<th>Total #{creditBean.achat.typeAchat}</th>
+							<th>Total Adherent</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>#{creditBean.achat.sommeVente} FBU</td>
+							<td>#{creditBean.achat.sommeVenteAssureur} FBU</td>
+							<td>#{creditBean.achat.sommeVenteReduit} FBU</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="signature" class="center">
+			Signature et Cachet de la Pharmacie
+		</div>
+		<div id="bon-footer" style="margin-top: 30px;">
+			<div class="left" style="font-size: 0.6em; width: 60%;">
+				Si de mauvaise foi, vous tentez de recevoir, aider a recevoir ou delivrez frauduleusement des prestation
+				prises en charge par la Mutuelle, vous vous exposez aux sanctions prevues aux articles 62 et 63 au Decret Loi
+				N° 1/28 du 27 Juin 1980 <br />
+				
+					<b>-</b> Remboursement du triple des sommes deboursees a tort<br />
+					<b>-</b> Retrait temporaire ou definitif de carte<br />
+					<b>-</b> Poursuite administrative et Penales<br />
+				
+				Specialite avec Generique: Si un affilie prefere une specialite a la place de son generique la 
+				Mutuelle ne remboursere que 80% de prix de ce dernier
+			</div>
+			<div class="right" style="width: 38%;">
+				Fourni(s) le #{creditBean.dateAchatString}<br />
+				Identification - Receptions des Produits <br />
+				Nom: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+				Carte d'Identite:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+				Delivree a: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+		</div>
+		</a4j:outputPanel>
+		<h:panelGroup layout="block" styleClass="center">
+			<a4j:commandLink  styleClass="linkButton radiusBorder5" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" 
+					style="color:white;padding:5px;margin:3px;" oncomplete="printElement('all-facture-data');" execute="@none">
+				<h:panelGroup layout="block" > 
+					<h:graphicImage value="/images/Print.png" />
+					<h:outputText value="Imprimer" />
+				</h:panelGroup>
+			</a4j:commandLink>
+		</h:panelGroup>
+	</rich:popupPanel>
+	
+</ui:composition>

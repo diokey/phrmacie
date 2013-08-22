@@ -1,0 +1,245 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<style type="text/css">
+		table a : selected {
+			border:none;
+		}
+		.hover{
+				background-color: #{richSkin.tableSubHeaderBackgroundColor};
+		}
+		.selected{
+			
+			background-color: #005000;
+			
+		}
+		.selected table{
+			color: white;
+			font-weight: bold;
+		}
+		.row3{
+			width: 35%;
+			display:inline-block;
+			min-height: 300px;
+			overflow: auto;
+			cursor: pointer;
+			background: -moz-linear-gradient(center bottom , #FFFFFF 0%, #E9E9E9 40%) repeat scroll 0 0 transparent;
+			background: -webkit-linear-gradient(bottom, #FFFFFF 0%,#E9E9E9 40%);
+			background: linear-gradient(bottom , #FFFFFF 0%, #E9E9E9 40%) repeat scroll 0 0 transparent;
+			border-bottom: none;
+			overflow :hidden;
+			margin-bottom: -15px;
+		}
+		
+		.row6{
+			width : 59%;
+			display:inline-block;
+			vertical-align: top;
+			min-height: 300px;
+			overflow: auto;
+			background: -moz-linear-gradient(center bottom , #FFFFFF 0%, #E9E9E9 30%) repeat scroll 0 0 transparent;
+			background: -webkit-linear-gradient(bottom, #FFFFFF 0%,#E9E9E9 40%);
+			background: linear-gradient(bottom , #FFFFFF 0%, #E9E9E9 40%) repeat scroll 0 0 transparent;
+			border-bottom: none;
+			overflow: auto;
+			margin-bottom: -15px;
+		}
+		
+		.fleche-holder{
+			display:inline-block;
+			vertical-align: top;
+			width : 30px;
+		}
+		.fleche-holder .content{
+			width : 100 %;
+			margin:0;
+			position: relative;
+			background: #F1F1F1;
+			
+		}
+		.content .triangle {
+			position : absolute;
+			left : -4px;
+			width: 40px;
+			height: 0px;
+			border-width:30px;
+			border-color: transparent  transparent  transparent #F1F1F1;
+			border-style: solid;
+			z-index : 2000;
+			
+		}
+	</style>
+	<script type="text/javascript">
+		function setUpUI() {
+			createBlocks();
+			selectFirstRow();
+			//createBlocks()
+		}
+		function createBlocks() {
+			var height = $(window).height() - 235 ;
+			$('#popup-form\\:annulationPanel').height(height);
+			$('#popup-form\\:detail').height(height);
+		}
+			
+		function selectFirstRow() {
+			var position = $('#popup-form\\:annulation-table .rf-dt-fst-r').addClass('selected').offset();
+			if(position==null)
+				return;
+			$('.triangle').css('top',position.top - 170+'px');
+		}
+
+		function selectRow(row,value,position) {
+			changeSelection(value);
+			$('.triangle').css('top',position - 170+'px');
+			$('.selected').removeClass('selected');
+			$(row).addClass('selected');
+		}
+	</script>
+	<a4j:status name="savingStatus">
+       	<f:facet name="start">
+   			<div class="statusBlock">
+   				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+    				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving}
+    				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+  				</h:panelGroup>
+   			</div>
+       	 </f:facet> 
+       	<f:facet name="error">
+       		<div class="statusBlock">
+			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+					<h:outputText value="#{uiMessages.error}" style="color:red"/>
+				</h:panelGroup>
+       		</div>
+       	</f:facet>        		
+    </a4j:status>
+    
+    <div class="auto-close statusBlock" style="display:none;" id="annulationMessage">
+  			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+  			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse">
+   				<h:graphicImage value="#{cancelingBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+   				<h:outputText escape="false" value="#{cancelingBean.message}" style="font-weight:bold;"/>
+  			</h:panelGroup>       				
+  	</div>
+  	
+  	<rich:panel id="pageContent" style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;">
+        
+        <h3>#{uiMessages.annulationVente}</h3> 
+	    <h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<h:panelGroup layout="block">
+	    		<p style="padding:6px;font-weight:bold;">
+	    			#{uiMessages.annulationVenteDesc}
+	    			<br clear="all"/>
+	    		</p>
+    		</h:panelGroup>    		
+	    </h:panelGroup>
+	    
+	    <rich:panel styleClass="row3" id="annulationPanel">
+	    	<f:facet name="header">#{uiMessages.annulationUntreated}</f:facet>
+	    	<h3>#{uiMessages.annulationUntreated}</h3>
+	    	<br />
+	    	<rich:dataTable id="annulation-table" style="width:100%" value="#{cancelingBean.achatAnnule}" var="achat" rowKeyVar="key" onrowmouseover="$(this).addClass('hover')" onrowmouseout="$(this).removeClass('hover')"
+	    	onrowclick="selectRow(this,#{key},$(this).offset().top)">
+	    		<f:facet name="noData">
+					<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+						#{uiMessages.nocancelrequest}
+					</div>
+				</f:facet>
+	    		<rich:column style="width:100%;overflow:auto;">
+					<h:panelGroup layout="block">
+						<h:panelGrid layout="block" columns="2" style=" display:inline-block;vertical-align:middle;">
+							<h:outputText value="#{uiMessages.numero} " />
+							<h:outputText value="#{achat.idAchat}" />
+							<h:outputText value="#{uiMessages.venteDu}" />
+							<h:outputText value="#{achat.dateShort}" />
+							<h:outputText value="#{uiMessages.temps} " />
+							<h:outputText value="#{achat.dateAchatString}" />
+							<h:outputText value="#{uiMessages.couts} Cash " />
+							<h:outputText value="#{achat.sommeTotalReduit} Fbu" />
+							<h:outputText value="#{uiMessages.couts} #{achat.typeAchat}" rendered="#{not achat.venteCash}"/>
+							<h:outputText value="#{achat.sommeTotal} Fbu" rendered="#{not achat.venteCash}"/>
+						</h:panelGrid>
+					</h:panelGroup>
+					<div style="display:inline-block;position:relative;top:0;left:55%">
+						<a4j:commandLink action="#{cancelingBean.accepterAnnulation}" execute="@this" limitRender="true" oncomplete="showMessage('annulationMessage');selectFirstRow();" render="reponse,annulation-table,tableDetailAchatAnnule">
+							<h:graphicImage style="display:inline-block;vertical-align:middle" value="/images/accept.png" width="16" height="16" title="#{uiMessages.confirm}"/>
+							<f:setPropertyActionListener value="#{key}" target="#{cancelingBean.selectedIndex}" />
+						</a4j:commandLink>
+						<div style="display:inline-block;vertical-align:middle;font-size:14px;padding-right:3px;color:white;">|</div>
+						<a4j:commandLink execute="@this" limitRender="true" action="#{cancelingBean.refuserAnnulation}" oncomplete="showMessage('annulationMessage');selectFirstRow();" render="reponse,annulation-table,tableDetailAchatAnnule">
+							<h:graphicImage style="display:inline-block;vertical-align:middle" value="/images/cancel.png" width="16" height="16" title="#{uiMessages.refuser}" />
+							<f:setPropertyActionListener value="#{key}" target="#{cancelingBean.selectedIndex}" />
+						</a4j:commandLink>	
+					
+					</div>
+				</rich:column>
+	    	</rich:dataTable>
+	    </rich:panel>
+	    <div class="fleche-holder">
+	    	<div class="content">
+	    		<div class="triangle" style="top: 70px;"></div>
+	    	</div>
+	    </div>
+	    <rich:panel styleClass="row6" id="detail">
+	    	<f:facet name="header">#{uiMessages.commandeDetails}</f:facet>
+	    	
+	    	<div style="width:100%;overflow:auto;">
+				<rich:dataTable id="tableDetailAchatAnnule" style="height:100%;width:100%; margin:auto;text-align:center" 
+				value="#{cancelingBean.selectedAchatAnnule.medicamentsAchete}" var="medic" rows="10" rowKeyVar="key"
+				rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'"
+				>
+					<f:facet name="noData">
+						<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+							#{uiMessages.noDataLabel} 
+						</div>
+					</f:facet>
+					<f:facet name="header">#{uiMessages.venteDetails}</f:facet>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+						#{medic.nomMedicament}
+						<h:graphicImage value="/images/refresh16.png" title="Medicament Remboursable a hauteur de son Generique" rendered="#{medic.specialiteRemboursable}" />
+					</rich:column>
+					
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+						#{medic.quantiteAchete}
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_prixUnitaire} 100%</f:facet>
+						#{medic.prix}
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_prixTotal} 100%</f:facet>
+						#{medic.prixTotal}
+					</rich:column>
+					<rich:column rendered="#{!cancelingBean.selectedAchatAnnule.venteCash}">
+						<f:facet name="header">#{uiMessages.prix} #{cancelingBean.selectedAchatAnnule.typeAchat}</f:facet>
+						#{medic.prixAssureur}
+					</rich:column>
+					<rich:column rendered="#{!cancelingBean.selectedAchatAnnule.venteCash}">
+						<f:facet name="header">#{uiMessages.prixAffilie}</f:facet>
+						#{medic.prixTotalReduit}					
+						</rich:column>
+					<f:facet name="footer">
+						<h3 style="text-align:right;font-size:11px;">
+						<a4j:outputPanel rendered="#{! cancelingBean.selectedAchatAnnule.venteCash}"><span style="color:white;">#{uiMessages.tab_prixTotal} #{cancelingBean.selectedAchatAnnule.typeAchat}:</span> #{cancelingBean.selectedAchatAnnule.sommeVenteAssureur} FBU </a4j:outputPanel>
+	 					<a4j:outputPanel rendered="#{! cancelingBean.selectedAchatAnnule.venteCash}"><span style="color:white;"> #{uiMessages.prixtotalAffilie} : </span>#{cancelingBean.selectedAchatAnnule.sommeVenteReduit} FBU  </a4j:outputPanel>
+						<span style="color:white;">#{uiMessages.tab_prixTotal}:</span> #{cancelingBean.selectedAchatAnnule.sommeVente} FBU
+						</h3>
+						<rich:dataScroller  renderIfSinglePage="false"></rich:dataScroller>
+					</f:facet>
+				</rich:dataTable>
+				</div>
+	    </rich:panel>
+	</rich:panel> 
+	<a4j:jsFunction name="changeSelection" limitRender="true" render="tableDetailAchatAnnule" action="#{cancelingBean.changeSelectedAchatAnnule}">
+			<a4j:param name="param1" assignTo="#{cancelingBean.selectedIndex}"></a4j:param>
+	</a4j:jsFunction>
+</ui:composition>

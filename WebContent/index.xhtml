@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+
+<h:head>
+
+	<f:loadBundle basename="ui_messages_#{locale.selectedLanguage}" var="uiMessages"/>
+	<link href="style/design.css" rel="stylesheet" type="text/css" />
+	
+	
+	<title>#{uiMessages.login}</title>
+	<style  type="text/css">
+		.column1{
+			
+			font-size: 14px;
+			width: 120px;
+			height: 40px;
+			
+		}
+		.column2{
+			
+			font-size: 14px;
+			width: 280px;
+			height: 40px;
+			
+		}
+		.loginBlock{
+		width: 400px;
+		}
+		.lockImgBlock{
+			width: 80px;
+		}
+		body{
+			background-color:rgba(125,125,125,0.1);
+			background-image:-moz-linear-gradient(left,white 0%, #005000 50%, white 100%, black -50%, white 100%);
+			background-image:-webkit-linear-gradient(left,white 0%, #005000 50%, white 100%, black -50%,white 100%);
+			background-image:linear-gradient(left,white 0%, #005000 50%, white 100%, black -50%, white 100%);
+			
+		}
+	</style>
+</h:head> 
+
+<h:body>
+	<ui:include src="/template/lang.xhtml" />
+	<div  id="loginBody">
+    <rich:panel style="width:480px;margin:auto; margin-top: 20%;" styleClass="radiusBorder5">
+        
+        <br clear="all"/>
+        <h:form id="connexionForm">
+        <h:panelGroup layout="block" style="margin:auto;">
+        	<rich:message for="connectBtn" style="font-size:14px;"></rich:message>
+        </h:panelGroup>
+        <h:panelGrid columns="2" columnClasses="loginBlock,lockImgBlock">
+        	<h:panelGroup layout="block">
+		        <fieldset>
+			        <legend style="font-size: 14px;">#{uiMessages.login}</legend>
+					<h:panelGrid columns="2" columnClasses="column1,column2">
+						<h:outputText value="#{uiMessages.username}" />
+						<h:panelGrid columns="1" id="usernameBlock">
+							<rich:message for="username" id="usernameMsg"></rich:message>
+							<h:inputText id="username" value="#{loginBean.username}" style="width:200px; height:20px;font-size:14px;"
+							required="true" requiredMessage="#{uiMessages.requiredUsernameMessage}" bypassUpdates="true">
+								<a4j:ajax limitRender="true" render="usernameMsg" execute="@this" event="blur"></a4j:ajax>
+							</h:inputText>							
+						</h:panelGrid>
+						
+						<h:outputText value="#{uiMessages.password}" />
+						<h:panelGrid columns="1" id="passwordBlock">
+							<rich:message for="password" id="passwordMsg"></rich:message>
+							<h:inputSecret id="password" value="#{loginBean.password}" style="width:200px; height:20px;font-size:14px;"
+							required="true" requiredMessage="#{uiMessages.requiredPasswordMessage}" bypassUpdates="true">
+								<a4j:ajax limitRender="true" render="passwordMsg" execute="@this" event="blur"></a4j:ajax>
+							</h:inputSecret>							
+						</h:panelGrid>
+					</h:panelGrid>
+				</fieldset>
+			</h:panelGroup>
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/lock.png" />
+			</h:panelGroup>
+		</h:panelGrid>
+		<h:panelGroup layout="block" style="margin:auto; text-align:center">
+		<br clear="all"/>
+		<a4j:commandButton value="#{uiMessages.entrer}" action="#{loginBean.connect}" id="connectBtn"
+		style="height:30px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium"></a4j:commandButton>
+		</h:panelGroup>
+		</h:form>
+	</rich:panel> 
+	
+	</div>
+	<script type="text/javascript" src="scripts/myscript.js"></script>
+</h:body> 
+</html>

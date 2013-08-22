@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	
+		
+		<fieldset style="margin:5px; paddding:5px;">
+			<legend>#{uiMessages.changeQuantity}</legend>
+			
+				<h:panelGrid columns="3">
+					<h:outputText value="#{uiMessages.quantite}" />
+					<rich:inputNumberSpinner id="nbMedic" required="true" requiredMessage="This field is Required"
+					value="#{venteBean.newQuantity}" minValue="1" maxValue="#{venteBean.maxQuantity}">
+						<a4j:ajax event="change"></a4j:ajax>
+					</rich:inputNumberSpinner>
+					<rich:message for="nbMedic"></rich:message>
+				</h:panelGrid>
+				<br clear="none"/>
+				
+			</fieldset>
+			
+			<h:panelGroup layout="block" style="text-align:center">
+				<a4j:commandButton value="#{uiMessages.valider}" styleClass="radiusBorder5" style="font-weight:bold;height:24px;margin-left:5px;padding-left:8px;padding-right:8px;"
+				onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" action="#{venteBean.updateSoldQuantity}"
+				 oncomplete="#{rich:component('mainPopUp')}.hide()" ></a4j:commandButton>
+			</h:panelGroup>
+	
+</ui:composition>

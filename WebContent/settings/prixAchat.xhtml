@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;">
+	
+		<a4j:jsFunction name="changeStatus" action="#{settingsBean.changeMedicStatus}" limitRender="true" render="saveBtn,fournisseurSI" oncomplete="$('#popup-form\\:add-warning').css('visibility','visible');">
+			<a4j:param name="param1" assignTo="#{settingsBean.priceMedicIndex}"></a4j:param>
+		</a4j:jsFunction>
+		<a4j:jsFunction name="showComponent" status="changingStatus" limitRender="true" render="updateMeToLoadPanel,idFournisseur" oncomplete="#{rich:component('confirmSaveDialog')}.show()">
+			<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/settings/promptSave.xhtml"></a4j:param>	
+		</a4j:jsFunction>
+		<a4j:jsFunction name="changeSelection" action="#{settingsBean.annulerMedicPrices}" limitRender="true" render="idFournisseur,allprices,medicsMsg,priceMsg,add-warning,saveBtn" oncomplete="zebraStyle();"></a4j:jsFunction>
+		
+		<a4j:jsFunction name="oui" limitRender="true" action="#{settingsBean.pricesconfirmed}" 
+		render="fournisseurSI,allprices,medicsMsg,priceMsg,settings-reponse,add-warning,saveBtn" 
+		oncomplete="zebraStyle();if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage(); }">					
+		</a4j:jsFunction>
+		<a4j:jsFunction name="non" limitRender="true" action="#{settingsBean.annulerMedicPrices}" 
+		render="fournisseurSI,allprices,medicsMsg,priceMsg,settings-reponse,add-warning,saveBtn" 
+		oncomplete="zebraStyle();">						
+		</a4j:jsFunction>
+		
+		<script type="text/javascript">
+			function promptUser(modified) {
+				if(modified){
+					showComponent();
+				
+				}else{
+					changeSelection();
+				}
+			}
+		</script>
+		<h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			#{uiMessages.addChangePrixAchat}
+    			<br clear="all"/>		    			
+    		</p>    		
+		</h:panelGroup>
+		
+		<rich:panel style="background:white;">
+			<f:facet name="header">
+				<h:panelGroup layout="block">
+					#{uiMessages.fournisseurPa}
+					<rich:select id="fournisseurSI" style="display:inline-block;vertical-align:middle;" value="#{settingsBean.idFournisseur}" required="true" requiredMessage="#{uiMesssages.required}" 
+					valueChangeListener="#{settingsBean.fournisseurChanged}">
+							<f:selectItems value="#{settingsBean.fournisseursSI}"></f:selectItems>
+							<a4j:ajax event="selectitem" execute="@this" status="changingStatus" render="fournisseurMsg,saveBtn,fournisseurSI" limitRender="true" oncomplete="promptUser(#{settingsBean.savePrices});"></a4j:ajax>
+					</rich:select>
+					<rich:message for="fournisseurSI" id="fournisseurMsg"></rich:message>
+					<a4j:status name="changingStatus">
+	     				<f:facet name="start">
+			       			<div style=" display:inline-block;border:1px solid black; color:black;background-color:yellow; border-radius:6px;">
+			       				<h:panelGroup layout="block" style="display:inline-block;">
+				       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.loading}				       				
+			      				</h:panelGroup>
+			       			</div>
+	      				</f:facet>        		
+        			</a4j:status>
+	      			<a4j:status name="annulerStatus">
+	      				<f:facet name="start">
+			       		<div style="display:inline-block;border:1px solid black; color:black;background-color:yellow; border-radius:6px;">
+			       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+				    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.canceling}					       				
+			      			</h:panelGroup>
+			       		</div>
+	      				</f:facet>        		
+	      			</a4j:status>
+				</h:panelGroup>
+			</f:facet>			
+			
+			<fieldset>
+				<legend>#{uiMessages.fournisseurPa}</legend>
+				
+				<h:panelGroup layout="block" styleClass="prix-achat-container">
+					
+					<rich:dataTable id="allprices" style="width:100%" value="#{settingsBean.listPrixAchat}" styleClass="zebra-style" var="prixAchat" rowKeyVar="key">
+						<f:facet name="noData">
+							<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+								#{uiMessages.noDataLabel}
+							</div>
+						</f:facet>
+						<f:facet name="header">#{uiMessages.prixAchat}</f:facet>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.codeMedicament}</f:facet>
+								#{prixAchat.codeMedicament}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+							#{prixAchat.nomMedicament}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.type}</f:facet>
+							#{prixAchat.typeMedicament}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.prix}</f:facet>
+							<rich:inplaceInput id="prix-edit" value="#{prixAchat.prix}" editEvent="dblclick" defaultLabel="#{uiMessages.doubleclicktomodify}" required="true" requiredMessage="#{uiMessages.required}" validatorMessage="#{uiMessages.incorrectValue}">
+								<f:validateLongRange></f:validateLongRange>
+								<a4j:ajax event="change" oncomplete="changeStatus(#{key})" limitRender="true" render="prix-edit-msg">
+									
+								</a4j:ajax>								
+							</rich:inplaceInput>
+							FBU
+							<rich:message for="prix-edit" id="prix-edit-msg"></rich:message>
+						</rich:column>
+					</rich:dataTable>
+					<h:panelGroup id="add-medic-price" layout="block" style="display:inline-block;vertical-align:top;text-align:center;padding-top:20px;padding-bottom:20px;width:70%;">
+						<h:panelGrid columns="5">
+							<h:outputLabel value="#{uiMessages.medics}" for="medics"/>
+							<h:panelGroup layout="block">
+								<rich:select id="medics" valueChangeListener="#{settingsBean.medicChanged}" style="display:inline-block;vertical-align:middle" selectFirst="true" enableManualInput="true"
+								defaultLabel="#{uiMessages.selectMedic}" required="true" requiredMessage="#{uiMessages.required}" value="#{settingsBean.prixAchat.idMedicament}">
+									<f:selectItems value="#{settingsBean.medicamentsSI}"></f:selectItems>
+									<a4j:ajax event="blur" limitRender="true" render="medicsMsg" execute="@this"></a4j:ajax>
+								</rich:select>
+								<rich:message style="text-align:left;" for="medics" id="medicsMsg"></rich:message>
+							</h:panelGroup>
+							<h:outputLabel value="#{uiMessages.prix}" for="price"/> 
+							<h:panelGroup layout="block">
+								<h:inputText id="price" validatorMessage="#{uiMessages.incorrectValue}" value="#{settingsBean.prixAchat.prix}" required="true" requiredMessage="#{uiMessages.required}" style="display:inline-block;vertical-align:middle">
+									<a4j:ajax event="blur" render="priceMsg" limitRender="true" execute="@this"></a4j:ajax>
+									<f:validateLongRange></f:validateLongRange>
+								</h:inputText>
+								<rich:message style="text-align:left;" id="priceMsg" for="price"></rich:message>
+							</h:panelGroup>
+							
+							<h:panelGroup layout="block" >
+								<a4j:commandButton status="savingStatus" execute="medics,price" value="#{uiMessages.add}" action="#{settingsBean.addPriceMedicaments}" render="allprices,medicsMsg,priceMsg,price,medics,saveBtn,fournisseurSI" limitRender="true" oncomplete="zebraStyle();$('#popup-form\\:add-warning').css('visibility','visible')"
+								onmouseover="this.style.color='#ef7e05'"  onmouseout="this.style.color='white'" style="height:26px;margin-left:6px;padding-left:12px;padding-right:12px;font-size:13px;display:inline-block;vertical-align:middle" >
+								
+								</a4j:commandButton>							
+								<a4j:commandButton immediate="true" limitRender="true" status="waitStatus" action="#{settingsBean.resetPrixAchat}" render="price,medics,medicsMsg,priceMsg" title="#{uiMessages.clicktoaddmedic}" image="/images/new24.jpeg" style="display:inline-block;vertical-align:middle;margin-left:5px;" execute="@this" oncomplete="$('#popup-form\\:new-medic-block').toggle();">
+								</a4j:commandButton>								
+								<h:panelGroup layout="block">
+								<a4j:status  name="waitStatus">
+									<f:facet name="start">
+										<h:panelGroup layout="block">
+											<h:graphicImage value="/images/savingimage.gif"/><br />
+											#{uiMessages.loading}
+										</h:panelGroup>
+									</f:facet>
+								</a4j:status>
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							
+						</h:panelGrid>
+						
+					</h:panelGroup>
+					<h:panelGroup layout="block" id="add-warning" styleClass="rf-p rf-p-b radiusBorder5" style="visibility:hidden;width:27%;position:relative;margin-top:10px;border:1px solid #C0C0C0;display:inline-block;vertical-align:top;">
+							<div class="standard-fleche"></div>
+							<div class="close"><h:graphicImage title="#{uiMessages.close}" value="/images/supprimer.png" width="16" height="16"/></div>
+							<p>
+								<h:graphicImage value="/images/warning.png" style="float:left;"/>
+								#{uiMessages.addPrixAchatHelper}
+							</p>
+					</h:panelGroup>
+					<a4j:region>
+						<h:panelGroup id="new-medic-block" styleClass="rf-p" layout="block" style="display:none;text-align:center; margin:10px;">
+							<h:panelGrid columns="5" style="width:100%;padding:20px;" styleClass="rf-p-b" id="new-medic-table">						 
+								<h:outputLabel for="codeMedicament" value="#{uiMessages.codeMedicament}" />						
+								<h:outputLabel value="#{uiMessages.tab_nomMedicament}" for="nomMedicament"/>							
+								<h:outputLabel value="#{uiMessages.type}" for="typeMedicament"/>					
+								<h:outputLabel value="#{uiMessages.prix}" for="prixMedicament"/>
+								<h:outputLabel value="&nbsp;" />
+								<h:panelGroup layout="block">
+									<h:inputText value="#{settingsBean.prixAchat.codeMedicament}" id="codeMedicament" required="true" requiredMessage="#{uiMessages.required}"
+									 validator="#{settingsBean.validateCodeMedicament}">
+										<a4j:ajax event="blur" render="codeMedicamentMsg" limitRender="true"></a4j:ajax>
+									</h:inputText>
+									<rich:message style="text-align:left" for="codeMedicament" id="codeMedicamentMsg"></rich:message>
+								</h:panelGroup>
+								<h:panelGroup layout="block">
+									<h:inputText value="#{settingsBean.prixAchat.nomMedicament}"  id="nomMedicament" required="true" requiredMessage="#{uiMessages.required}">
+										<a4j:ajax event="blur" render="nomMedicamentMsg" limitRender="true"></a4j:ajax>
+									</h:inputText>
+									<rich:message style="text-align:left" for="nomMedicament" id="nomMedicamentMsg"></rich:message>
+								</h:panelGroup>
+								<h:panelGroup layout="block">
+									<rich:select id="typeMedicament" value="#{settingsBean.prixAchat.typeMedicament}" required="true" requiredMessage="#{uiMessages.required}">
+										<f:selectItem itemLabel="Generique" itemValue="generique"/>
+										<f:selectItem itemLabel="Specialite" itemValue="specialite"/>
+										<a4j:ajax event="blur" render="typeMedicamentMsg" limitRender="true"></a4j:ajax>
+									</rich:select>
+									<rich:message style="text-align:left" for="typeMedicament" id="typeMedicamentMsg"></rich:message>
+								</h:panelGroup>
+								<h:panelGroup layout="block">
+									<h:inputText value="#{settingsBean.prixAchat.prix}" id="prixMedicament" required="true" requiredMessage="#{uiMessages.required}" validatorMessage="#{uiMessages.incorrectValue}">
+										<a4j:ajax event="blur" render="prixMedicamentMsg" limitRender="true"></a4j:ajax>
+										<f:validateLongRange></f:validateLongRange>
+									</h:inputText>
+									<rich:message style="text-align:left" for="prixMedicament" id="prixMedicamentMsg"></rich:message>
+								</h:panelGroup>
+								
+								<a4j:commandButton limitRender="true" status="savingStatus" styleClass="radiusBorder5" execute="@region" action="#{settingsBean.addNewMedicPrice}" render="allprices,new-medic-table,saveBtn,fournisseurSI"
+								oncomplete="zebraStyle();if (#{empty settingsBean.message}) {$('#popup-form\\:new-medic-block').fadeOut('slow');$('#popup-form\\:add-warning').css('visibility','visible');}else{showMessage('settingsMessage');resetSettingMessage();}" 
+								value="#{uiMessages.save}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" style="height:26px;margin-left:6px;padding-left:12px;padding-right:12px;font-size:13px;" >
+								</a4j:commandButton>
+								
+							</h:panelGrid>
+						</h:panelGroup>
+					</a4j:region>
+				</h:panelGroup>			
+				
+			</fieldset>
+			<br clear="all"/>
+			<h:panelGroup layout="block" style="text-align:center">
+				
+				<a4j:commandButton styleClass="radiusBorder5" action="#{settingsBean.annulerMedicPrices}" limitRender="true" status="annulerStatus" execute="@this" render="allprices,new-medic-block,medics,price,medicsMsg,priceMsg,add-warning,saveBtn,fournisseurSI"
+				oncomplete="zebraStyle();if (#{not empty settingsBean.message}) {$('#popup-form\\:new-medic-block').fadeOut('slow');resetSettingMessage();}" 
+				value="#{uiMessages.annuler}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" >
+				</a4j:commandButton>
+				<a4j:commandButton id="saveBtn" execute="@this" action="#{settingsBean.saveMedicPrices}" disabled="#{not settingsBean.savePrices}" value="#{uiMessages.save}" styleClass="radiusBorder5" oncomplete="zebraStyle();if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage(); }" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+       			style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="allprices,medicsMsg,priceMsg,settings-reponse,add-warning,saveBtn,fournisseurSI" limitRender="true">
+       			</a4j:commandButton>
+			</h:panelGroup>
+			
+		</rich:panel>	
+	</rich:panel>
+</ui:composition>

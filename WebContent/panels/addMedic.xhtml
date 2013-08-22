@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+ 
+
+<a4j:outputPanel layout="block">
+		<style type="text/css">
+    	
+    	.col1{
+    		padding:4px;
+    	}
+    	.tab-panel-content{
+    		background-color: white;
+    	}    	
+    	    	    	
+    	</style>
+    	<script type="text/javascript">
+    		function skinComponent() {
+				$('#popup-form .rf-sel-lst-scrl').css('width','200px');
+				$('#popup-form input[type="text"]').css('width','200px');
+				$('#popup-form .rf-insl-inp').attr('size','3').css('width','30px');
+								
+            }
+
+            function generiquespecialite(value) {
+				generiqueMedicament(value);
+				
+            }
+
+                		
+    	</script>
+    	<a4j:jsFunction name="selectMedicament" status="suggestStatus" limitRender="true" render="medic-data,prix-panel" action="#{addMedicBean.onlistClick}" oncomplete="skinComponent();">
+    		<a4j:param name="param1" assignTo="#{addMedicBean.code}"></a4j:param>
+    	</a4j:jsFunction>
+    	<a4j:jsFunction name="generiqueMedicament" limitRender="true" render="typeMedicMsg,generique-label,generique-input" oncomplete="skinComponent();" status="generiqueStatus">
+    		<a4j:param name="param1" assignTo="#{addMedicBean.medicament.typeMedic}"></a4j:param>
+    	</a4j:jsFunction>
+    	<a4j:jsFunction name="saveGenerique" action="#{addMedicBean.findGeneriqueId}" limitRender="true" render="idGenerique">
+    		<a4j:param name="param1" assignTo="#{addMedicBean.medicament.generique}"></a4j:param>
+    	</a4j:jsFunction>
+    	    	
+    	<a4j:status name="savingStatus">
+        		<f:facet name="start">
+        			<div class="statusBlock">
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+		       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving}
+		       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet> 
+        		<f:facet name="error">
+        			<div class="statusBlock">
+        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+	        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet>        		
+        </a4j:status>
+      	<div class="auto-close statusBlock" style="display:none;" id="resultMessage">
+      			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+      			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse">
+       				<h:graphicImage value="#{addMedicBean.messageImg}" width="24" height="24" styleClass="imgStatus"/> 
+       				<h:outputText value="#{addMedicBean.message}" style="font-weight:bold;"/>
+      			</h:panelGroup>       				
+      	</div>
+     	
+    <rich:panel id="main-popup-panel" style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;"> 
+    	
+    	<h3>#{uiMessages.addMedic}</h3> 
+    	<h:panelGroup>
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			<h:outputText value="#{uiMessages.addMedicDesc}" escape="false"/>
+    			<br clear="all"/>
+    		</p>
+    	</h:panelGroup>  	
+    	 	
+        	<fieldset>
+        		<legend style="font-size:1.1em;">#{uiMessages.medicInfo}</legend>
+        		<h:panelGrid columns="2" columnClasses="col1,col1" style="display:inline-block; vertical-align:middle" id="medic-data">
+        			<h:outputLabel value="#{uiMessages.codeMedicament}" for="codeMedic"/>        			
+        			<h:panelGrid columns="2">
+        				<rich:autocomplete value="#{addMedicBean.medicament.codeMedicament}" id="codeMedic" required="true" requiredMessage="#{uiMessages.required}" validator="#{addMedicBean.validateCodeMedicament}" tabindex="1"
+        				autocompleteMethod="#{addMedicBean.suggestMedicament}" var="medicament" fetchValue="#{medicament.codeMedicament}" layout="block" onselectitem="selectMedicament(#{rich:component('codeMedic')}.getValue())">
+        					<div class="auto-complete-box">
+        						<span class="auto-complete-element auto-complete-first-column">
+        						 	<h:outputText value="#{medicament.codeMedicament}" />
+        						</span>
+        						<span class="auto-complete-element">
+        						 <h:outputText value="#{medicament.nomMedicament}" />
+        						</span>
+        						<span class="auto-complete-element">
+        						 <h:outputText value="#{medicament.typeMedic}" />
+        						</span>
+        					</div>
+        					
+        					<a4j:ajax execute="@this" event="blur" render="#{addMedicBean.codeRender}" oncomplete="skinComponent();" limitRender="true"></a4j:ajax>
+        					
+        				</rich:autocomplete>
+        				<a4j:status name="suggestStatus">
+        					<f:facet name="start">
+        						<h:panelGroup layout="block">
+        							<h:graphicImage value="/images/savingimage.gif" width="16" height="16"/>
+        							<h:outputText value="Wait..." />
+        						</h:panelGroup>
+        					</f:facet>
+        				</a4j:status>
+        				<rich:message for="codeMedic" id="codeMedicMsg"></rich:message>
+        			</h:panelGrid>
+        			
+        			<h:outputLabel value="#{uiMessages.tab_nomMedicament}" for="nomMedic"/>
+        			<h:panelGrid columns="1">
+        				<h:inputText style="width:145px;" required="true" requiredMessage="#{uiMessages.required}" validatorMessage="#{uiMessages.valueShort}"
+        				 value="#{addMedicBean.medicament.nomMedicament}" id="nomMedic" tabindex="2">
+        					<f:validateLength maximum="60" minimum="2"></f:validateLength>
+        					<a4j:ajax execute="@this" event="blur" render="nomMedicMsg" limitRender="true"></a4j:ajax>
+        				</h:inputText>
+        				<rich:message for="nomMedic" id="nomMedicMsg"></rich:message>
+        			</h:panelGrid>
+        					
+        			<h:outputLabel value="#{uiMessages.type}" for="typeMedic"/>
+        			<h:panelGrid columns="2">
+        				<rich:select tabindex="3" onselectitem="generiquespecialite(#{rich:component('typeMedic')}.getValue());" selectFirst="true" id="typeMedic" value="#{addMedicBean.medicament.typeMedic}" required="true" requiredMessage="#{uiMessages.required}" defaultLabel="Selectionner le Type">
+							<f:selectItem itemValue="generique" itemLabel="Generique"/>
+							<f:selectItem itemValue="specialite" itemLabel="Specialite"/>
+							<a4j:ajax execute="@this" event="blur" render="typeMedicMsg,generique-label,generique-input" limitRender="true" oncomplete="skinComponent()"></a4j:ajax>							
+						</rich:select>
+						<a4j:status name="generiqueStatus">
+	        					<f:facet name="start">
+	        						<h:panelGroup layout="block">
+	        							<h:graphicImage value="/images/savingimage.gif" width="16" height="16"/>
+	        							<h:outputText value="Wait..." />
+	        						</h:panelGroup>
+	        					</f:facet>
+	        			</a4j:status>
+						<rich:message for="typeMedic" id="typeMedicMsg"></rich:message>        				
+        			</h:panelGrid>
+        			
+        			<h:panelGroup id="generique-label" layout="block">
+        				<h:outputLabel value="#{uiMessages.songenerique}" for="generique" rendered="#{addMedicBean.medicament.special}">
+        				<span style="color:red">*</span>
+        				</h:outputLabel>
+        			</h:panelGroup>
+        			<h:panelGroup id="generique-input" layout="block">
+	        			<h:panelGrid columns="1" rendered="#{addMedicBean.medicament.special}">
+	        				<rich:autocomplete value="#{addMedicBean.medicament.generique}" tabindex="4" id="generique" required="false" validator="#{addMedicBean.validateGenerique}" 
+	        				autocompleteMethod="#{addMedicBean.suggestGenerique}" var="medicament" fetchValue="#{medicament.codeMedicament}-#{medicament.nomMedicament}" layout="div" autofill="true" selectFirst="true" onlistclick="saveGenerique(#{rich:component('generique')}.getValue())">
+	        				
+		        				<div class="auto-complete-box">
+	        						<span class="auto-complete-element auto-complete-first-column">
+	        						 	<h:outputText value="#{medicament.codeMedicament}" />
+	        						</span>
+	        						<span class="auto-complete-element">
+	        						 <h:outputText value="#{medicament.nomMedicament}" />
+	        						</span>
+	        						<span class="auto-complete-element">
+	        						 <h:outputText value="#{medicament.typeMedic}" />
+	        						</span>
+	        					</div>
+        						<a4j:ajax event="blur" limitRender="true" render="generiqueMsg">        							
+        						</a4j:ajax>
+	        				</rich:autocomplete>
+	        				<rich:message for="generique" id="generiqueMsg"></rich:message>
+	        			</h:panelGrid>
+        			</h:panelGroup> 
+        			
+        			<h:outputLabel value="#{uiMessages.lot}" for="batch"/>
+        			<h:panelGrid columns="1">
+        				<h:inputText style="width:145px;" value="#{addMedicBean.medicament.batch}" id="batch" required="true" requiredMessage="#{uiMessages.required}" 
+        				validatorMessage="La longeur est trop petit ou trop grand" tabindex="5">
+        					<f:validateLength minimum="1" maximum="10"></f:validateLength>
+        					<a4j:ajax execute="@this" event="blur" render="batchMsg" limitRender="true"></a4j:ajax>
+        				</h:inputText>
+        				<rich:message for="batch" id="batchMsg"></rich:message>
+        			</h:panelGrid>
+        			        			
+        			        			
+        			<h:outputLabel value="#{uiMessages.quantite}" for="quantite"/>
+        			<h:panelGrid columns="1">
+        				<rich:inputNumberSpinner tabindex="6" id="quantite" inputSize="20" enableManualInput="true" minValue="1" maxValue="10000" value="#{addMedicBean.medicament.quantiteStock}" required="true" requiredMessage="#{uiMessages.required}">
+        					<a4j:ajax execute="@this" event="change" render="quantiteMsg" limitRender="true"></a4j:ajax>
+        				</rich:inputNumberSpinner>
+        				<rich:message for="quantite" id="quantiteMsg"></rich:message>
+        			</h:panelGrid>
+        			    			        			        			
+        			<h:outputLabel value="#{uiMessages.manifactureDate}" for="manifactureDate"/>
+        			<h:panelGrid columns="1">
+        				<rich:calendar tabindex="7" id="manifactureDate" value="#{addMedicBean.medicament.manifactureDate}" required="true" requiredMessage="#{uiMessages.required}"
+        				dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv">
+        					<a4j:ajax execute="@this" event="change" render="manifactureDateMsg" limitRender="true"></a4j:ajax>
+        				</rich:calendar>
+        				<rich:message for="manifactureDate" id="manifactureDateMsg"></rich:message>
+        			</h:panelGrid>
+        			
+        			<h:outputLabel value="#{uiMessages.dateExpiration}" for="expiryDate"/>
+        			<h:panelGrid columns="1">
+        				<rich:calendar tabindex="8" id="expiryDate" value="#{addMedicBean.medicament.expiryDate}" required="true" requiredMessage="#{uiMessages.required}"
+        				dayDisableFunction="disablePrevious" dayClassFunction="disabledClassesPrev">
+        					<a4j:ajax execute="@this" event="change" render="expiryDateMsg" limitRender="true"></a4j:ajax>
+        				</rich:calendar>
+        				<rich:message for="expiryDate" id="expiryDateMsg"></rich:message>
+        			</h:panelGrid>
+        			
+        			<h:outputLabel value="#{uiMessages.dateArrive}" for="dateArrive"/>
+        			<h:panelGrid columns="1">
+        				<rich:calendar tabindex="9" id="dateArrive" value="#{addMedicBean.medicament.dateArrive}" required="true" requiredMessage="#{uiMessages.required}"
+        				dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv">
+        					<a4j:ajax execute="@this" event="change" render="dateArriveMsg" limitRender="true"></a4j:ajax>
+        				</rich:calendar>
+        				<rich:message for="dateArrive" id="dateArriveMsg"></rich:message>
+        			</h:panelGrid>
+        			<h:inputHidden value="#{addMedicBean.medicament.exists}" />
+        			<h:inputHidden value="#{addMedicBean.medicament.idMedicament}" />
+        			<h:inputHidden value="#{addMedicBean.medicament.codeGenerique}" id="idGenerique"/>
+        			       			
+        		</h:panelGrid>
+        		
+        		<a4j:outputPanel layout="block" style="display:inline-block; vertical-align:middle">
+	        		<h:graphicImage value="/images/help.png" onclick="$('.bulle').fadeIn('slow');" style="display:inline-block; vertical-align:middle"/>
+	        		<div class="bulle" style="display:inline-block; vertical-align:middle">
+	        			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+	        			<div class="fleche-bulle"></div>
+	        			<p>
+	        			<h:outputText value="#{uiMessages.addMedicHelper}" escape="false"/>
+	        			 </p>
+	        		</div>
+        		</a4j:outputPanel>
+        		
+        	</fieldset>
+        	
+        	<h:panelGroup layout="block" style="margin:15px 0px 15px 0px;" id="prix-panel">
+        		<rich:tabPanel switchType="client" tabContentClass="tab-panel-content">        			
+        			<c:forEach items="#{addMedicBean.medicament.listAssureur}" var="assureur" varStatus="key">     			
+        				
+        				<rich:tab>
+							<f:facet name="header">
+								<h3>#{assureur.nomAssureur}</h3>
+							</f:facet>
+							<fieldset>
+	        					<legend style="font-size:1.1em;">#{uiMessages.tarifHelper} #{assureur.nomAssureur} </legend>
+								<h:panelGrid columns="2" style="font-size:1.1em;" columnClasses="col1,col1">
+									<h:outputText value="#{uiMessages.prix}" />
+									<h:panelGroup layout="block" id="group_#{assureur.nomAssureur}">
+										<h:inputText style="width:182px;display:inline-block;" id="#{assureur.nomAssureur}" value="#{assureur.prix.prix}" validatorMessage="#{uiMessages.incorrectValue}">
+											<a4j:ajax event="change" execute="@this" limitRender="true" render="group_#{assureur.nomAssureur}"></a4j:ajax>
+											<f:validateLongRange minimum="0"></f:validateLongRange>
+										</h:inputText>
+										<rich:message style="display:inline-block;" for="#{assureur.nomAssureur}"></rich:message>
+									</h:panelGroup>
+									<h:outputText value="#{uiMessages.reduction}" />
+									<rich:inputNumberSlider value="#{assureur.prix.reduction}"></rich:inputNumberSlider>
+									<h:outputText value="#{uiMessages.mention}" />
+									<rich:select value="#{assureur.prix.idMention}" required="false">
+										<f:selectItems value="#{addMedicBean.mentions}"/>
+										
+									</rich:select>
+									#{assureur.nomAssureur}									
+								</h:panelGrid>							   				
+        					</fieldset>
+						</rich:tab>
+        			</c:forEach>
+        			
+        		</rich:tabPanel>  		
+        	</h:panelGroup>
+        	
+        	<h:panelGroup layout="block" style="margin:auto; text-align:center">
+        		<a4j:commandButton action="#{addMedicBean.saveMedic}" execute="@form" value="#{uiMessages.save}" styleClass="radiusBorder5" oncomplete="skinComponent(); if (#{not empty addMedicBean.message}) {showMessage('resultMessage');updateMedicamentVente();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="medic-data,prix-panel,reponse" limitRender="true">
+        		</a4j:commandButton>        		
+        	</h:panelGroup> 
+        	
+        <script type="text/javascript">
+        	
+        	skinComponent();
+        </script>
+        
+	</rich:panel>
+</a4j:outputPanel>		
+
+</ui:composition>

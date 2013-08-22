@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+		<style type="text/css">
+			
+			#master{
+				margin-left:5px;
+				margin-top:10px;
+				vertical-align: top;
+			}
+			.cal{
+				width:100%;
+				
+			}
+			.cal table{
+				width:100%;
+				
+			}
+			#details{
+				margin-top:10px;
+			}
+			
+			.hover{
+				background-color: #{richSkin.tableSubHeaderBackgroundColor};
+			}
+			.selected{
+				
+				background-color: #005000;
+				
+			}
+			
+			.selected table{
+				color: white;
+				font-weight: bold;
+				font-size: 95%;
+			}
+						
+		</style>
+		<script type="text/javascript">
+		
+		function selectRow(row,value) {
+			changeSelection(value);
+			$('.selected').removeClass('selected');
+			$(row).addClass('selected');
+		}
+
+		function createBlocks() {
+			if($('#main-form\\:masterRichPanel').offset()==null)
+				return;
+			if($('#main-form\\:detailsPanel').offset()==null)
+				return;
+			var masterTop = ($('#main-form\\:masterRichPanel').offset().top)+35; //add 50 px for the footer
+			var detailTop = ($('#main-form\\:detailsPanel').offset().top)+35;
+			var windowHeight=$(window).height();
+			
+			$('#main-form\\:masterRichPanel').height(windowHeight - masterTop);
+			$('#main-form\\:detailsPanel').height(windowHeight - detailTop);
+		}
+		function setUpUI() {
+			selectFirstRow();
+			createBlocks()
+		}	
+		function selectFirstRow() {
+			$('#main-form\\:masterTable .rf-dt-fst-r').addClass('selected');
+			selectFirstToogle();
+		}				
+		</script>
+		
+			<div id="master">
+				<a4j:outputPanel layout="block" id="masterPanel" style="width:36%;display:inline-block;vertical-align:top">
+					<rich:panel id="masterRichPanel" style="margin-top: -10px;margin-bottom:-30px;overflow: auto;">
+						<f:facet name="header"><h:outputText id="headerText" value=" #{uiMessages.venteDu} #{caisseBean.selectedDateString} : #{caisseBean.totalVenteDuJour} FBU "/> </f:facet>
+						<rich:dataTable id="masterTable" style="cursor:pointer;width:100%;" value="#{caisseBean.listAchat}" var="achat" rowKeyVar="key"
+						onrowclick="selectRow(this,#{achat.idAchat})" onrowmouseover="$(this).addClass('hover')" onrowmouseout="$(this).removeClass('hover')" 
+						rendered="#{not empty caisseBean.listAchat}" onrowmousedown="selectedAchat(#{achat.idAchat})">
+							<rich:column style="width:100%;overflow:auto;">
+							<h:panelGroup layout="block">
+								<h:panelGrid layout="block" columns="2" style=" display:inline-block;vertical-align:middle;">
+									<h:outputText value="#{uiMessages.numero}: " />
+									<h:outputText value="#{achat.idAchat}" />
+									<h:outputText value="#{uiMessages.temps}: " />
+									<h:outputText value="#{achat.dateAchatString}" />
+									<h:outputText value="#{uiMessages.couts} Cash: " />
+									<h:outputText value="#{achat.sommeTotalReduit} Fbu" />
+									<h:outputText value="#{uiMessages.couts} #{achat.typeAchat}:" rendered="#{not achat.venteCash}"/>
+									<h:outputText value="#{achat.sommeTotal} Fbu" rendered="#{not achat.venteCash}"/>
+								</h:panelGrid>
+							</h:panelGroup>
+							</rich:column>
+						</rich:dataTable>
+						<a4j:outputPanel layout="block" rendered="#{empty caisseBean.listAchat}">
+							<h3>#{uiMessages.emptyEntry} #{caisseBean.selectedDateString} </h3>
+						</a4j:outputPanel>
+												
+					</rich:panel>
+					<rich:contextMenu id="facture-menu" mode="client" target="masterTable">
+						<rich:menuItem label="#{uiMessages.details}" mode="ajax" icon="/images/preview.png" execute="@this" limitRender="true" oncomplete="showDetailsPanel('#{creditBean.idAchat}')"></rich:menuItem>
+						<rich:menuItem id="bon-facture" iconDisabled="/images/stop.png" label="#{uiMessages.bonFourniture}" icon="/images/bon-fourniture.png" disabled="#{creditBean.venteCash}" limitRender="true" mode="ajax" render="updateMeToLoadPanel" execute="@this" action="#{creditBean.fillFactureData}" oncomplete="#{rich:component('bon-fourniture')}.show();">
+							<a4j:param name="param1" assignTo="#{controllerBean.panelInfoURI}" value="/panels/bonFourniture.xhtml"></a4j:param>
+						</rich:menuItem>
+					</rich:contextMenu>
+				</a4j:outputPanel>
+				<a4j:outputPanel ajaxRendered="false" layout="block" style="margin-top: -10px;width:62%;margin-left:10px;display:inline-block;vertical-align:top">
+					
+					<rich:calendar id="calendar" popup="false" styleClass="cal" 
+					value="#{caisseBean.selectedDate}" dayDisableFunction="disablementFunction" datePattern="dd-MM-yy"
+					dayClassFunction="disabledClassesProv">
+						<a4j:ajax event="change" status="loading" execute="@this" listener="#{caisseBean.findAchatDuJour}" limitRender="true" render="masterPanel,detailsPanel" oncomplete="setUpUI()"></a4j:ajax>
+					</rich:calendar>
+					
+					<div id="details">
+						<a4j:outputPanel layout="block">
+							<rich:panel style="margin-bottom:-30px; overflow: auto;" id="detailsPanel">
+								<f:facet name="header">
+									#{uiMessages.itemSold}
+								</f:facet>
+								<div style="width:100%;overflow:auto;">
+								<rich:dataTable style="height:100%;width:100%; margin:auto;text-align:center" id="tableDetailAchat" value="#{caisseBean.selectedAchat.medicamentsAchete}" var="medic" rows="10" rowKeyVar="key"
+								rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'"
+								rendered="#{not empty caisseBean.selectedAchat.medicamentsAchete}">
+									<f:facet name="header">#{uiMessages.venteDetails}</f:facet>
+									<rich:column>
+										<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+										#{medic.nomMedicament}
+										<h:graphicImage value="/images/refresh16.png" title="Medicament Remboursable a hauteur de son Generique" rendered="#{medic.specialiteRemboursable}" />
+									</rich:column>
+									
+									<rich:column>
+										<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+										#{medic.quantiteAchete}
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">#{uiMessages.tab_prixUnitaire} 100%</f:facet>
+										#{medic.prix}
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">#{uiMessages.tab_prixTotal} 100%</f:facet>
+										#{medic.prixTotal}
+									</rich:column>
+									<rich:column rendered="#{!caisseBean.selectedAchat.venteCash}">
+										<f:facet name="header">Prix #{caisseBean.selectedAchat.typeAchat}</f:facet>
+										#{medic.prixAssureur}
+									</rich:column>
+									<rich:column rendered="#{!caisseBean.selectedAchat.venteCash}">
+										<f:facet name="header">Prix Adherant</f:facet>
+										#{medic.prixTotalReduit}					
+										</rich:column>
+									<f:facet name="footer">
+										<h3 style="text-align:right;font-size:11px;">
+										<a4j:outputPanel rendered="#{! caisseBean.selectedAchat.venteCash}"><span style="color:white;">Prix Total #{caisseBean.selectedAchat.typeAchat}:</span> #{caisseBean.selectedAchat.sommeVenteAssureur} FBU </a4j:outputPanel>
+					 					<a4j:outputPanel rendered="#{! caisseBean.selectedAchat.venteCash}"><span style="color:white;"> Prix Total Adherent: </span>#{caisseBean.selectedAchat.sommeVenteReduit} FBU  </a4j:outputPanel>
+										<span style="color:white;">#{uiMessages.tab_prixTotal}:</span> #{caisseBean.selectedAchat.sommeVente} FBU
+										</h3>
+										<rich:dataScroller  renderIfSinglePage="false"></rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+								</div>
+								<a4j:outputPanel layout="block" rendered="#{empty caisseBean.selectedAchat.medicamentsAchete}">
+									<h3>
+									#{uiMessages.emptyEntry} #{caisseBean.selectedDateString} </h3>
+								</a4j:outputPanel>
+							</rich:panel>
+						</a4j:outputPanel>
+					</div>
+				</a4j:outputPanel>
+			</div>
+		
+		<a4j:jsFunction name="changeSelection" render="tableDetailAchat" action="#{caisseBean.changeSelectedAchat}">
+			<a4j:param name="param1" assignTo="#{caisseBean.idAchat}"></a4j:param>
+		</a4j:jsFunction>
+		<a4j:jsFunction execute="@this" name="selectTypeAchatToshow" action="#{caisseBean.changeTypeAchat}" limitRender="true" render="masterPanel,detailsPanel" oncomplete="setUpUI();"
+		 status="loading">
+		 	<a4j:param name="param1" assignTo="#{caisseBean.idTypeAchat}" ></a4j:param>
+		 </a4j:jsFunction>
+		 <a4j:jsFunction name="venteUtilisateur" execute="@this" status="loading" limitRender="true" action="#{caisseBean.selectVenteUtilisateur}" render="masterPanel,detailsPanel,selectUser" oncomplete="setUpUI();">
+		 	<a4j:param name="param1" assignTo="#{caisseBean.idUtilisateur}"></a4j:param>
+		 </a4j:jsFunction>
+		 
+		<script type="text/javascript">
+			setUpUI();
+			$(window).resize(createBlocks);
+		</script>
+</ui:composition>

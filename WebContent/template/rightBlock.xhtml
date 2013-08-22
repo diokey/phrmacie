@@ -1,0 +1,261 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style>
+		.nameMedicColumn{
+			font-weight:bold;
+			color:#ef7e05;
+			text-align: justify;
+		}
+		
+	</style>
+	<script type="text/javascript">
+		var leftPosition=0;
+		var topPosition=0;
+	</script>
+	
+	<div style="position:relative; top: 0; right: 0;margin-left:5px;">
+		<rich:panel id="subRightBlock" style="background-color:white;border-radius:12px 0px 0px 0px;
+		-moz-border-radius:12px 0px 0px 0px; -webkit-border-radius: 12px 0px 0px 0px;">
+			<h:panelGroup id="creditOptions" layout="block" style="widht:100%;height:60px; margin-top:-11px; margin-left:-11px;margin-right:-11px;border-bottom:2px solid rgba(0,0,0,0.2);">
+				<h:panelGrid columns="2" style="width:100%;overflow:auto; margin:auto; text-align:center;padding-top:5%;">
+					<h:outputLabel value="#{uiMessages.paymentModeHeaderText}" style="font-weight:bold;color:#005000;"/>
+					
+						<h:selectOneRadio style="text-align:center;margin:auto;" value="#{venteBean.typeAchat}" onclick="showCreditForm($(this).offset().left,$(this).val())">
+							<f:selectItems value="#{venteBean.typesAchat}"></f:selectItems>
+							
+						</h:selectOneRadio>
+					
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:panel style="margin-top:10px;">				
+				<rich:dropTarget acceptedTypes="medicaments" status="addingTocart" dropListener="#{venteBean.addToCart}" render="notification" oncomplete="hideAchatPanel()" />
+				<f:facet name="header">#{uiMessages.cartHeaderText}</f:facet>	
+				<a4j:status name="addingTocart">
+					<f:facet name="start">
+						<h:panelGroup layout="block" style="position:absolute; top: 140px; right: 180px;">
+							<h:graphicImage value="/images/savingimage.gif" />
+						</h:panelGroup>
+					</f:facet>
+				</a4j:status>			
+				<a4j:outputPanel ajaxRendered="true" layout="block" >
+					<h:graphicImage id="cartImage" value="#{venteBean.cartIcon}" styleClass="cartImage"/>
+					<a4j:outputPanel layout="block" rendered="#{not empty venteBean.listMedicamentsAchete}">
+						<div class="itemCount">
+							<h:outputText value="#{venteBean.produitsCount}" />
+						</div>
+						
+						<div class="payement">
+							<h3 style="font-size:large;color:white;">#{uiMessages.sommeaPayer}</h3>
+							<h:graphicImage value="/images/money.png" style="display:inline-block;vertical-align:middle;"/>
+							<span><h:outputText value="#{venteBean.sommeTotalReduit} Fbu" /></span>
+						</div>
+					</a4j:outputPanel>
+					<div id="">
+					<rich:dataTable style="margin-top:-30px;margin-left:-11px;width:330px;" value="#{venteBean.listMedicamentsAchete}" var="medic" rows="5"
+					onrowmousedown="leftPosition=$(this).offset().left;topPosition=$(this).offset().top; removeItem('#{key}')" rowKeyVar="key" id="medicamentAchete" rendered="#{not empty venteBean.listMedicamentsAchete}"
+					rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+						<f:facet name="header">#{uiMessages.cartContentHeaderText}</f:facet>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+							#{medic.nomMedicament}
+						</rich:column>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+							#{medic.quantiteAchete}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixUnitaire}</f:facet>
+							#{medic.prixReduit}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixTotal}</f:facet>
+							#{medic.prixTotalReduit}
+						</rich:column>
+						<f:facet name="footer">
+							<h3 style="text-align:right">#{uiMessages.sommeaPayer}: #{venteBean.sommeTotalReduit} FBU</h3>
+							<rich:dataScroller renderIfSinglePage="false" />
+						</f:facet>
+						
+					</rich:dataTable>
+					</div>
+					<a4j:jsFunction name="removeItem" limitRender="true">
+						<a4j:param name="param1" assignTo="#{venteBean.toBeRemoved}"></a4j:param>
+					</a4j:jsFunction>
+					<rich:contextMenu id="ctxMenuOptions" target="medicamentAchete" mode="ajax">
+							<rich:menuItem label="#{uiMessages.changeQuantity}" action="#{venteBean.changeQuantite}" 
+							oncomplete="showQuantityPanel(#{rich:component('mainPopUp')})" 
+							mode="ajax" limitRender="true" render="loadPopup,closecontrol" icon="/images/edit.png" status="loading">
+								<a4j:param name="param1" value="/panels/editQuantity.xhtml" assignTo="#{controllerBean.panelURI}"></a4j:param>
+								<a4j:param name="param2" assignTo="#{controllerBean.close}" value="true"></a4j:param>
+							</rich:menuItem>
+							<rich:menuItem label="#{uiMessages.remove}" mode="ajax" icon="/images/hide.png" action="#{venteBean.removeFromCart}"
+							render="notification"></rich:menuItem>
+							<rich:menuItem label="#{uiMessages.removeAll}" mode="ajax" icon="/images/rubbish-bin.png" action="#{venteBean.viderPanier}" render="notification"></rich:menuItem>
+							
+					</rich:contextMenu>
+				</a4j:outputPanel>
+				
+			</rich:panel>
+			
+			
+			
+			<a4j:outputPanel layout="block" ajaxRendered="true">
+							
+				<h:panelGroup layout="block" style="text-align:center;width:100%;margin:auto; margin-top:10px;" rendered="#{not empty venteBean.listMedicamentsAchete}">
+					<a4j:commandLink  styleClass="linkButton radiusBorder5" action="#{venteBean.annulerCommande}" render="notification,creditOptions" status="loading" execute="@this"
+					style="color:white;padding:5px;margin:3px;" oncomplete="jQuery('#achatPanel').show();" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'">
+						<h:panelGroup layout="block" >
+							<h:graphicImage value="/images/cancel.png" />
+							<h:outputText value="#{uiMessages.annuler}" />
+						</h:panelGroup>
+					</a4j:commandLink>
+					
+					<a4j:commandLink  styleClass="linkButton radiusBorder5" action="#{venteBean.saveAchat}" render="notification,sommeTotal,facture-rp,creditOptions" status="loading" execute="@this"
+					style="color:white;padding:5px;margin:3px;" oncomplete="jQuery('#achatPanel').show();reloadSoldMedics()" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'">
+						<h:panelGroup layout="block">
+							<h:graphicImage value="/images/valider.png" />
+							<h:outputText value="#{uiMessages.valider}" />
+						</h:panelGroup>
+					</a4j:commandLink>
+				</h:panelGroup>
+			</a4j:outputPanel>
+			
+			
+			<div id="facturePanel">
+				<rich:panel style="width:330px;" id="facture-rp">
+					<f:facet name="header">
+						<h:outputText value="#{uiMessages.factureHeaderText}" />
+						<div id="hideBlock" onclick="jQuery('#achatPanel').toggle();">							
+							<h:graphicImage value="/images/hide.png" width="16" height="16"/>							
+						</div>
+					</f:facet>
+					
+						<div id="achatPanel" style="width:310px;">
+							<rich:dataTable id="tableAchat" style="margin-left:-10px;width:330px;cursor:pointer" value="#{venteBean.listAchatDuJour}" rendered="#{not empty venteBean.listAchatDuJour}" 
+							var="achat" rows="10" rowKeyVar="key" onrowclick="showDetailsPanel('#{achat.idAchat}')" onrowmousedown="selectedAchat(#{achat.idAchat},#{achat.idAchat})"
+							rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+								<f:facet name="header">#{uiMessages.factureHeaderText}</f:facet>
+								<rich:column>									
+									<h:graphicImage value="/images/accept.png" title="Achat effectué" rendered="#{! achat.canceled}"/>
+									<h:graphicImage value="/images/cancel.png" title="Achat Annulé" width="16" height="16" rendered="#{achat.canceled}"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.numero}</f:facet>
+									<h:outputText value="#{achat.idAchat}">
+									</h:outputText>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.tempsAchat}</f:facet>
+									#{achat.dateAchat}
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.typePayement}</f:facet>
+									#{achat.typeAchat}
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.couts}</f:facet>
+									#{achat.sommeTotalReduit} Fbu
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller renderIfSinglePage="false"></rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+							
+						</div>
+					
+					<a4j:outputPanel layout="block" id="sommeTotal">
+						<div class="rf-p-hdr" style="margin-bottom:5px;margin-left:-10px;margin-right:-10px;min-height:12px;">
+							<h3 style="display:inline">#{uiMessages.totalCaisse}</h3>
+							<h3 style="display:inline">#{venteBean.totalEnCaisse} Fbu</h3>
+						</div>
+					</a4j:outputPanel>
+					
+					<rich:contextMenu direction="topAuto" id="facture-menu" mode="client" target="tableAchat">
+						<rich:menuItem label="#{uiMessages.details}" mode="ajax" icon="/images/preview.png" execute="@this" limitRender="true" oncomplete="showDetailsPanel('#{creditBean.idAchat}')"></rich:menuItem>
+						<rich:menuItem label="#{uiMessages.print}" mode="ajax" icon="/images/Print.png" execute="@this" limitRender="true" oncomplete="showFacturePanel(#{creditBean.idAchat})"></rich:menuItem>
+						<rich:menuItem id="bon" iconDisabled="/images/stop.png" label="#{uiMessages.bonFourniture}" icon="/images/bon-fourniture.png" disabled="#{creditBean.venteCash}" 
+						limitRender="true" mode="ajax" execute="@this" action="#{creditBean.fillFactureData}" oncomplete="showBonFourniture();">
+							
+						</rich:menuItem>
+						<rich:menuItem mode="ajax" label="#{uiMessages.annuler}" icon="/images/cancel.png" execute="@this" render="notification,tableAchat" limitRender="true"
+						action="#{venteBean.demanderAnnulationAchat}"></rich:menuItem>
+					</rich:contextMenu>
+				</rich:panel>
+			</div>
+		</rich:panel>
+	</div>
+	<a4j:jsFunction name="showDetailsPanel" status="loading" action="#{venteBean.selectOrderToViewDetails}" 
+	render="updateMeToLoadPanel" oncomplete="#{rich:component('detailVentePanel')}.show()">
+		<a4j:param name="param1" assignTo="#{venteBean.orderId}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/detailsVente.xhtml"></a4j:param>	
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="showFacturePanel" status="loading" action="#{venteBean.selectOrderToViewDetails}" 
+	render="updateMeToLoadPanel" oncomplete="#{rich:component('factureAchat')}.show();">
+		<a4j:param name="param1" assignTo="#{venteBean.orderId}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/factureAchat.xhtml"></a4j:param>	
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="showBonFourniture" render="updateMeToLoadPanel" oncomplete="#{rich:component('bon-fourniture')}.show();">
+		<a4j:param name="param" assignTo="#{controllerBean.panelInfoURI}" value="/panels/bonFourniture.xhtml"></a4j:param>
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="changetypeAchat" action="#{venteBean.changeTypeAchat}" status="loading" render="loadPopup,closecontrol" oncomplete="showCreditPopUp(#{venteBean.typeAchat},#{rich:component('mainPopUp')})">
+		<a4j:param name="param1" assignTo="#{venteBean.typeAchat}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelURI}" value="/panels/formulaire.xhtml"></a4j:param>
+		<a4j:param name="param3" assignTo="#{controllerBean.close}" value="false"></a4j:param>
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="selectedAchat" action="#{creditBean.checkVente}" render="bon,main-form:bon-facture" limitRender="true">
+			<a4j:param name="param1" assignTo="#{creditBean.idAchat}"></a4j:param>
+			<a4j:param name="param2" assignTo="#{venteBean.idAchat}"></a4j:param>
+	</a4j:jsFunction>
+	
+	<a4j:jsFunction name="reloadSoldMedics" action="#{caisseBean.reset}" limitRender="true"></a4j:jsFunction>
+	
+	<script type="text/javascript">
+		function showQuantityPanel(component) {
+			
+			//les valeurs top et left sont recuperes plus haut comme des variable globales dans l'evenement on rowmousedown
+			$('#mainPopUp_content .flechehaut').removeAttr('style');
+			$('#mainPopUp_content .flechehaut').css('display','inline-block')
+			
+			component.show('',{left:leftPosition,top:topPosition+20,width:330,height:125});	
+
+		}
+
+		function hideAchatPanel() {
+			$('#achatPanel').hide('fast');
+		}
+
+		function showCreditForm(leftCompPos, value) {
+
+			leftFlechPos = leftCompPos;
+			changetypeAchat(value);
+			
+		}
+
+		function showCreditPopUp(value, component) {
+			var windowWidth = $(window).width();
+			var popUpWidth = $('#mainPopUp_container').width();
+			leftCompPos = leftFlechPos;
+			//alert(popUpWidth);
+			if(value!=1){
+				var leftPos = windowWidth - 555;
+				
+				var rightPos = (windowWidth - leftCompPos) -30;
+				$('#mainPopUp_content .flechehaut').removeAttr('style');
+				$('#mainPopUp_content .flechehaut').css('display','block').css('right',rightPos+'px');
+				component.show('',{top:'130',left:leftPos-30,width:580,height:420});
+			}
+		}
+		
+	</script>
+</ui:composition>

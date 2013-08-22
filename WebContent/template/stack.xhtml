@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<!-- BEGIN STACK "DOWN" ============================================================ -->
+	<div class="stack">
+		
+		<h:graphicImage value="/images/stack-down.png" alt="stack"/>
+		<ul id="stack">
+			
+			<li><a href="#"><h:graphicImage width="79" value="/images/video.png" alt="tutorial" /><span>#{uiMessages.tutorial}</span></a></li>
+			<li>
+				<a4j:commandLink value="" limitRender="true" onclick="showStackPopUp('./panels/horloge.jsf','#{uiMessages.horloge}');">
+					<h:graphicImage value="/images/safari.png" alt="Safari" /><span>#{uiMessages.horloge}</span>
+				</a4j:commandLink>
+			</li>
+			<li>
+				<a4j:commandLink value="" limitRender="true" onclick="showStackPopUp('./panels/calendar.jsf','#{uiMessages.calendar}');">
+					<h:graphicImage width="79" value="/images/cal.png" alt="Coda" /><span>#{uiMessages.calendar}</span>
+				</a4j:commandLink>
+			</li>
+			<li>
+				<a4j:commandLink value="" limitRender="true" onclick="showStackPopUp('./panels/calculator.jsf','#{uiMessages.calculator}')">
+					<h:graphicImage width="79" value="/images/calculator.png" alt="Finder" /><span>#{uiMessages.calculator}</span>
+				</a4j:commandLink>
+			</li>			
+			<li>
+				<a4j:commandLink value="" limitRender="true" onclick="changemainPopUp('/panels/messages.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});setUpUI();">
+					<h:graphicImage width="79" value="/images/email-sm.png" alt="Email" /><span>#{uiMessages.message}</span>
+					<h:panelGroup layout="block" id="messagecount" styleClass="email-counter">
+						<h:outputText value="#{notificationBean.newMessageCount}" />
+					</h:panelGroup>
+				</a4j:commandLink>
+			</li>
+		</ul>
+	</div><!-- end div .stack -->
+	<!-- END STACK "DOWN" ============================================================ -->
+	<a4j:jsFunction name="showStackPopUp" render="updateMeToLoadPanel" oncomplete="adaptToChartSize();#{rich:component('chartPanel')}.show()"
+    status="loading">
+    	<a4j:param name="param1" assignTo="#{chartBean.chartUrl}"></a4j:param>
+    	<a4j:param name="param2" assignTo="#{chartBean.panelTitle}"></a4j:param>		
+    	<a4j:param name="param3" assignTo="#{controllerBean.panelInfoURI}" value="/panels/chartPanel.xhtml"></a4j:param>
+    		
+    </a4j:jsFunction>
+</ui:composition>

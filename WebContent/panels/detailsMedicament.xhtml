@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<h:outputStylesheet>
+	.col2{
+		margin-left:10px;
+		padding-left:12px;
+	}
+	</h:outputStylesheet>
+	<rich:popupPanel id="detailsMedicament" style="font-size:12px;" autosized="true">
+		<f:facet name="header">#{commandeBean.selectedMedicament.nomMedicament}</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/supprimer.png" width="16" height="16"
+				onclick="#{rich:component('detailsMedicament')}.hide();" style="cursor:pointer"/>
+			</h:panelGroup>
+		</f:facet>
+		<fieldset>
+			<legend style="font-size:12px;">#{uiMessages.medicInfo}</legend>
+			<h:graphicImage value="/images/medicament.png" width="64" style="display:inline-block;vertical-align:middle"/>
+			<h:panelGrid columns="2" style="padding:5px;display:inline-block;vertical-align:middle" columnClasses="col2,col2">
+				<h:outputText value="Code #{uiMessages.medics}" />
+				<h:outputText value="#{commandeBean.selectedMedicament.codeMedicament}" />
+				<h:outputText value="#{uiMessages.medicName}: " />
+				<h:outputText  value="#{commandeBean.selectedMedicament.nomMedicament}" />
+				<h:outputText value="#{uiMessages.type}:" />
+				<h:outputText value="#{commandeBean.selectedMedicament.typeMedic}" />
+				<h:outputText value="Generique" rendered="#{not empty venteBean.selected.generique}" />
+				<h:outputText value="#{venteBean.selected.generique}" rendered="#{not empty venteBean.selected.generique}"/>
+				<h:outputText value="#{uiMessages.quantite}: " />
+				<h:outputText value="#{commandeBean.selectedMedicament.quantiteStock}" />
+				<h:outputText value="#{uiMessages.prixAchat}: " />
+				<h:outputText value="#{commandeBean.selectedMedicament.prixAchat} FBU " rendered="#{commandeBean.selectedMedicament.prixAchat!=0}"/>
+				<h:panelGroup layout="block" rendered="#{commandeBean.selectedMedicament.prixAchat==0}">
+					<h:graphicImage value="/images/stop.png" width="16" height="16" style="display:inline-block;vertical-align:middle" title="Medicament non Fournis par ce Fournisseur"/>
+					<h:outputText value="#{uiMessages.noFournis}" />
+				</h:panelGroup>
+								
+			</h:panelGrid>
+		</fieldset>
+	</rich:popupPanel>
+	
+</ui:composition>

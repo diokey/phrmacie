@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+     
+     
+
+	<h:form id="menu-form">
+	<div id="menuElements">
+		<a4j:commandLink actionListener="#{controllerBean.changePage}" id="venteCmd" status="loading"
+		oncomplete="activateMenu('menu1')" limitRender="true" render="middlePanel,searchOutput" style="text-decoration:none;">
+		<div class="menuElement selectedMenu" id="menu1">
+			<h:graphicImage value="/images/fleche.png" class="fleche" />
+			<h:outputText value="#{uiMessages.commande}"/>
+			<h:graphicImage value="/images/vente.png" />
+			<rich:tooltip  followMouse="true" target="menu1">
+				#{uiMessages.tooltipCommande}
+			</rich:tooltip>
+		</div>
+		</a4j:commandLink>
+		<a4j:commandLink actionListener="#{controllerBean.changePage}" id="caisseCmd" status="loading"
+		oncomplete="activateMenu('menu2')" limitRender="true" render="middlePanel,searchOutput" style="text-decoration:none;">
+		<div class="menuElement" id="menu2">
+			<h:outputText value="#{uiMessages.vente_menu2}"/>
+			<h:graphicImage value="/images/caisse.png" id="caisse">
+				
+			</h:graphicImage>
+			<rich:tooltip followMouse="true" target="menu2">
+					#{uiMessages.tooltip_caisse}
+			</rich:tooltip>
+		</div>
+		</a4j:commandLink>
+		
+		<a4j:commandLink rendered="false" actionListener="#{controllerBean.changePage}" id="creditCmd" status="loading"
+		oncomplete="activateMenu('menu3')" limitRender="true" render="middlePanel,searchOutput" style="text-decoration:none;">
+		<div class="menuElement" id="menu3" >
+			<h:outputText value="#{uiMessages.vente_menu3}"/>
+			<h:graphicImage value="/images/credit.png" />
+			<rich:tooltip followMouse="true" target="menu3">
+				#{uiMessages.tootip_credit}
+			</rich:tooltip>
+		</div>
+		</a4j:commandLink>
+		
+		<a4j:commandLink actionListener="#{controllerBean.changePage}" id="medicamentCmd" status="loading"
+		oncomplete="activateMenu('menu4')" limitRender="true" render="middlePanel,searchOutput" style="text-decoration:none;">
+		<div class="menuElement" id="menu4" >
+			<h:outputText value="#{uiMessages.vente_menu4}"/><br />
+			<h:graphicImage value="/images/medicreportorium.png" />
+			<rich:tooltip followMouse="true" target="menu4">
+				#{uiMessages.tooltip_medicament}
+			</rich:tooltip>
+		</div>		
+		</a4j:commandLink>
+	</div>
+	</h:form>
+	
+	
+		
+	<script type="text/javascript">
+		function activateMenu(component) {
+			updateStock();
+			$('.menuElement').removeClass('selectedMenu');
+			$('#'+component).prepend($('.fleche')).addClass('selectedMenu');
+			
+		}
+	</script>
+	
+</ui:composition>

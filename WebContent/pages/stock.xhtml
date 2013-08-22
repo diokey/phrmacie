@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<a4j:jsFunction name="sortTable" render="tableMedicamentStock" action="#{sortingBean.sort}">
+		<a4j:param name="param1" assignTo="#{sortingBean.sortProperty}"></a4j:param>
+	</a4j:jsFunction>
+    <div style="width:100%;margin:auto;overflow:auto;">
+      
+	 <rich:dataTable style="font-size:12px;width:100%; text-align:center" id="tableMedicamentStock" value="#{stockBean.listMedicaments}" var="medic" rows="20" rowKeyVar="key"
+		rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'"
+		rowClass="#{medic.nomMedicament} == 'Quinine' ?'redbackground':'yellowbackground'">
+			<f:facet name="header">#{uiMessages.medicList}</f:facet>				
+			<f:facet name="noData">
+				<div style="color:#ef7e05;font-weight:bold; font-size:large; padding:10px;">
+					#{uiMessages.noDataLabel}
+				</div>
+			</f:facet>
+			<rich:column sortBy="#{medic.nomMedicament}" sortOrder="#{sortingBean.sortOrders['nomMedicament']}">
+				<f:facet name="header">
+					<div onclick="sortTable('nomMedicament')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['nomMedicament']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['nomMedicament']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.tab_nomMedicament}" >
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.nomMedicament}
+			</rich:column>				
+			<rich:column sortBy="#{medic.batch}" sortOrder="#{sortingBean.sortOrders['batch']}" >
+				<f:facet name="header">
+					<div onclick="sortTable('batch')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['batch']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['batch']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.lot}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.batch}
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['dateArrive']}" comparator="#{sortingBean.dateArriveComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('dateArrive')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['dateArrive']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['dateArrive']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.dateArrive}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.dateArrive}
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['manifactureDate']}" comparator="#{sortingBean.manufactureDateComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('manifactureDate')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['manifactureDate']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['manifactureDate']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.manifactureDate}">
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.manifactureDate}
+			</rich:column>
+			<rich:column sortOrder="#{sortingBean.sortOrders['expiryDate']}" comparator="#{sortingBean.expiryDateComparator}">
+				<f:facet name="header">
+					<div onclick="sortTable('expiryDate')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['expiryDate']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['expiryDate']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.ExpiryDate}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.expiryDate}
+			</rich:column>
+			<rich:column sortBy="#{medic.quantiteStock}" sortOrder="#{sortingBean.sortOrders['quantiteStock']}">
+				<f:facet name="header">
+					<div onclick="sortTable('quantiteStock')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['quantiteStock']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['quantiteStock']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.quantite}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.quantiteStock}
+			</rich:column>
+			<rich:column sortBy="#{medic.prix}" sortOrder="#{sortingBean.sortOrders['prix']}">
+				<f:facet name="header">
+					<div onclick="sortTable('prix')">
+						<h:graphicImage value="/images/s_asc.png" rendered="#{sortingBean.sortOrders['prix']=='ascending'}"/>
+						<h:graphicImage value="/images/s_desc.png" rendered="#{sortingBean.sortOrders['prix']=='descending'}"/>
+						<h:outputText style="cursor:pointer;color:white" value="#{uiMessages.tab_prixUnitaire}">
+							
+						</h:outputText>
+					</div>
+				</f:facet>
+				#{medic.prix} FBU
+			</rich:column>
+			
+			<f:facet name="footer">
+				<rich:dataScroller renderIfSinglePage="false"></rich:dataScroller>
+			</f:facet>
+		</rich:dataTable>
+		
+		<a4j:jsFunction name="medicPrice" action="#{stockBean.selectByPrice}" render="tableMedicamentStock" limitRender="true">
+			<a4j:param name="param1"  assignTo="#{stockBean.idTypeAchat}"></a4j:param>
+		</a4j:jsFunction>
+		<script type="text/javascript">
+		selectFirstToogle();
+		</script>
+	</div>
+	
+</ui:composition>

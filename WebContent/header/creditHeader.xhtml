@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+      
+      <div class="top-content" style="position:relative;height:50px;">
+	      <div class="header">
+	      		<h2>#{uiMessages.vente_menu3}</h2>
+	      </div>
+	  
+		  <div class="helpIcon" style="position:absolute; top:1px; left:10px;">
+			<h:graphicImage value="/images/help.png" id="helpImgCredit"/><br />
+			<h:outputText value="#{uiMessages.helpLabel}"/>
+			<rich:tooltip showEvent="click" target="helpImgCredit">
+				<h:panelGroup layout="block" style="width:200px">
+					<h:graphicImage value="/images/rightarrow.png" style="float:left;"/>
+					<h:outputText escape="false" value="#{uiMessages.helpTextStock}" />
+				</h:panelGroup>
+			</rich:tooltip>
+		 </div>
+	 </div>
+</ui:composition>

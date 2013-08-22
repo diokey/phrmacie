@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style type="text/css">
+		.box-4{
+			display:inline-block;
+			width : 23%;
+			text-align:center;
+			margin: 5px;
+		}
+		.box-2{
+			width : 47%;
+			margin : 1%;
+			text-align : center;
+			display:inline-block;
+		}
+		
+		.box-3 {
+			
+			display:inline-block;
+			padding : 5px;
+		}
+		.box-in-2{
+			width : 44.5%;
+			margin : 1%;
+			text-align : left;
+			display:inline-block;
+		}
+		
+		.row1{
+			padding: 6px;
+		}
+		.row2{
+			color:#ef7e05;
+			font-weight: bold;
+		}
+		
+		#stats-data fieldset{
+			background-color:white;
+		}
+		#stats-data fieldset legend{
+			font-weight: bold;
+		}
+	</style>
+	<script type="text/javascript">
+	var curDt = new Date();
+	function disablementOtherFunction(day){
+		
+		if (curDt==undefined){
+		curDt = day.date.getDate();
+		}
+		if (curDt.getTime() - day.date.getTime() &lt; 0) return false; else return true;
+	}
+	function disabledOtherClassesProv(day){
+		if (curDt.getTime() - day.date.getTime() &lt;= 0) return 'rf-cal-boundary-day';
+		
+	}
+	</script>
+	<!-- Payement des achats credits et statistiques des credits non encore paye!!!! to do.. -->
+	<div id="stats-charts">
+   		<a4j:commandLink onclick="showChartPopUP('./charts/VentePieChart.jsf','#{uiMessages.repartitionVente}');return false;">
+    		<h:panelGroup styleClass="box-4">
+    			<h:graphicImage value="/images/chart_pie.png" /><br />
+    			#{uiMessages.partVente}
+    		</h:panelGroup>
+   		</a4j:commandLink>
+   		<a4j:commandLink onclick="showChartPopUP('./charts/produitsVendusLineChart.jsf','#{uiMessages.evolutionMensuel}');return false;">
+    		<h:panelGroup styleClass="box-4">
+    			<h:graphicImage value="/images/line-chart.png" width="48" height="48"/><br />
+    			#{uiMessages.evolutionVente}
+    		</h:panelGroup>
+   		</a4j:commandLink>
+   		<a4j:commandLink onclick="showChartPopUP('./charts/venteBarChart.jsf','#{uiMessages.evolutionMensuelRevenu}');return false;">
+    		<h:panelGroup styleClass="box-4">
+    			<h:graphicImage value="/images/chart.png" /><br />
+    			#{uiMessages.montantVente}
+    		</h:panelGroup>
+   		</a4j:commandLink>
+   		<a4j:commandLink onclick="showChartPopUP('./charts/produitsPieChart.jsf','#{uiMessages.partProduit}');return false;">
+	   		<h:panelGroup styleClass="box-4">
+	   			<h:graphicImage value="/images/chart_pie.png"/><br />
+	   			#{uiMessages.produit}
+	   		</h:panelGroup>
+    	</a4j:commandLink>
+  	</div>
+  	<div id="stats-data">
+  		<rich:panel id="daily-stats" styleClass="box-2" style="vertical-align: top;">
+  			<f:facet name="header">#{uiMessages.dailyReport} </f:facet>
+  			
+  			<h3>#{statsBean.today}</h3>
+  			<fieldset style="text-align:left">
+  				<legend>#{uiMessages.ventes}</legend>
+  				
+					<a4j:repeat value="#{statsBean.ventes}" var="vente">
+						<div>
+						<h:panelGrid columns="2" columnClasses="row1,row2">
+						<h:outputText value="#{uiMessages.totalVente} #{vente.typeAchat}" />
+						<h:outputText value="#{vente.sommeTotal} FBU" />
+						<h:outputText escape="false" value="#{uiMessages.totalPaye}" rendered="#{vente.typeAchat!='Cash'}"/>
+						<h:outputText value="#{vente.sommeTotalReduit} FBU" rendered="#{vente.typeAchat!='Cash'}"/>
+						<h:outputText value="#{uiMessages.totalCredit}" rendered="#{vente.typeAchat!='Cash'}"/>
+						<h:outputText value="#{vente.sommeTotal - vente.sommeTotalReduit} FBU" rendered="#{vente.typeAchat!='Cash'}"/>
+						</h:panelGrid>
+						<hr />
+						</div>
+					</a4j:repeat>
+  					<h:outputText styleClass="box-3" value="#{uiMessages.total} : #{statsBean.totalVente} FBU" style="font-weight:bold"/>
+  					<h:outputText styleClass="box-3" value="#{uiMessages.totalPaye} : #{statsBean.totalVentePaye} FBU" style="font-weight:bold"/>
+  					<h:outputText styleClass="box-3" value="#{uiMessages.totalCredit} : #{statsBean.totalVente - statsBean.totalVentePaye} FBU" style="font-weight:bold"/>
+  				
+  			</fieldset>
+  			<fieldset style="text-align:left">
+  				<legend>#{uiMessages.produit}</legend>
+  				<h:panelGrid columns="2" columnClasses=",row2">
+  					<h:outputText value="#{uiMessages.qteVendus}" />
+  					<h:outputText value="#{statsBean.nombreProduitsVente}" style="font-weight:bold"/>
+  					<h:outputText value="#{uiMessages.qteStock}" />
+  					<h:outputText value="#{statsBean.quantiteProduitStock}" style="font-weight:bold"/>
+  					
+  				</h:panelGrid>
+  			</fieldset>
+  			
+  			<fieldset style="text-align:left">
+  				<legend>#{uiMessages.commande}</legend>
+  				<h:panelGrid columns="2" columnClasses=",row2">
+  					<h:outputText value="#{uiMessages.nbCmdEmitted}" />
+  					<h:outputText value="#{statsBean.nombreCommande}" />
+  					<h:outputText value="#{uiMessages.qteCommande}" />
+  					<h:outputText value="#{statsBean.quantiteCommande}" />
+  					<h:outputText value="#{uiMessages.prixCommande}" />
+  					<h:outputText value="#{statsBean.prixCommande} FBU" />
+  				</h:panelGrid>
+  			</fieldset>
+  			  			
+  		</rich:panel>
+  		<rich:panel id="monthly-stats" styleClass="box-2">
+  			<f:facet name="header">
+  				#{uiMessages.monthlyReport}
+  			</f:facet>
+  			<rich:select value="#{statsBean.month}" id="month" valueChangeListener="#{statsBean.moisChanged}">
+				<a4j:ajax event="selectitem" render="vente-group,commande-group,produit-group,commande-group" limitRender="true" execute="@this"></a4j:ajax>
+				<f:selectItems value="#{chartBean.monthList}"></f:selectItems>
+  			</rich:select>
+  			<rich:inputNumberSpinner id="year" value="#{statsBean.year}" minValue="2012" maxValue="#{chartBean.annee}"
+				valueChangeListener="#{statsBean.anneeChanged}">
+					<a4j:ajax event="change" render="vente-group"></a4j:ajax>
+			</rich:inputNumberSpinner>
+  			<fieldset style="text-align:left;">
+  				<legend>Ventes</legend>
+  				<h:panelGroup layout="block" id="vente-group">
+	  				<a4j:repeat value="#{statsBean.ventesMensuel}" var="vente">
+						<div>
+							<h:panelGrid columns="2" columnClasses="row1,row2">
+							<h:outputText value="#{uiMessages.totalVente} #{vente.typeAchat}" />
+							<h:outputText value="#{vente.sommeTotal} FBU" />
+							<h:outputText escape="false" value="#{uiMessages.totalPaye}" rendered="#{vente.typeAchat!='Cash'}"/>
+							<h:outputText value="#{vente.sommeTotalReduit} FBU" rendered="#{vente.typeAchat!='Cash'}"/>
+							<h:outputText value="#{uiMessages.totalCredit}" rendered="#{vente.typeAchat!='Cash'}"/>
+							<h:outputText value="#{vente.sommeTotal - vente.sommeTotalReduit} FBU" rendered="#{vente.typeAchat!='Cash'}"/>
+							</h:panelGrid>
+							<hr />
+						</div>
+					</a4j:repeat>
+	  				<h:outputText styleClass="box-3" value="#{uiMessages.total} : #{statsBean.totalVenteMensuel} FBU" style="font-weight:bold"/>
+	  				<h:outputText styleClass="box-3" value="#{uiMessages.totalPaye} : #{statsBean.totalVentePayeMensuel} FBU" style="font-weight:bold"/>
+	  				<h:outputText styleClass="box-3" value="#{uiMessages.totalCredit} : #{statsBean.totalVenteMensuel - statsBean.totalVentePayeMensuel} FBU" style="font-weight:bold"/>
+  				</h:panelGroup>
+  			</fieldset>
+  			<fieldset style="text-align:left">
+  				<legend>#{uiMessages.produit}</legend>
+  				<h:panelGrid columns="2" columnClasses=",row2" id="produit-group">
+  					<h:outputText value="#{uiMessages.qteVendus}" />
+  					<h:outputText value="#{statsBean.nombreProduitsVenteMensuel}" style="font-weight:bold"/>
+  					<h:outputText value="#{uiMessages.qteStock}" />
+  					<h:outputText value="#{statsBean.quantiteProduitStock}" style="font-weight:bold"/>
+  				</h:panelGrid>
+  			</fieldset>
+  			
+  			<fieldset style="text-align:left;">
+  				<legend>#{uiMessages.commande}</legend>
+  				<h:panelGrid columns="2" columnClasses=",row2" id="commande-group">
+  					<h:outputText value="#{uiMessages.nbCmdEmitted}" />
+  					<h:outputText value="#{statsBean.nombreCommandeMensuel}" />
+  					<h:outputText value="#{uiMessages.qteCommande}" />
+  					<h:outputText value="#{statsBean.quantiteCommandeMensuel}" />
+  					<h:outputText value="#{uiMessages.prixCommande}" />
+  					<h:outputText value="#{statsBean.prixCommandeMensuel} FBU" />
+  				</h:panelGrid>
+  			</fieldset>
+  			
+  		</rich:panel>
+  		
+  		<rich:panel style="margin:12px">
+  			<f:facet name="header">#{uiMessages.infoPratique}</f:facet>
+  			<h:panelGrid columns="5" style="text-align:center;margin:auto;">
+  				<h:outputLabel for="debut" value="#{uiMessages.debut}" />
+  				<rich:calendar value="#{statsBean.startDate}" id="debut" dayDisableFunction="disablementOtherFunction" dayClassFunction="disabledOtherClassesProv">
+  					<a4j:ajax event="change" execute="@this" limitRender="true" oncomplete="zebraStyle();" render="less-sold,most-sold,best-client,stats-general"></a4j:ajax>
+  				</rich:calendar>
+  				<h:outputLabel value="#{uiMessages.to}" for="fin"/>
+  				<rich:calendar value="#{statsBean.endDate}" id="fin" dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv" >
+  					<a4j:ajax event="change" execute="@this" limitRender="true" render="less-sold,most-sold,debut,best-client,stats-general" oncomplete="curDt = #{rich:component('fin')}.getValue();zebraStyle();"></a4j:ajax>
+  				</rich:calendar>
+  			</h:panelGrid>
+  			<fieldset class="box-in-2">
+  				<legend>#{uiMessages.stats}</legend>
+  				<h:panelGrid columns="2" id="stats-general" styleClass="rf-dt zebra-style" columnClasses="row1,row1" rowClasses="rf-dt-c" style="width:100%">
+  					
+  					<h:outputText value="#{uiMessages.grosseVente}" />
+  					<h:outputText value="#{statsBean.bestSells}" />
+  					<h:outputText value="#{uiMessages.faibleVente}" />
+  					<h:outputText value="#{statsBean.worstSells}" />
+  					<h:outputText value="#{uiMessages.moyenneVente}" />
+  					<h:outputText value="#{statsBean.moyenneVente}" />
+  					<h:outputText value="#{uiMessages.qteMoyenneVente}" />
+  					<h:outputText value="#{statsBean.quantiteVente}" />
+  					<h:outputText value="#{uiMessages.somMoyenneVente}" />
+  					<h:outputText value="#{statsBean.sommeMoyenne}" />
+  					
+  				</h:panelGrid>
+  			</fieldset>
+  			<fieldset class="box-in-2">
+  				<legend>#{uiMessages.myrClient}</legend>
+  				<rich:dataTable noDataLabel="#{uiMessages.noDataLabel}" id="best-client" styleClass="zebra-style" value="#{statsBean.bestCustomers}" var="client" style="width:100%;">
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.client}</f:facet>
+  						#{client.nomClient}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.fonction}</f:facet>
+  						#{client.nomService}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.totalAchat}</f:facet>
+  						#{client.sommeAchat} FBU
+  					</rich:column>
+  				</rich:dataTable>
+  			</fieldset>
+  			  			
+  			<fieldset class="box-in-2">
+  				<legend>#{uiMessages.mostSold}</legend>
+  				<rich:dataTable noDataLabel="#{uiMessages.noDataLabel}" id="most-sold" styleClass="zebra-style" value="#{statsBean.medicsPhare}" var="medic" style="width:100%;">
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.produit}</f:facet>
+  						#{medic.nomMedicament}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.quantite}</f:facet>
+  						#{medic.quantiteAchete}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.prix}</f:facet>
+  						#{medic.prix} FBU
+  					</rich:column>
+  				</rich:dataTable>
+  			</fieldset>
+  			<fieldset class="box-in-2">
+  				<legend>#{uiMessages.lessSoldProducts}</legend>
+  				<rich:dataTable noDataLabel="#{uiMessages.noDataLabel}" id="less-sold" styleClass="zebra-style" value="#{statsBean.medicsNoPhare}" var="medic" style="width:100%;">
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.produit}</f:facet>
+  						#{medic.nomMedicament}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.quantite}</f:facet>
+  						#{medic.quantiteAchete}
+  					</rich:column>
+  					<rich:column>
+  						<f:facet name="header">#{uiMessages.prix}</f:facet>
+  						#{medic.prix} FBU
+  					</rich:column>
+  				</rich:dataTable>
+  			</fieldset>
+  			
+  		</rich:panel>
+  	</div>
+    <a4j:jsFunction name="showChartPopUP" render="updateMeToLoadPanel" oncomplete="adaptToChartSize();#{rich:component('chartPanel')}.show()"
+    status="loading">
+    	<a4j:param name="param1" assignTo="#{chartBean.chartUrl}"></a4j:param>
+    	<a4j:param name="param2" assignTo="#{chartBean.panelTitle}"></a4j:param>		
+    	<a4j:param name="param3" assignTo="#{controllerBean.panelInfoURI}" value="/panels/chartPanel.xhtml"></a4j:param>
+    		
+    </a4j:jsFunction>
+   
+</ui:composition>

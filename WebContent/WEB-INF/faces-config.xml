@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+ <converter>
+  <converter-id>medicamentConverter</converter-id>
+  <converter-class>pharmacie.converters.MedicamentConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>prixConverter</converter-id>
+  <converter-class>pharmacie.converters.PrixAchatConverter</converter-class>
+ </converter>
+ <navigation-rule>
+  <from-view-id>/index.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>vente</from-outcome>
+   <to-view-id>/vente.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>manager</from-outcome>
+   <to-view-id>/manager.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>boss</from-outcome>
+   <to-view-id>/boss.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/*</from-view-id>
+  <navigation-case>
+   <from-outcome>logOut</from-outcome>
+   <to-view-id>/index.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+ </navigation-rule>
+ <application>
+  <resource-bundle>
+   <base-name>resources</base-name>
+   <var>msgs</var>
+  </resource-bundle>
+  <resource-bundle>
+   <base-name>ui_messages_en_US</base-name>
+   <var>uiMessagesUS</var>
+  </resource-bundle>
+  <resource-bundle>
+   <base-name>ui_messages_fr_FR</base-name>
+   <var>uiMessagesFR</var>
+  </resource-bundle>
+  <resource-bundle>
+   <base-name>ui_messages_ki_BI</base-name>
+   <var>uiMessagesBI</var>
+  </resource-bundle>
+ </application>
+</faces-config>

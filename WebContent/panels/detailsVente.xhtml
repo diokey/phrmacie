@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:popupPanel id="detailVentePanel" autosized="true">
+		<f:facet name="header">#{uiMessages.venteDetails}</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"
+				onclick="#{rich:component('detailVentePanel')}.hide();" style="cursor:pointer"/>
+			</h:panelGroup>
+		</f:facet>
+		<h:form>
+			
+			<rich:dataTable style="width:100%;margin:auto;text-align:center" id="tabledetail" value="#{venteBean.selectedAchat.medicamentsAchete}" var="medic" rows="10" rowKeyVar="key"
+			rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+				<f:facet name="header">#{uiMessages.venteDetails}</f:facet>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+					#{medic.nomMedicament}
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.type}</f:facet>
+					#{medic.typeMedic}
+					<h:graphicImage value="/images/refresh16.png" title="Medicament Remboursable a hauteur de son Generique" rendered="#{medic.specialiteRemboursable}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.lot}</f:facet>
+					#{medic.batch}
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+					#{medic.quantiteAchete}
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.tab_prixUnitaire} 100%</f:facet>
+					#{medic.prix}
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">#{uiMessages.tab_prixTotal} 100%</f:facet>
+					#{medic.prixTotal}
+				</rich:column>
+				<rich:column rendered="#{!venteBean.selectedAchat.venteCash}">
+					<f:facet name="header">Prix #{venteBean.selectedAchat.typeAchat}</f:facet>
+					#{medic.prixAssureur}
+				</rich:column>
+				<rich:column rendered="#{!venteBean.selectedAchat.venteCash}">
+					<f:facet name="header">Prix Adherant</f:facet>
+					#{medic.prixTotalReduit}
+					
+				</rich:column>
+				<f:facet name="footer">
+					<h3 style="text-align:right">
+					 	<a4j:outputPanel rendered="#{! venteBean.selectedAchat.venteCash}"><span style="color:white;">Prix Total #{venteBean.selectedAchat.typeAchat}:</span> #{venteBean.selectedAchat.sommeVenteAssureur} FBU </a4j:outputPanel>
+					 	<a4j:outputPanel rendered="#{! venteBean.selectedAchat.venteCash}"><span style="color:white;"> Prix Total Adherent: </span>#{venteBean.selectedAchat.sommeVenteReduit} FBU  </a4j:outputPanel>
+					 	<span style="color:white;">#{uiMessages.tab_prixTotal}:</span> #{venteBean.selectedAchat.sommeVente} FBU					 
+					 </h3>
+					<rich:dataScroller renderIfSinglePage="false"></rich:dataScroller>
+				</f:facet>
+			</rich:dataTable>
+			
+		</h:form>
+	</rich:popupPanel>
+	
+</ui:composition>

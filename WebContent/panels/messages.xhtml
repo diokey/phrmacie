@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style type="text/css">
+		.selected{
+			background-color: #005000;	
+			color: white;	
+		}
+		.hover{
+				background-color: #{richSkin.tableSubHeaderBackgroundColor};
+		}
+		
+		.new{
+			background-color: #ef7e05;
+		}		
+	</style>
+	<script type="text/javascript">
+		var selectedRow;
+		
+		function setUpUI() {
+			scrollableDiv(); 
+			renderEditor();
+			positionToolTip();
+			//selectFirstContact();
+		}
+
+		function positionToolTip() {
+			
+			var $position = $("#toMany").offset();
+			var $top =$position.top; 
+			$position.top = $top -80;
+			$position.left = ($position.left)+200;
+			$('#helpcc').offset($position);
+			
+		}
+		function scrollableDiv() {
+			var height = $('#popup-form\\:pageContent').height()
+			$userList = $("#popup-form\\:userlist");
+			$userList.css('height',(height - 25)+'px').css('overflow','auto');
+			$nouveauMsg = $("#popup-form\\:nouveauMessage");
+			$conversation = $("#popup-form\\:messages-wrapper");
+			$conversation.height(height-($nouveauMsg).height()-67);
+			$conversation.css('overflow','auto');
+			
+		}
+
+		function addComma() {
+			autocompleteVal= $("#popup-form\\:ccInput").val();
+			if(autocompleteVal!='') {
+				autocompleteVal+=', ';
+			}
+			$("#popup-form\\:ccInput").val(autocompleteVal);
+						
+		}
+
+		function selectFirstContact() {
+			$('#popup-form\\:userlist .rf-dt-fst-r').addClass('selected');
+			$('#popup-form\\:userlist .rf-dt-fst-r td').addClass('selected');
+		}
+
+		function hidehelpcc() {
+			var display = $('#autocomplete-holder').css('display');
+			
+			if(display=='none') {
+				$('.helpcc-container').fadeOut('slow');
+			}else{
+				positionToolTip();
+				$('.helpcc-container').fadeIn('slow');
+			}
+		}
+
+		function changeReceiver(row, value) {
+			changeContact(value);
+			//$('.selected').removeClass('selected');
+			$(row).children('td').removeClass('new');
+			//$(row).addClass('selected');
+			//scrollableDiv();
+			//positionToolTip();			
+		}
+		
+	</script>
+	<a4j:jsFunction name="renderEditor" render="contenu"></a4j:jsFunction>
+	<a4j:jsFunction name="changeContact" action="#{notificationBean.changeReceiver}" render="userlisttable,message-header,nouveauMessage,messages-container,message-header,messagecount">
+		<a4j:param name="param1" assignTo="#{notificationBean.selectedIndex}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:poll interval="2000" execute="@this" action="#{notificationBean.autoUpdate}" enabled="true" limitRender="true" render="messagecount,userlisttable,message-header,messages-container"></a4j:poll>
+	<a4j:status name="savingStatus">
+        		<f:facet name="start">
+        			<div class="statusBlock">
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+		       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving}
+		       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet> 
+        		<f:facet name="error">
+        			<div class="statusBlock">
+        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+	        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet>        		
+    </a4j:status>
+  	<div class="auto-close statusBlock" style="display:none;" id="resultsendingMessage">
+  			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+  			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse">
+   				<h:graphicImage value="#{notificationBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+   				<h:outputText escape="false" value="#{notificationBean.messageInfo}" style="font-weight:bold;"/>
+  			</h:panelGroup>       				
+  	</div>
+  	
+    <rich:panel id="pageContent" style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;">
+        
+        <rich:panel id="userlist" styleClass="inline-block" style="width:20%;vertical-align:top;cursor:pointer">
+			<rich:dataTable id="userlisttable" value="#{notificationBean.contacts}" rowKeyVar="key" var="contact" style="width:100%;" 
+			onrowmouseover="$(this).addClass('hover')" onrowmouseout="$(this).removeClass('hover')" onrowclick="changeReceiver(this,#{key})">
+				<rich:column style="" styleClass="#{contact.styleClass} #{contact.newMessageStyle}">
+					<h:graphicImage value="/images/#{contact.role}.png" width="24" height="24"/>
+					<h:panelGroup layout="block" style="display:inline-block;padding-left:5px;">
+						<h:outputText value="#{contact.username}" style="font-weight:bold;"/><br />
+						<h:outputText value="#{contact.role}" />
+					</h:panelGroup>
+				</rich:column>
+			</rich:dataTable>
+		</rich:panel>
+		
+		<div class="inline-block" style="width:79%; margin-left:-3px;">
+		<rich:panel id="conversation" styleClass="" style="padding-bottom:-20px;padding-right:-20px;background-color:white;border-left:none;vertical-align:top">
+			<rich:panel id="message-header" style="height:35px;border-top:none;border-left:none;border-right:none;margin-top:-10px;margin-right:-10px;margin-left:-10px;padding-right:10px;padding-left:10px;">
+				<h2 style="padding-left:20px;" class="orange">
+					<h:graphicImage style="float:left;padding-right:10px;" width="24" height="24" value="/images/#{notificationBean.selectedContact.role}.png" />
+					<h:outputText escape="false"  value="#{uiMessages.chatWith} #{notificationBean.selectedContact.username} " rendered="#{notificationBean.selectedContact.role!='system'}"/>
+					<h:outputText value="#{uiMessages.systemNotification}" rendered="#{notificationBean.selectedContact.role=='system'}" />
+				</h2>				 
+			</rich:panel>
+			<h:panelGroup style="margin-bottom:-10px;width:102%;overflow-x:hidden;margin-left:-10px;margin-right:-10px" layout="block" id="messages-wrapper">
+			<h:panelGroup layout="block" id="messages-container">
+			<a4j:repeat id="messages"  value="#{notificationBean.selectedContact.conversations}" var="message" style="display:block;width:100%;margin-right:-20px;margin-left:-20px">
+				<div style="border-bottom:1px solid #C0C0C0;background-color:white;" >
+					<h:panelGroup layout="block" styleClass="msg-user-bckgd">
+						<h:panelGroup layout="block" style="text-align:center;padding:8px 0 8px 8px;width:10%;display:inline-block;vertical-align:top">
+							<h:graphicImage height="24" width="24" value="/images/#{message.sender.role}.png" /><br />
+							<h:outputText value="#{message.sender.username}" />
+						</h:panelGroup>
+						<h:panelGroup layout="block"  style="background:white;padding:8px;width:86%;border-left:1px solid #C0C0C0; display:inline-block;vertical-align:top;min-height:40px;">
+							<div style="border-bottom:1px dashed #C0C0C0">
+							<h3><h:graphicImage style="float:left;" width="16" height="16" value="#{message.priority}" />#{message.messageTitle}</h3>
+							<span class="small">#{uiMessages.sentBy} #{message.sender.username} - #{message.sendDate}</span>
+							</div>
+							<h:outputText escape="false" value="#{message.message}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</div>
+			</a4j:repeat>
+			</h:panelGroup>
+			</h:panelGroup>
+		</rich:panel>
+		<rich:panel id="nouveauMessage" style="border-left:none;min-height:255px;">
+		<a4j:region>
+		
+			<h:panelGrid columns="4" style="vertical-align:top">
+				<h:outputLabel styleClass="msg-label" value="#{uiMessages.messageTitle}" />
+				<h:inputText disabled="#{notificationBean.selectedContact.role=='system'}" id="titre-msg" value="#{notificationBean.message.messageTitle}" required="false" style="width:200px;">
+					<a4j:ajax event="change" execute="@this" limitRender="true" render="titleMsg"></a4j:ajax>
+				</h:inputText>
+				<h:outputLabel styleClass="msg-label" value="#{uiMessages.typemsg}" />
+				<rich:select disabled="#{notificationBean.selectedContact.role=='system'}" value="#{notificationBean.message.priority}" defaultLabel="#{uiMessages.typemsgLabel}">
+					<f:selectItem itemLabel="#{uiMessages.typemsginfo}" itemValue="/images/info.png"/>
+					<f:selectItem itemLabel="#{uiMessages.typemsgwarning}" itemValue="/images/warning.png"/>
+					<f:selectItem itemLabel="#{uiMessages.typemsgerror}" itemValue="/images/error.png"/>
+				</rich:select>
+			</h:panelGrid>
+			<rich:editor disabled="#{notificationBean.selectedContact.role=='system'}" onfocus="$('.helpcc-container').fadeOut('slow')" required="true" value="#{notificationBean.message.message}" requiredMessage="#{uiMessages.required}" id="contenu" height="100">
+				<a4j:ajax event="change" execute="@this" limitRender="true" render="contenuMsg"></a4j:ajax>
+			</rich:editor>
+			<div id="toMany" style="height:20px;"> 
+					<h:selectBooleanCheckbox disabled="#{notificationBean.selectedContact.role=='system'}" style="display:inline-block;vertical-align:top;" onchange="$('#autocomplete-holder').toggle();$('#autocomplete-holder input').val('');hidehelpcc();"/>
+					<h:outputLabel style="display:inline-block;vertical-align:top;" styleClass="msg-label" value="#{uiMessages.sendtomany}" />
+					<span id="autocomplete-holder" style="display:none;">
+						<rich:autocomplete disabled="#{notificationBean.selectedContact.role=='system'}" id="cc" mode="lazyClient" value="#{notificationBean.recievers}" fetchValue="#{contact.username}" tokens="," autocompleteList="#{notificationBean.suggestionList}" 
+						style="display:inline-block;height:16px;width:300px;vertical-align:top;" var="contact" minChars="1" autofill="true" selectFirst="true">
+							<div class="auto-complete-box">
+        						<span class="auto-complete-element auto-complete-first-column">
+        						 	<h:graphicImage value="/images/#{contact.role}.png" width="16" height="12"/>
+        						</span>
+        						<span class="auto-complete-element">
+        						 <h:outputText value="#{contact.username}" />
+        						</span>
+        						<span class="auto-complete-element">
+        						 <h:outputText value="#{contact.role}" />
+        						</span>
+        					</div>
+						</rich:autocomplete>
+					</span>
+					<div id="helpcc">
+						<div class="helpcc-container" style="display:none;">
+							<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+							<div style="min-height: 45px;">
+								<p>
+								<h:graphicImage value="/images/info.png" width="16" height="16"/>
+								#{uiMessages.sendtomanyDesc}
+								</p>
+								
+							</div>
+							<div class="flechebas"></div>
+						</div>
+					</div>
+			</div>
+			<h:panelGroup layout="block" style="text-align:center;">
+				<a4j:commandButton disabled="#{notificationBean.selectedContact.role=='system'}" action="#{notificationBean.sendMessage}" status="savingStatus" execute="@region" value="Envoyer" styleClass="radiusBorder5" style="font-weight:bold;height:24px;margin-left:5px;padding-left:8px;padding-right:8px;"
+				onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" oncomplete="if (#{not empty notificationBean.messageInfo}) {showMessage('resultsendingMessage');}" render="reponse,messages-container,nouveauMessage"> </a4j:commandButton>
+			</h:panelGroup>
+			
+			</a4j:region> 
+		</rich:panel>
+		<rich:notifyMessage for="titre-msg" id="titleMsg"></rich:notifyMessage>	
+		<rich:notifyMessage for="contenu" id="contenMsg"></rich:notifyMessage>
+		</div>
+	</rich:panel>
+	
+	
+
+</ui:composition>

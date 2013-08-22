@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<script type="text/javascript">
+	
+		function showAssureControls() {
+			
+			$('#assures-controls-button').fadeIn('slow');
+		}
+
+		function hideAssureControls() {
+			$('#assures-controls-button').fadeOut('slow');
+		}
+		
+	</script>
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;">
+	
+		<h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			#{uiMessages.AssureAddedit}
+    			<br clear="all"/>		    			
+    		</p>    		
+		</h:panelGroup>
+		
+		<rich:panel style="background:white;">
+			<f:facet name="header">
+				<h:panelGroup layout="block">
+					#{uiMessages.servicesAssured}
+					<h:selectOneMenu id="assureur-id" value="#{settingsBean.idAssureur}">
+						<f:selectItems value="#{settingsBean.assureurSI}"></f:selectItems>
+						<a4j:ajax event="change" execute="@this" render="assure-form,assureData" status="changingStatus"></a4j:ajax>
+					</h:selectOneMenu>
+						<a4j:status name="changingStatus">
+	     				<f:facet name="start">
+			       			<div style=" display:inline-block;border:1px solid black; color:black;background-color:yellow; border-radius:6px;">
+			       				<h:panelGroup layout="block" style="display:inline-block;">
+				       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.loading}				       				
+			      				</h:panelGroup>
+			       			</div>
+	      				</f:facet>        		
+        			</a4j:status>
+	      			<a4j:status name="annulerStatus">
+	      				<f:facet name="start">
+			       		<div style="display:inline-block;border:1px solid black; color:black;background-color:yellow; border-radius:6px;">
+			       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+				    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.canceling}					       				
+			      			</h:panelGroup>
+			       		</div>
+	      				</f:facet>        		
+	      			</a4j:status>
+				</h:panelGroup>
+			</f:facet>
+			
+			<h:panelGroup id="assure-form" layout="block" styleClass="partener-info" style="display:inline-block;width:40%;">
+				<fieldset style="margin:5px;">
+					<legend>#{uiMessages.addAssured}</legend>
+				<a4j:region id="assure-region">
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.name}" />
+					<h:inputText value="#{settingsBean.service.nomService}" size="31" id="nom-assure" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" render="nom-assure-msg" limitRender="true"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="nom-assure" id="nom-assure-msg" style="display:inline-block"></rich:message>
+					<br />	
+					<span class="small">#{uiMessages.addAssuredHelper}</span><br />				
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.reduction}" />
+					<rich:inputNumberSlider value="#{settingsBean.service.reduction}" minValue="0" maxValue="100" required="false"></rich:inputNumberSlider>%<br />
+					<span class="small">#{uiMessages.reductionHelper} </span><br />
+				</h:panelGroup>
+				
+				<h:panelGroup layout="block" style="margin:auto; text-align:center">					
+	        		<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.annulerAssure}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" render="assure-form,assureData" execute="@this" status="annulerStatus">
+	        		</a4j:commandButton>
+	        		<a4j:commandButton value="#{uiMessages.save}" styleClass="radiusBorder5" action="#{settingsBean.saveAssure}" oncomplete="if (#{not empty settingsBean.message}) showMessage('settingsMessage');resetSettingMessage();" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="assure-form,assureData,settings-reponse" execute="assureur-id,@region">
+	        		</a4j:commandButton>        		
+        		</h:panelGroup>
+        		</a4j:region>
+        		</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup layout="block" style="display:inline-block;width:58%;vertical-align:top;">
+				<fieldset style="margin:5px;">
+				<legend>#{uiMessages.assuredBy} #{settingsBean.nomAssureur}</legend>
+				<a4j:region>
+				<rich:dataTable styleClass="zebra-style" value="#{settingsBean.listAssures}" style="width:100%;" var="service" id="assureData" noDataLabel="#{uiMessages.noDataLabel}">
+					<f:facet name="header"> #{uiMessages.servicesAssured} #{settingsBean.nomAssureur}</f:facet>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.denomination}</f:facet>
+						<rich:inplaceInput id="nom-service-col" value="#{service.nomService}" required="true" editEvent="dblclick"
+						requiredMessage="#{uiMessages.required}" defaultLabel="Double cliquez pour ajouter le service">
+							<a4j:ajax event="change" execute="@this" render="nom-service-msg" limitRender="true" oncomplete="showAssureControls();"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:message for="nom-service-col" id="nom-service-msg"></rich:message>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.reduction}</f:facet>
+						<rich:inplaceInput id="reduction-col" value="#{service.reduction}" required="false" editEvent="dblclick"
+						 validatorMessage="#{uiMessages.incorrectValue}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+							<a4j:ajax event="change" execute="@this" render="reduction-col-msg" limitRender="true" oncomplete="showAssureControls();"></a4j:ajax>
+							<f:validateLongRange minimum="0" maximum="100"></f:validateLongRange>
+						</rich:inplaceInput> %
+						<rich:message for="reduction-col" id="reduction-col-msg"></rich:message>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							#{uiMessages.assureur}
+						</f:facet>
+						<rich:inplaceSelect value="#{service.idAssureur}" required="true" editEvent="dblclick" requiredMessage="#{uiMessages.required}"
+							defaultLabel="Selectionnez l'assureur" id="assureur-col">
+								<f:selectItems value="#{settingsBean.assureurSI}"/>
+								<a4j:ajax event="change" render="assureur-col-msg" execute="@this" limitRender="true" oncomplete="showAssureControls();"></a4j:ajax>
+							</rich:inplaceSelect>
+							<rich:message for="assureur-col" id="assureur-col-msg"></rich:message>
+					</rich:column>
+				</rich:dataTable>
+				<br clear="all" />
+				<div id="assures-controls-button" style="display:none;">
+					<h:panelGroup layout="block" style="text-align:center">
+						<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.annulerAllAssure}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        			style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" render="assureData,assureData" execute="@this" status="annulerStatus" oncomplete="hideAssureControls();">
+	        			</a4j:commandButton>
+						<a4j:commandButton value="#{uiMessages.save}" action="#{settingsBean.updateAssure}" styleClass="radiusBorder5" oncomplete="if (#{not empty settingsBean.message}){ showMessage('settingsMessage');resetSettingMessage();hideAssureControls();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="assureData,settings-reponse" execute="@region">
+		        		</a4j:commandButton> 
+		        	</h:panelGroup>
+	        	</div>
+	        	</a4j:region>
+				</fieldset>
+			</h:panelGroup>
+			
+		</rich:panel>
+		
+	</rich:panel>
+	
+</ui:composition>

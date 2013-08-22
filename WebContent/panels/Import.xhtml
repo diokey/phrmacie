@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<a4j:outputPanel layout="block" id="import-page">
+		<a4j:jsFunction name="removerow" action="#{importBean.processRemoval}" execute="@this" render="uploaded-data" limitRender="true">
+			<a4j:param name="param1" assignTo="#{importBean.selectIndex}"></a4j:param>
+		</a4j:jsFunction>
+		<script type="text/javascript">
+			function handleRejectedType(id) {
+				$('#help-extension').show();
+				$('#help-extension .bulle').fadeIn();	
+			}
+
+			function hideRejectedTypeMessage() {
+				$('#help-extension').hide();
+			}
+
+			function createScrollableDiv() {
+				var maxWidth = $(window).width() - 40;				
+				$('#scrollable-table-area').css('min-width','500px').css('overflow','auto');
+				
+			}
+			
+		</script>
+		<a4j:status name="uploadingStatus">
+        		<f:facet name="start">
+        			<div class="statusBlock">
+        				<h:panelGroup layout="block" styleClass="animated-progress-bar" style="margin:auto; text-align:center; padding:10px;">
+		       				<p style="font-size:1.3em; margin:auto; position:relative;"> Uploading... </p>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet> 
+        		<f:facet name="error">
+        			<div class="statusBlock">
+        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+	        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet>        		
+        </a4j:status>
+        
+        
+		<div class="statusBlock" style="display:none;" id="resultUploadMessage">
+      			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+      			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse-importation">
+      				<h:panelGroup layout="block" rendered="#{! empty importBean.message}">
+       					<h:graphicImage value="#{importBean.messageImg}" width="24" height="24" styleClass="imgStatus"/> 
+       					<h:outputText escape="false" value="#{importBean.message}" style="font-weight:bold;"/>
+       				</h:panelGroup>
+       				<h:panelGroup rendered="#{! empty importBean.validationMsg}" layout="block">
+       					<div>
+       						<h:graphicImage value="#{importBean.validationImg}" width="24" height="24" styleClass="imgStatus"/>
+       						<h:outputText escape="false" value="#{importBean.validationMsg}" style="font-weight:bold;"/>
+       					</div>
+       				</h:panelGroup>
+      			</h:panelGroup>       				
+      	</div>
+      	
+		<rich:panel style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;"> 
+			
+		<h3>#{uiMessages.importHeader}</h3> 
+    	<h:panelGroup>
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			<h:outputText value="#{uiMessages.importDesc}" escape="false"/> 	
+    			
+    			<br clear="all"/>
+    		</p>
+    		
+    	</h:panelGroup>
+    		
+    			<fieldset>
+    				<legend>#{uiMessages.importFile}</legend>
+    				<h:panelGrid columns="2">
+		    			<h:panelGrid columns="2" style="display:inline-block; vertical-align:middle">
+		    				<h:outputLabel value="#{uiMessages.chooseFile}" for="xls-uploader"/>
+		    				<h:panelGrid columns="2">
+		    					<rich:fileUpload id="xls-uploader" style="width:300px;" disabled="#{importBean.disabled}" acceptedTypes="xls" fileUploadListener="#{importBean.uploadFile}" maxFilesQuantity="1"
+		    					listHeight="100px" serverErrorLabel="#{uiMessages.errorUpload}" sizeExceededLabel="File Too Big" ontyperejected="handleRejectedType()"
+		    					 onfilesubmit="hideRejectedTypeMessage()">
+		    						<a4j:ajax event="uploadcomplete" status="uploadingStatus" execute="@this" render="reponse-importation,xls-uploader,uploaded-data"
+		    						listener="#{importBean.processImport}" limitRender="true" oncomplete="createScrollableDiv();zebraStyle(); if(#{not empty importBean.message}) showMessage('resultUploadMessage');"></a4j:ajax>
+		    					</rich:fileUpload>
+		    					
+		    					<rich:message for="xls-uploader"></rich:message>
+		    				</h:panelGrid>
+		    				
+		    			</h:panelGrid>
+		    			<h:panelGroup layout="block">		    			
+		    			<div style="display:none" id="help-extension">		    			
+				        		<h:graphicImage value="/images/help.png" onclick="$('.bulle').fadeIn('slow');" style="display:inline-block; vertical-align:middle;"/>
+				        		<div class="bulle" style="display:inline-block; vertical-align:middle;padding:10px;">
+				        			<div class="fleche-bulle"></div>
+				        			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16" title="#{uiMessages.close}"/></div>
+				        			
+				        			<p>
+				        				<h:graphicImage value="/images/warning.png" style="float: left"/>
+				        				<strong>#{uiMessages.wrongExtension}</strong><br />
+				        				#{uiMessages.wrongExtensionDesc}
+				        			 </p>
+				        		</div>
+			        		
+		        		</div>
+		        		</h:panelGroup>	
+		        		
+        		</h:panelGrid>
+        		
+    			</fieldset>
+    		
+    			<a4j:status name="validatingStatus">
+     				<f:facet name="start">
+		       			<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+		       				<h:panelGroup layout="block" style="display:inline-block;">
+			       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.validating}					       				
+		      				</h:panelGroup>
+		       			</div>
+      				</f:facet>        		
+        		</a4j:status>
+      			<a4j:status name="annulerStatus">
+      				<f:facet name="start">
+		       		<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+		       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+			    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.canceling}				       				
+		      			</h:panelGroup>
+		       		</div>
+      				</f:facet>        		
+      			</a4j:status>
+      			<a4j:status name="savingStatus">
+      				<f:facet name="start">
+		       		<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+		       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+			    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving}					       				
+		      			</h:panelGroup>
+		       		</div>
+      				</f:facet>        		
+      			</a4j:status>
+    			
+    			<a4j:outputPanel id="uploaded-data" layout="block">
+    			
+    			<h:panelGroup layout="block" rendered="#{not empty importBean.listMedicament}">
+    			<div id="scrollable-table-area" style="width:100%; overflow:auto;margin:auto;">
+    			<table class="rf-dt zebra-style" style="width:100%; overflow:auto;">
+    			<colgroup span="9"></colgroup>
+    				<thead class="rf-dt-thd">
+	    				
+	    					<tr class="rf-dt-hdr rf-dt-hdr-fst">
+	    						<th class="rf-dt-hdr-c" colspan="10" style="color:white;">#{uiMessages.identificationMedicament}</th>
+	    						<th class="rf-dt-hdr-c" colspan="#{importBean.assureurCount}" style="color:white;">#{uiMessages.prix}</th>
+	    						<th class="rf-dt-hdr-c" colspan="#{importBean.assureurCount}" style="color:white;">#{uiMessages.reduction}</th>
+	    						<th class="rf-dt-hdr-c" colspan="#{importBean.assureurCount}" style="color:white;">#{uiMessages.mention}</th>
+	    					</tr>
+	    					<tr class="rf-dt-hdr">
+	    						<th class="rf-dt-hdr-c"></th>	
+	    						<th class="rf-dt-hdr-c">#{uiMessages.status}</th>	    					
+		    					<a4j:repeat value="#{importBean.columnList}" var="column">
+		    						<th class="rf-dt-hdr-c">#{column}</th>
+		    					</a4j:repeat>
+		    					<a4j:repeat  value="#{importBean.listAssureur}" var="assureur">
+		    						<th class="rf-dt-hdr-c">#{assureur.nomAssureur}</th>
+		    						
+		    					</a4j:repeat>
+		    					<a4j:repeat  value="#{importBean.listAssureur}" var="assureur">
+		    						<th class="rf-dt-hdr-c">#{assureur.nomAssureur}</th>
+		    						
+		    					</a4j:repeat>
+		    					<a4j:repeat  value="#{importBean.listAssureur}" var="assureur">
+		    						<th class="rf-dt-hdr-c">#{assureur.nomAssureur}</th>
+		    						
+		    					</a4j:repeat>
+	    					</tr>	    					
+    				</thead>
+    			<a4j:repeat id="table-data" style="width:100%" value="#{importBean.listMedicament}" var="medic" rendered="#{not empty importBean.listMedicament}" rowKeyVar="key">
+    				
+    				<tbody class="rf-dt-b">
+    					<tr class="rf-dt-r rf-dt-fst-r">
+    						<td class="rf-dt-c">
+    							<a4j:commandLink style="text-align:center;" action="#{importBean.processRemoval}" execute="@this" render="uploaded-data" limitRender="false">
+    								<h:graphicImage width="18" height="18" value="/images/hide.png" title="#{uiMessages.delete}"/>
+    								<a4j:param name="param1" value="#{key}" assignTo="#{importBean.selectIndex}"></a4j:param>
+    							</a4j:commandLink>
+    						</td>
+    						<td class="rf-dt-c">
+    							<h:graphicImage width="24" height="24" value="#{medic.statusIcon}" title="#{medic.statusMessage}"/>
+    						</td>
+    						
+    						<td class="rf-dt-c">
+    						
+    							<rich:inplaceInput id="codeMedicament" value="#{medic.codeMedicament}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}" >
+    								<a4j:ajax event="change" render="codeMedicament-message" limitRender="true" execute="@this"></a4j:ajax>
+    							</rich:inplaceInput>
+    							<rich:message for="codeMedicament" id="codeMedicament-message"></rich:message> 
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:inplaceInput id="nomMedicament" value="#{medic.nomMedicament}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}" >
+    								<a4j:ajax event="change" render="nomMedicament-msg" limitRender="true" execute="@this"></a4j:ajax>
+    							</rich:inplaceInput>
+    							<rich:message for="nomMedicament" id="nomMedicament-msg"></rich:message>
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:inplaceSelect id="typeMedic" value="#{medic.typeMedic}"  editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}" >
+    								<f:selectItem itemValue="generique" itemLabel="Generique"></f:selectItem>
+    								<f:selectItem itemValue="specialite" itemLabel="Specialite"/>
+    								<a4j:ajax event="change" render="typeMedic-msg" limitRender="true" execute="@this"></a4j:ajax>
+    							</rich:inplaceSelect>
+    							<rich:message for="typeMedic" id="typeMedic-msg"></rich:message>
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:inplaceInput value="#{medic.codeGenerique}" editEvent="dblclick" >
+    								<a4j:ajax event="change"></a4j:ajax>
+    							</rich:inplaceInput>
+    						</td>
+    						
+    						<td class="rf-dt-c">
+    							<rich:inplaceInput id="batch" value="#{medic.batch}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}" >
+    								<a4j:ajax event="change" render="batch-msg" limitRender="true" execute="@this"></a4j:ajax>
+    							</rich:inplaceInput>
+    							<rich:message for="batch" id="batch-msg"></rich:message>
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:inplaceInput id="quantiteStock" value="#{medic.quantiteStock}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}" >
+    								<a4j:ajax event="change" render="quantiteStock-msg" execute="@this" limitRender="true"></a4j:ajax>
+    							</rich:inplaceInput>
+    							<rich:message for="quantiteStock" id="quantiteStock-msg"></rich:message>
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:calendar value="#{medic.manifactureDate}"></rich:calendar>
+    						</td>    						
+    					
+    						<td class="rf-dt-c">
+    							<rich:calendar value="#{medic.expiryDate}"></rich:calendar>
+    						</td> 
+    						
+    						<a4j:repeat value="#{medic.listAssureur}" var="assur">
+		    					<td class="rf-dt-c">
+		    						<rich:inplaceInput id="prix" value="#{assur.prix.prix}" editEvent="dblclick" required="true" requiredMessage="#{uiMessages.required}">
+		    							<a4j:ajax event="change" render="prix-msg" limitRender="true" execute="@this"></a4j:ajax>
+		    						</rich:inplaceInput>
+		    						<rich:message for="prix" id="prix-msg"></rich:message>
+		    					</td>
+		    					
+	    					</a4j:repeat>
+	    					<a4j:repeat value="#{medic.listAssureur}" var="assur">
+		    					
+		    					<td class="rf-dt-c">
+		    						<rich:inplaceInput id="reduction" value="#{assur.prix.reduction}" defaultLabel="Ajouter la Reduction" editEvent="dblclick">
+		    							<a4j:ajax event="change"></a4j:ajax>
+		    						</rich:inplaceInput>
+		    						 %
+		    					</td>
+		    					
+	    					</a4j:repeat>
+	    					<a4j:repeat value="#{medic.listAssureur}" var="assur">
+		    					
+		    					<td class="rf-dt-c">
+		    						<rich:inplaceSelect required="false" value="#{assur.prix.mentionString}" editEvent="dblclick">
+		    							<f:selectItems value="#{importBean.mentions}"/>
+		    							<a4j:ajax event="change"></a4j:ajax>
+		    						</rich:inplaceSelect>
+		    					</td>
+	    					</a4j:repeat>   						
+    					</tr>
+    				</tbody>   				
+    				
+    			</a4j:repeat>
+    			</table>
+    			</div>
+    			<br />
+    			<h:panelGroup id="importOption" layout="block">
+	    			<h:panelGrid columns="3" rendered="#{importBean.warnings}">
+	    				<h:outputLabel value="#{uiMessages.forExistingmedics}" style="color:#ef7e05;font-size:bold;" for="choice"/>
+	    				<rich:select value="#{importBean.action}" id="choice" 
+	    				required="true" requiredMessage="#{uiMessages.required}">
+	    					<f:selectItem itemLabel="#{uiMessages.ignore}" itemValue="1" />
+	    					<f:selectItem itemLabel="#{uiMessages.update} #{uiMessages.vente_menu4}" itemValue="2"/>
+	    					<a4j:ajax event="blur" render="choiceMsg" limitRender="true" execute="@this"></a4j:ajax>
+	    				</rich:select>
+	    				<rich:message for="choiceMsg"></rich:message>
+	    			</h:panelGrid> 
+	    		</h:panelGroup>   			
+    			<a4j:outputPanel layout="block" ajaxRendered="true">
+					<h:panelGroup layout="block" style="text-align:center;width:100%;margin:auto; margin-top:10px;" rendered="#{not empty importBean.listMedicament}">
+						<a4j:commandLink  immediate="true" styleClass="linkButton radiusBorder5" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+						style="color:white;padding:6px;margin:3px;" action="#{importBean.annulerImport}" render="import-page" status="annulerStatus" oncomplete="$('#resultUploadMessage').hide();">
+							<h:panelGroup layout="block" >
+								<h:graphicImage value="/images/cancel.png" />
+								<h:outputText value="#{uiMessages.annuler}" />
+							</h:panelGroup>
+						</a4j:commandLink>
+						
+						<a4j:commandLink  styleClass="linkButton radiusBorder5" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" oncomplete="zebraStyle(); if(#{not empty importBean.validationMsg}) showMessage('resultUploadMessage');"
+						style="color:white;padding:6px;margin:3px;" action="#{importBean.validateData}" render="importOptions,uploaded-data,reponse-importation" status="validatingStatus">
+							<h:panelGroup layout="block"> 
+								<h:graphicImage value="/images/valider.png" />
+								<h:outputText value="#{uiMessages.valider}" />
+							</h:panelGroup>
+						</a4j:commandLink>
+						
+						<a4j:commandLink  styleClass="linkButton radiusBorder5" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+						style="color:white;padding:6px;margin:3px;" rendered="#{not importBean.errors}" action="#{importBean.saveUploadedData}" render="uploaded-data,reponse-importation" status="savingStatus" oncomplete="zebraStyle();updateMedicamentVente()">
+							<h:panelGroup layout="block" > 
+								<h:graphicImage value="/images/Save.png" />
+								<h:outputText value="#{uiMessages.save}" />
+							</h:panelGroup>
+						</a4j:commandLink>
+						
+					</h:panelGroup>
+				</a4j:outputPanel>
+    			
+    			</h:panelGroup>
+    			
+    			</a4j:outputPanel>	
+    		
+		</rich:panel>
+		
+	</a4j:outputPanel>
+</ui:composition>

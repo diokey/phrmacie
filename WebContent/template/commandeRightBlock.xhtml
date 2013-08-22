@@ -1,0 +1,228 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<style>
+		.nameMedicColumn{
+			font-weight:bold;
+			color:#ef7e05;
+			text-align: justify;
+		}
+		
+	</style>
+	<script type="text/javascript">
+		var leftPosition=0;
+		var topPosition=0;
+	</script>
+	
+	<div style="position:relative; top: 0; right: 0;margin-left:5px;">
+		<rich:panel id="subRightBlock" style="background-color:white;border-radius:12px 0px 0px 0px;
+		-moz-border-radius:12px 0px 0px 0px; -webkit-border-radius: 12px 0px 0px 0px;">
+			<h:panelGroup id="creditOptions" layout="block" style="widht:100%;height:60px; margin-top:-11px; margin-left:-11px;margin-right:-11px;border-bottom:2px solid rgba(0,0,0,0.2);">
+				<h:panelGrid columns="2" style="width:100%;overflow:auto; margin:auto; text-align:center;padding-top:5%;">
+					<h:outputLabel value="#{uiMessages.fournisseur}" style="font-weight:bold;color:#005000;"/>
+					
+						<rich:select id="fournisseur" value="#{commandeBean.idFournisseur}" valueChangeListener="#{commandeBean.fournisseurChanged}">
+							<f:selectItems value="#{settingsBean.fournisseursSI}"></f:selectItems>
+							<a4j:ajax event="selectitem" status="loading" oncomplete="showConfirmDialog(#{not empty commandeBean.listMedicamentCommande})"></a4j:ajax>
+						</rich:select>
+					
+				</h:panelGrid>
+			</h:panelGroup>
+			<rich:panel style="margin-top:10px;">				
+				<rich:dropTarget acceptedTypes="medicaments" status="addingTocart" dropListener="#{commandeBean.addToCart}" render="notification" oncomplete="hideAchatPanel()" />
+				<f:facet name="header">#{uiMessages.cartHeaderText}</f:facet>	
+				<a4j:status name="addingTocart">
+					<f:facet name="start">
+						<h:panelGroup layout="block" style="position:absolute; top: 140px; right: 180px;">
+							<h:graphicImage value="/images/savingimage.gif" />
+						</h:panelGroup>
+					</f:facet>
+				</a4j:status>			
+				<a4j:outputPanel ajaxRendered="true" layout="block" >
+					<h:graphicImage id="cartImage" value="#{commandeBean.cartIcon}" styleClass="cartImage"/>
+					<a4j:outputPanel layout="block" rendered="#{not empty commandeBean.listMedicamentCommande}">
+						<div class="itemCount">
+							<h:outputText value="#{commandeBean.produitsCount}" />
+						</div>
+						
+						<div class="payement">
+							<h3 style="font-size:large;color:white;">#{uiMessages.sommeaPayer}</h3>
+							<h:graphicImage value="/images/money.png" style="display:inline-block;vertical-align:middle;"/>
+							<span><h:outputText value="#{commandeBean.prixCommande} Fbu" /></span>
+						</div>
+					</a4j:outputPanel>
+					<div id="printable-facture">
+					<rich:dataTable style="margin-top:-30px;margin-left:-11px;width:330px;" value="#{commandeBean.listMedicamentCommande}" var="medic" rows="5"
+					onrowmousedown="leftPosition=$(this).offset().left;topPosition=$(this).offset().top; selectItem('#{key}')" rowKeyVar="key" id="medicamentAchete" rendered="#{not empty commandeBean.listMedicamentCommande}"
+					rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+						<f:facet name="header">#{uiMessages.cartContentHeaderText}</f:facet>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+							#{medic.nomMedicament}
+						</rich:column>
+						
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+							#{medic.quantiteAchete}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixUnitaire}</f:facet>
+							#{medic.prixAchat}
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">#{uiMessages.tab_prixTotal}</f:facet>
+							#{medic.prixTotalAchat}
+						</rich:column>
+						<f:facet name="footer">
+							<h3 style="text-align:right">#{uiMessages.sommeaPayer}: #{commandeBean.prixCommande} FBU</h3>
+							<rich:dataScroller renderIfSinglePage="false" />
+						</f:facet>
+						
+					</rich:dataTable>
+					</div>
+					<a4j:jsFunction name="selectItem" limitRender="true">
+						<a4j:param name="param1" assignTo="#{commandeBean.selectedMedic}"></a4j:param>
+					</a4j:jsFunction>
+					<rich:contextMenu id="ctxMenuOptions" target="medicamentAchete" mode="ajax">
+							<rich:menuItem label="#{uiMessages.changeQuantity}" action="#{commandeBean.changeQuantity}" 
+							oncomplete="showQuantityPanel(#{rich:component('mainPopUp')})" 
+							mode="ajax" limitRender="true" render="loadPopup,closecontrol" icon="/images/edit.png" status="loading">
+								<a4j:param name="param1" value="/panels/editCommandeQuantity.xhtml" assignTo="#{controllerBean.panelURI}"></a4j:param>
+								<a4j:param name="param2" assignTo="#{controllerBean.close}" value="true"></a4j:param>
+							</rich:menuItem>
+							<rich:menuItem label="#{uiMessages.remove}" mode="ajax" icon="/images/hide.png" action="#{commandeBean.removeFromCart}"
+							render="notification"></rich:menuItem>
+							<rich:menuItem label="#{uiMessages.removeAll}" mode="ajax" icon="/images/rubbish-bin.png" action="#{commandeBean.annulerCommande}" render="notification"></rich:menuItem>
+							
+					</rich:contextMenu>
+				</a4j:outputPanel>
+				
+			</rich:panel>
+			
+			<a4j:outputPanel layout="block" ajaxRendered="true">
+							
+				<h:panelGroup layout="block" style="text-align:center;width:100%;margin:auto; margin-top:10px;" rendered="#{not empty commandeBean.listMedicamentCommande}">
+					<a4j:commandLink  styleClass="linkButton radiusBorder5" action="#{commandeBean.annulerCommande}" render="notification,creditOptions" status="loading" execute="@this"
+					style="color:white;padding:5px;margin:3px;" oncomplete="jQuery('#achatPanel').show();" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'">
+						<h:panelGroup layout="block" >
+							<h:graphicImage value="/images/cancel.png" />
+							<h:outputText value="#{uiMessages.annuler}" />
+						</h:panelGroup>
+					</a4j:commandLink>
+					
+					<a4j:commandLink  styleClass="linkButton radiusBorder5" action="#{commandeBean.saveCommande}" render="sommeTotal,facture-rp,creditOptions,notification" status="loading" execute="@this"
+					style="color:white;padding:5px;margin:3px;" oncomplete="jQuery('#achatPanel').show();" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'">
+						<h:panelGroup layout="block">
+							<h:graphicImage value="/images/valider.png" />
+							<h:outputText value="#{uiMessages.valider}" />
+						</h:panelGroup>
+					</a4j:commandLink>
+				</h:panelGroup>
+			</a4j:outputPanel>
+			
+			<div id="facturePanel">
+				<rich:panel style="width:330px;" id="facture-rp">
+					<f:facet name="header">
+						<h:outputText value="#{uiMessages.commande}" />
+						<div id="hideBlock" onclick="jQuery('#achatPanel').toggle();">							
+							<h:graphicImage value="/images/hide.png" width="16" height="16"/>							
+						</div>
+					</f:facet>
+					
+						<div id="achatPanel" style="width:310px;">
+							<rich:dataTable id="tableAchat" style="margin-left:-10px;width:330px;cursor:pointer" value="#{commandeBean.listCommande}" rendered="true" 
+							var="commande" rows="10" rowKeyVar="key" onrowclick="showDetailsCommandePanel(#{key})" onrowmousedown="setOrder(#{key})"
+							rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+								<f:facet name="header">#{uiMessages.commandeEffectue}</f:facet>
+								<rich:column>
+									<f:facet name="header">Status</f:facet>
+									<h:graphicImage width="16" height="16" value="/images/pending.png" rendered="#{not commande.delivered}" title="En attente"/>
+									<h:graphicImage width="16" height="16" value="/images/accept.png" rendered="#{commande.delivered}" title="Delivree"/>
+									
+								</rich:column>
+								
+								<rich:column>
+									<f:facet name="header">#{uiMessages.tempsCommande}</f:facet>
+									#{commande.dateCommande}
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.fournisseur}</f:facet>
+									#{commande.fournisseurName}
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{uiMessages.couts}</f:facet>
+									#{commande.prixTotal} Fbu
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller renderIfSinglePage="false" maxPages="3"></rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+							
+						</div>
+					
+					<a4j:outputPanel layout="block" id="sommeTotal">
+						
+					</a4j:outputPanel>
+					
+					<rich:contextMenu direction="topAuto" id="facture-menu" mode="client" target="tableAchat">
+						<rich:menuItem label="#{uiMessages.details}" mode="ajax" icon="/images/preview.png" execute="@this" limitRender="true" oncomplete="showDetailsCommandePanel(#{commandeBean.selectedOrderId})"></rich:menuItem>
+						<rich:menuItem id="bon" iconDisabled="/images/stop.png" label="#{uiMessages.bonCommande}" icon="/images/bon-fourniture.png" limitRender="true" mode="ajax" render="updateMeToLoadPanel"  action="#{commandeBean.selectOrderToViewDetails}" execute="@this" oncomplete="#{rich:component('bon-commande')}.show();">
+							<a4j:param name="param1" assignTo="#{controllerBean.panelInfoURI}" value="/panels/bonCommande.xhtml"></a4j:param>
+						</rich:menuItem>
+					</rich:contextMenu>
+				</rich:panel>
+			</div>
+		</rich:panel>
+	</div>
+	<a4j:jsFunction name="showDetailsCommandePanel" status="loading" action="#{commandeBean.selectOrderToViewDetails}" 
+	render="updateMeToLoadPanel" oncomplete="#{rich:component('detailCommandePanel')}.show()">
+		<a4j:param name="param1" assignTo="#{commandeBean.selectedOrderId}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/detailsCommande.xhtml"></a4j:param>	
+	</a4j:jsFunction>
+	<a4j:jsFunction name="showDetailsPanel" status="loading" action="#{venteBean.selectOrderToViewDetails}" 
+	render="updateMeToLoadPanel" oncomplete="#{rich:component('detailVentePanel')}.show()">
+		<a4j:param name="param1" assignTo="#{venteBean.orderId}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/detailsVente.xhtml"></a4j:param>	
+	</a4j:jsFunction>
+	<a4j:jsFunction name="showDialog" status="loading" oncomplete="#{rich:component('confirmCommande')}.show()" render="updateMeToLoadPanel">
+		<a4j:param name="param1" assignTo="#{controllerBean.panelInfoURI}" value="/panels/confirmCommande.xhtml"></a4j:param>
+	</a4j:jsFunction>	
+	<a4j:jsFunction name="setOrder" >
+		<a4j:param name="param1" assignTo="#{commandeBean.selectedOrderId}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="confirm" status="loading" action="#{commandeBean.confirmed}" render="notification,sommeTotal,facture-rp,creditOptions" oncomplete="jQuery('#achatPanel').show();"></a4j:jsFunction>
+	<a4j:jsFunction name="cancel" status="loading" action="#{commandeBean.canceled}" render="creditOptions"></a4j:jsFunction>
+	<a4j:jsFunction name="selectedAchat" action="#{creditBean.checkVente}" render="bon,main-form:bon-facture" limitRender="true">
+		<a4j:param name="param1" assignTo="#{creditBean.idAchat}"></a4j:param>
+	</a4j:jsFunction>
+	<script type="text/javascript">
+		function showQuantityPanel(component) {
+			
+			//les valeurs top et left sont recuperes plus haut comme des variable globales dans l'evenement on rowmousedown
+			$('#mainPopUp_content .flechehaut').removeAttr('style');
+			$('#mainPopUp_content .flechehaut').css('display','inline-block')
+			
+			component.show('',{left:leftPosition,top:topPosition+20,width:330,height:125});	
+
+		}
+
+		function hideAchatPanel() {
+			$('#achatPanel').hide('fast');
+		}
+
+		function showConfirmDialog(save) {
+			if(save) {
+				showDialog();
+			}else{
+				cancel();
+			}
+		}
+
+		
+	</script>
+</ui:composition>

@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<a4j:outputPanel layout="block">
+	
+		<a4j:jsFunction name="resetSettingMessage" action="#{settingsBean.reset}" limitRender="true"></a4j:jsFunction>	
+		<a4j:status name="savingStatus">
+       		<f:facet name="start">
+       			<div class="statusBlock">
+       				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving} 
+	       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+      				</h:panelGroup>
+       			</div>
+       		</f:facet> 
+       		<f:facet name="error">
+       			<div class="statusBlock">
+       				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+       				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+      					</h:panelGroup>
+       			</div>
+       		</f:facet>        		
+        </a4j:status>
+        <div class="auto-close statusBlock" style="display:none;" id="settingsMessage">
+			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"/></div>
+				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="settings-reponse">
+					<h:graphicImage value="#{settingsBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+					<h:outputText value="#{settingsBean.message}" style="font-weight:bold;"/>
+				</h:panelGroup>       				
+       		</div>
+		<script type="text/javascript">
+
+			function createScrollableDiv() {
+				var maxHeight = $(window).height() - 302;				
+				$('.settings-container').css('height',maxHeight+'px');
+				zebraStyle();
+			}
+		</script>
+		<rich:panel style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;"> 
+		
+			<h3>#{uiMessages.data}</h3> 
+	    	<h:panelGroup layout="block">
+	    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+	    		<p style="padding:6px;font-weight:bold;">
+	    			#{uiMessages.dataDesc}
+	    			<br clear="all"/>
+	    		</p>
+	    	</h:panelGroup> 
+	    	
+		    	<rich:tabPanel switchType="client" id="settings-tab" headerAlignment="right">
+		    		<rich:tab header="#{uiMessages.applicationTitle}" name="pharmacie-info">
+		    			<ui:include src="/settings/pharmacieInfo.xhtml" />
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.medics}" name="medics">
+		    			<ui:include src="/settings/editmedicaments.xhtml"></ui:include>
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.assureur}" rendered="#{userBean.user.patron}" name="assureur">
+		    			<ui:include src="/settings/parteners.xhtml" />
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.prixVente}" name="prix-assureur">
+		    			<ui:include src="/settings/prixAssureurs.xhtml"></ui:include>
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.assure}" name="assure">
+		    			<ui:include src="/settings/assures.xhtml"></ui:include>
+		    		</rich:tab>
+		    		<rich:tab header="Client" name="client">
+		    			<ui:include src="/settings/clients.xhtml"></ui:include>
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.fournisseur}" name="fournisseur">
+		    			<ui:include src="/settings/Fournisseurs.xhtml"></ui:include>
+		    		</rich:tab>
+		    		<rich:tab header="#{uiMessages.prixAchat}" name="prix-achat">
+		    			<ui:include src="/settings/prixAchat.xhtml"></ui:include>
+		    		</rich:tab>
+		    		
+		    	</rich:tabPanel>
+	    	
+		</rich:panel>
+		
+		</a4j:outputPanel>
+	
+</ui:composition>

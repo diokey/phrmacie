@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">	
+	
+	<style type="text/css">
+		.disable{
+		opacity:0.6;
+		}
+	</style>	
+	<a4j:outputPanel layout="block" ajaxRendered="true">
+		<a4j:repeat value="#{commandeBean.medicaments}" rows="50" var="medicament" id="allMedicaments" rowKeyVar="key">				
+			<rich:panel id="medicamentPanel" ondblclick="moveMedicament(#{key},#{rich:element('medicamentPanel')},#{medicament.prixAchat!=0})"
+				 style="width:160px; height:65px;display:inline-block;vertical-align:top;margin:3px;padding:0;cursor:move;" styleClass="medic-panel #{medicament.prixAchat==0?'disable':''}">
+					
+					<rich:dragSource rendered="#{medicament.prixAchat!=0}" dragIndicator="indicator" type="medicaments" dragValue="#{medicament}" />
+					<h:graphicImage id="medicamentImage" value="/images/medicament.png" width="42" style="display:inline-block;vertical-align:middle;">
+						
+					</h:graphicImage>
+					<div id="medicamentInfo" style="display:inline-block;vertical-align:middle;">
+						<b><h:outputText value="#{uiMessages.medicName}: #{medicament.nomMedicShort}" /></b><br />
+						<h:outputText value="#{uiMessages.quantite}: #{medicament.quantiteStock}" style="display:inline-block;vertical-align:middle;"/>
+						<h:graphicImage value="/images/stop.png" width="16" height="16" style="display:inline-block;vertical-align:middle;padding-left:3px;" title="Le fournisseur selectionne ne fournit pas ce medicament" rendered="#{medicament.prixAchat==0}"/>
+						<br />
+						<h:outputText value="#{uiMessages.type}: #{medicament.typeMedic}" /><br />
+						<h:outputText value="#{uiMessages.prix}: #{medicament.prixAchat} Fbu" rendered="#{medicament.prixAchat!=0}"/>
+											
+					</div>					
+				</rich:panel>
+				<rich:dragIndicator id="indicator" rendered="#{medicament.prixAchat!=0}" acceptClass="rf-ind-acpt" draggingClass="rf-ind-drag" rejectClass="rf-ind-rejt">
+					<rich:panel>
+						<h:graphicImage id="medicamentImage2" value="/images/medicament.png" style="display:inline-block;vertical-align:middle;"/>
+						<div id="medicamentInfo" style="display:inline-block;vertical-align:middle;">
+							<b><h:outputText value="#{uiMessages.medicName}: #{medicament.nomMedicament}" /></b><br />
+							<h:outputText value="#{uiMessages.quantite}: #{medicament.quantiteStock}" /><br />							
+							<h:outputText value="#{uiMessages.type}: #{medicament.typeMedic}" /><br />
+							<h:outputText value="#{uiMessages.prix}: #{medicament.prix} Fbu" /><br />
+							
+						</div>
+					</rich:panel>
+				</rich:dragIndicator>
+				<a4j:region>
+				<rich:contextMenu id="ctxMenuOptions" target="medicamentPanel" mode="ajax" style="display:inline-block">
+					<rich:menuItem label="#{uiMessages.addToCart}" disabled="#{medicament.prixAchat==0}" iconDisabled="/images/stop.png" mode="client" icon="/images/add2.png" onclick="moveMedicament(#{key},#{rich:element('medicamentPanel')},#{medicament.prixAchat!=0})"></rich:menuItem>
+					
+					<rich:menuItem limitRender="true" execute="@none" label="#{uiMessages.preview}" mode="client" icon="/images/preview.png" onclick="showPreviewPanel(#{key})">						
+						
+					</rich:menuItem>					
+				</rich:contextMenu>
+				</a4j:region>
+		</a4j:repeat>		
+			
+	</a4j:outputPanel>
+	
+	<h:panelGroup layout="block" style="text-align:center;">
+	<rich:dataScroller for="allMedicaments" renderIfSinglePage="false" style="display:block;position:absolute;bottom:10px;width:100%;margin:auto;"></rich:dataScroller>
+	</h:panelGroup>
+	
+	<a4j:jsFunction name="addMedicament" action="#{commandeBean.addMedicToCart}" status="addingTocart" execute="@this" render="notification">
+		<a4j:param name="param1" assignTo="#{commandeBean.selectedMedic}"></a4j:param>
+	</a4j:jsFunction>
+	<a4j:jsFunction name="showPreviewPanel" execute="@this" action="#{commandeBean.selectMedicamentToViewDetails}" render="updateMeToLoadPanel"
+	oncomplete="#{rich:component('detailsMedicament')}.show()" status="loading">
+		<a4j:param name="param1" assignTo="#{commandeBean.selectedMedic}"></a4j:param>
+		<a4j:param name="param2" assignTo="#{controllerBean.panelInfoURI}" value="/panels/detailsMedicament.xhtml"></a4j:param>
+	</a4j:jsFunction>
+		<script type="text/javascript">
+
+			function showPanel(value) {
+				showPreviewPanel(value);
+				//component.show();
+			}
+
+			
+			function moveMedicament(idValue, compId,available) {
+
+				if(!available)
+					return;
+				var $original = $(compId);
+				
+				var originalX = $original.offset().left;
+				var originalY = $original.offset().top;
+				var pos =  $original.offset();
+				
+				var $selectedMed = $original.clone();						
+				$original.parent().append($selectedMed);
+				$selectedMed.css('position','fixed');
+				$selectedMed.css('z-index','202');
+				$selectedMed.offset(pos);
+				
+				var $cartImage = $('.cartImage');	
+				
+				var posX = 	$cartImage.offset().left;
+				var posY =  $cartImage.offset().top;		
+				
+				$selectedMed.animate({'left': posX,'top':posY}, 'normal',function(){
+					
+					$('#achatPanel').hide('fast');					
+						$(this).fadeOut('slow',function(){									
+							$(this).remove();							
+							addMedicament(idValue);								
+						});
+						
+					 });									
+			
+			}
+
+			
+		</script>
+	
+</ui:composition>

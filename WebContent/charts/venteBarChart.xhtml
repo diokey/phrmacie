@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"> 
+
+<h:head>
+	<f:loadBundle basename="ui_messages_#{locale.selectedLanguage}" var="uiMessages"/>
+</h:head> 
+<body>
+    <div class="rf-p-b">
+    	<h:panelGroup layout="block" id="notify">
+	       <rich:notify id="sommeTotal" styleClass="notification" rendered="#{not empty chartBean.sommeTotalMessage}" 
+	       stayTime="2000" showShadow="true" nonblocking="false" showCloseButton="true">
+	    		<f:facet name="detail">
+						<h:panelGroup layout="block">
+							<h:graphicImage value="/images/info.png" style="float:left"/>
+							<h:outputText value="#{chartBean.sommeTotalMessage}" styleClass="rf-p-b" />
+						</h:panelGroup>
+					</f:facet>
+	    	</rich:notify>
+    	 </h:panelGroup>
+       <h:form id="chartForm">
+		<h:panelGroup layout="block">
+			<h:panelGrid columns="2">
+				<h:panelGroup layout="block" style="width:370px;margin-left:-15px;">
+					<fieldset>
+						<legend>#{uiMessages.chooseInterval}</legend>
+										
+					<h:panelGrid columns="4">
+						<h:outputLabel value="#{uiMessages.month}" for="month"/>
+						<rich:select value="#{chartBean.mois}" id="month" valueChangeListener="#{chartBean.venteBarChartMonthChanged}">
+							<a4j:ajax event="selectitem" render="chart-container" oncomplete="chartForm_venteBarChart_chart_drawJSFlotChart();"></a4j:ajax>
+							<f:selectItems value="#{chartBean.monthList}"></f:selectItems>
+						</rich:select>
+						<h:outputLabel value="#{uiMessages.annee}" for="year"/>
+						<rich:inputNumberSpinner id="year" value="#{chartBean.annee}" minValue="2012" maxValue="#{chartBean.annee}" 
+						valueChangeListener="#{chartBean.venteBarAnneeChanged}">
+							<a4j:ajax execute="@this" limitRender="true" event="change" render="chart-container" oncomplete="chartForm_venteBarChart_chart_drawJSFlotChart();"></a4j:ajax>
+						</rich:inputNumberSpinner>
+					</h:panelGrid>
+					</fieldset>
+				</h:panelGroup>
+				<h:panelGroup layout="block" style="width:200px;margin-left:10px;">
+					<fieldset>
+						<legend>#{uiMessages.afficher}</legend>
+					
+					<h:panelGrid columns="1">
+						<rich:select value="#{chartBean.typeSomme}" valueChangeListener="#{chartBean.typeSommeChanged}">
+							<a4j:ajax event="change" execute="@this" limitRender="true" render="chart-container" oncomplete="chartForm_venteBarChart_chart_drawJSFlotChart();"></a4j:ajax>
+							<f:selectItems value="#{chartBean.venteBarChartOption}"></f:selectItems>
+						</rich:select>
+						
+					</h:panelGrid>
+					</fieldset>
+				</h:panelGroup>
+				
+			</h:panelGrid>
+			
+		</h:panelGroup>
+    	<a4j:outputPanel id="chart-container">
+    	
+		<jsflot:resources></jsflot:resources>
+	    <jsflot:flotChart id="venteBarChart"
+	        value="#{chartBean.ventesChartSeries}"
+	        actionListener="#{chartBean.barChartActionListener}"
+	        testChartDraggedAction="#{chartBean.chartDraggedListener}"
+	        chartDraggable="#{chartBean.ventesChartRenderer.chartDraggable}"
+	        chartClickable="#{chartBean.ventesChartRenderer.chartClickable}"
+	        chartZoomable="#{chartBean.ventesChartRenderer.chartZoomable}"
+	        reRender="notify"
+	        showLines="#{chartBean.ventesChartRenderer.showLines}"
+	        fillLines="#{chartBean.ventesChartRenderer.fillLines}"
+	        showDataPoints="#{chartBean.ventesChartRenderer.showDataPoints}"
+	        legendColumns="#{chartBean.ventesChartRenderer.legendColumns}"
+	        legendOpacity="#{chartBean.ventesChartRenderer.legendOpacity}"
+	        legendPosition="#{chartBean.ventesChartRenderer.legendPosition}"
+	        legendColor="#{chartBean.ventesChartRenderer.legendColor}"
+	        height="#{chartBean.ventesChartRenderer.height}"
+	        width="#{chartBean.ventesChartRenderer.width}"
+	        showTooltip="#{chartBean.ventesChartRenderer.showTooltip}"
+	        tooltipPosition="#{chartBean.ventesChartRenderer.tooltipPosition}"
+	        tooltipFollowMouse="#{chartBean.ventesChartRenderer.tooltipFollowMouse}"
+	        mode="#{chartBean.ventesChartRenderer.mode}"
+	        timeFormat="#{chartBean.ventesChartRenderer.timeFormat}"
+	        title="#{chartBean.ventesChartRenderer.title}"
+	        subtitle="#{chartBean.ventesChartRenderer.subtitle}"
+	        chartType="#{chartBean.ventesChartRenderer.chartType}"
+	        showXaxisLabels="#{chartBean.ventesChartRenderer.showXaxisLabels}"
+	        xaxisTitle="#{chartBean.ventesChartRenderer.xaxisTitle}"
+	        xaxisTitleRotation="#{chartBean.ventesChartRenderer.xaxisTitleRotation}"
+	        xaxisLabelRotation="#{chartBean.ventesChartRenderer.xaxisLabelRotation}"
+	        showYaxisLabels="#{chartBean.ventesChartRenderer.showYaxisLabels}"
+	        yaxisTitle="#{chartBean.ventesChartRenderer.yaxisTitle}"
+	        yaxisTitleRotation="#{chartBean.ventesChartRenderer.yaxisTitleRotation}"
+	        yaxisLabelRotation="#{chartBean.ventesChartRenderer.yaxisLabelRotation}"
+	        numberOfXAxisTicks="#{chartBean.ventesChartRenderer.numberOfXAxisTicks}"
+	        xaxisMinValue="#{chartBean.ventesChartRenderer.xaxisMinValue}"
+	        xaxisMaxValue="#{chartBean.ventesChartRenderer.xaxisMaxValue}"
+	        numberOfYAxisTicks="#{chartBean.ventesChartRenderer.numberOfYAxisTicks}"
+	        yaxisMinValue="#{chartBean.ventesChartRenderer.yaxisMinValue}"
+	        markers="#{chartBean.ventesChartRenderer.markers}"
+	        markerPosition="#{chartBean.ventesChartRenderer.markerPosition}"
+	        yaxisMaxValue="#{chartBean.ventesChartRenderer.yaxisMaxValue}"
+	        crosshair="#{chartBean.ventesChartRenderer.crosshair}">
+	    </jsflot:flotChart>
+	    </a4j:outputPanel> 
+		</h:form>
+	</div>
+</body> 
+</html>

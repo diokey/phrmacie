@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+<rich:popupPanel id="factureAchat" autosized="true" style="background-color:white;">
+		<f:facet name="header">Facture</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"
+				onclick="#{rich:component('factureAchat')}.hide();" style="cursor:pointer"/>
+			</h:panelGroup>
+		</f:facet>
+		<style type="text/css">
+		
+			
+		</style>
+		<a4j:outputPanel layout="block" id="all-facture-data" style="width:500px;background-color:white;">
+		<div id="bon-header">
+			<div class="left">
+				<p>
+					#{pharmacieBean.pharmacie.nomOwner}<br />
+					BP #{pharmacieBean.pharmacie.bp} <br />
+					Tel #{pharmacieBean.pharmacie.tel} 
+				</p>
+			</div>
+			<div class="right">
+				
+			</div>
+		</div>
+		<p style="padding:0px;padding-left:15px;padding-right:20px;text-align:center;"> 
+			Facture No #{venteBean.selectedAchat.idAchat}
+		</p>
+		
+		<div id="produits-fournis">
+			<table style="width:100%;">
+				<thead>
+					<tr>
+						
+						<th>#{uiMessages.tab_nomMedicament}</th>
+						<th>#{uiMessages.tab_quantiteMedicament}</th>
+						<th>#{uiMessages.tab_prixUnitaire}</th>
+						<th>#{uiMessages.tab_prixTotal}</th>
+						
+					</tr>
+				</thead>
+				<tbody>
+				<a4j:repeat value="#{venteBean.selectedAchat.medicamentsAchete}" var="medicament">
+					<tr>
+						
+						<td>#{medicament.nomMedicament}</td>
+						<td>#{medicament.quantiteAchete}</td>
+						<td>#{medicament.prixReduit}</td>
+						<td>#{medicament.prixTotalReduit}</td>
+						
+					</tr>
+				</a4j:repeat>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="4" style="text-align:right">
+											 	
+							 <b>#{uiMessages.tab_prixTotal}: #{venteBean.selectedAchat.sommeVenteReduit} FBU</b>					 
+							
+					 	</td>
+					 </tr>
+				</tfoot>
+			</table>
+			
+			
+		</div>
+		<div id="facturation-total">
+			
+			
+		</div>
+		
+		</a4j:outputPanel>
+		<h:panelGroup layout="block" styleClass="center">
+			<a4j:commandLink  styleClass="linkButton radiusBorder5" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'" 
+					style="color:white;padding:5px;margin:3px;" oncomplete="printElement('all-facture-data');" execute="@none">
+				<h:panelGroup layout="block" > 
+					<h:graphicImage value="/images/Print.png" />
+					<h:outputText value="Imprimer" />
+				</h:panelGroup>
+			</a4j:commandLink>
+		</h:panelGroup>
+	</rich:popupPanel>
+	
+</ui:composition>

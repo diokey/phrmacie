@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"> 
+
+<h:head>
+
+<script type="text/javascript">
+	var curDt = new Date();
+	function disablementOtherFunction(day){
+		
+		if (curDt==undefined){
+		curDt = day.date.getDate();
+		}
+		if (curDt.getTime() - day.date.getTime() &lt; 0) return false; else return true;
+	}
+	function disabledOtherClassesProv(day){
+		if (curDt.getTime() - day.date.getTime() &lt;= 0) return 'rf-cal-boundary-day';
+		
+	}
+</script>
+	<f:loadBundle basename="ui_messages_#{locale.selectedLanguage}" var="uiMessages"/>
+</h:head> 
+<body>
+     <div class="rf-p-b">
+       <h:form id="chartForm">
+       <fieldset>
+       <legend><h:outputLabel escape="false" value="#{uiMessages.chooseInterval}" /></legend>
+		<h:panelGroup layout="block">			
+			<h:panelGrid columns="4">
+				<h:outputLabel value="#{uiMessages.debut}" for="startDate"/>
+				<rich:calendar id="startDate" value="#{chartBean.dateDebut}" dayDisableFunction="disablementOtherFunction" dayClassFunction="disabledOtherClassesProv" valueChangeListener="#{chartBean.dateChanged}">
+					<a4j:ajax event="change" limitRender="true" execute="@this" render="chart-container" oncomplete="chartForm_produitPieChart_chart_drawJSFlotChart();"></a4j:ajax>
+				</rich:calendar>
+				<h:outputLabel value="#{uiMessages.to}" for="endDate"/>
+				<rich:calendar id="endDate" value="#{chartBean.dateFin}" dayDisableFunction="disablementOtherFunction" dayClassFunction="disabledOtherClassesProv" valueChangeListener="#{chartBean.dateChanged}">
+					<a4j:ajax event="change" limitRender="true" execute="@this" render="chart-container" oncomplete="chartForm_produitPieChart_chart_drawJSFlotChart();"></a4j:ajax>
+				</rich:calendar>
+			</h:panelGrid>
+		</h:panelGroup>
+		</fieldset>
+    	<a4j:outputPanel id="chart-container">
+		<jsflot:resources></jsflot:resources>
+	    <jsflot:flotChart id="produitPieChart"
+	        value="#{chartBean.produitPieChartSeries}"
+	        actionListener="#{chartBean.chartActionListener}"
+	        testChartDraggedAction="#{chartBean.chartDraggedListener}"
+	        chartDraggable="#{chartBean.produitPieChartData.chartDraggable}"
+	        chartClickable="#{chartBean.produitPieChartData.chartClickable}"
+	        chartZoomable="#{chartBean.produitPieChartData.chartZoomable}"
+	        reRender="clickedPanel"
+	        showLines="#{chartBean.produitPieChartData.showLines}"
+	        fillLines="#{chartBean.produitPieChartData.fillLines}"
+	        showDataPoints="#{chartBean.produitPieChartData.showDataPoints}"
+	        legendColumns="#{chartBean.produitPieChartData.legendColumns}"
+	        legendOpacity="#{chartBean.produitPieChartData.legendOpacity}"
+	        legendPosition="#{chartBean.produitPieChartData.legendPosition}"
+	        legendColor="#{chartBean.produitPieChartData.legendColor}"
+	        height="#{chartBean.produitPieChartData.height}"
+	        width="#{chartBean.produitPieChartData.width}"
+	        showTooltip="#{chartBean.produitPieChartData.showTooltip}"
+	        tooltipPosition="#{chartBean.produitPieChartData.tooltipPosition}"
+	        tooltipFollowMouse="#{chartBean.produitPieChartData.tooltipFollowMouse}"
+	        mode="#{chartBean.produitPieChartData.mode}"
+	        timeFormat="#{chartBean.produitPieChartData.timeFormat}"
+	        title="#{chartBean.produitPieChartData.title}"
+	        subtitle="#{chartBean.produitPieChartData.subtitle}"
+	        chartType="#{chartBean.produitPieChartData.chartType}"
+	        showXaxisLabels="#{chartBean.produitPieChartData.showXaxisLabels}"
+	        xaxisTitle="#{chartBean.produitPieChartData.xaxisTitle}"
+	        xaxisTitleRotation="#{chartBean.produitPieChartData.xaxisTitleRotation}"
+	        xaxisLabelRotation="#{chartBean.produitPieChartData.xaxisLabelRotation}"
+	        showYaxisLabels="#{chartBean.produitPieChartData.showYaxisLabels}"
+	        yaxisTitle="#{chartBean.produitPieChartData.yaxisTitle}"
+	        yaxisTitleRotation="#{chartBean.produitPieChartData.yaxisTitleRotation}"
+	        yaxisLabelRotation="#{chartBean.produitPieChartData.yaxisLabelRotation}"
+	        numberOfXAxisTicks="#{chartBean.produitPieChartData.numberOfXAxisTicks}"
+	        xaxisMinValue="#{chartBean.produitPieChartData.xaxisMinValue}"
+	        xaxisMaxValue="#{chartBean.produitPieChartData.xaxisMaxValue}"
+	        numberOfYAxisTicks="#{chartBean.produitPieChartData.numberOfYAxisTicks}"
+	        yaxisMinValue="#{chartBean.produitPieChartData.yaxisMinValue}"
+	        markers="#{chartBean.produitPieChartData.markers}"
+	        markerPosition="#{chartBean.produitPieChartData.markerPosition}"
+	        yaxisMaxValue="#{chartBean.produitPieChartData.yaxisMaxValue}"
+	        crosshair="#{chartBean.produitPieChartData.crosshair}">
+	    </jsflot:flotChart>
+	    </a4j:outputPanel> 
+		</h:form>
+	</div>
+</body> 
+</html>

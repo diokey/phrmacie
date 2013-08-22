@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+
+	<a4j:status name="savingStatus">
+       	<f:facet name="start">
+   			<div class="statusBlock">
+   				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+    				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving} 
+    				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+  				</h:panelGroup>
+   			</div>
+       	 </f:facet> 
+       	<f:facet name="error">
+       		<div class="statusBlock">
+			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+					<h:outputText value="#{uiMessages.error}" style="color:red"/>
+				</h:panelGroup>
+       		</div>
+       	</f:facet>        		
+    </a4j:status>
+  	<div class="auto-close statusBlock" style="display:none;" id="resultUserMessage">
+  			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+  			<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="reponse">
+   				<h:graphicImage value="#{userManagerBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+   				<h:outputText escape="false" value="#{userManagerBean.message}" style="font-weight:bold;"/>
+  			</h:panelGroup>       				
+  	</div>
+  	
+  	<a4j:jsFunction name="updateUser" action="#{userManagerBean.updateUser}" render="allUsers,script" limitRender="true">
+  		<a4j:param name="param1" assignTo="#{userManagerBean.newRole}"></a4j:param>
+  		<a4j:param name="param2" assignTo="#{userManagerBean.selectedUserIndex}"></a4j:param>
+  	</a4j:jsFunction>
+    <rich:panel id="pageContent" style="overflow:auto;background-color:white;position:absolute; top:20px; left: 15px; right: 15px; bottom:20px;">
+        
+        <h3>#{uiMessages.users}</h3> 
+	    <h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<h:panelGroup layout="block" rendered="#{userBean.user.gerant}">
+	    		<p style="padding:6px;font-weight:bold;">
+	    			#{uiMessages.usersDesc}
+	    			<br clear="all"/>
+	    		</p>
+    		</h:panelGroup>
+    		<h:panelGroup layout="block" rendered="#{userBean.user.patron}">
+	    		<p style="padding:6px;font-weight:bold;">
+	    			#{uiMessages.usersAdminDesc}
+	    			<br clear="all"/>
+	    		</p>
+    		</h:panelGroup>
+	    </h:panelGroup>
+	    	
+        <rich:panel id="user-panel">
+        	<f:facet name="header"> #{uiMessages.userList}</f:facet>
+        	
+        	<rich:dataTable rows="20" id="allUsers" styleClass="zebra-style" style="width:100%;" value="#{userManagerBean.allUsers}" var="user" rowKeyVar="key">
+        		<f:facet name="header">Tous les Utilisateurs</f:facet>
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.username}</f:facet>
+        			#{user.username}
+        		</rich:column>
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.name} </f:facet>
+        			#{user.nom}
+        		</rich:column>
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.surname} </f:facet>
+        			#{user.prenom}
+        		</rich:column>
+        			
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.cni}</f:facet>
+        			#{user.cni}
+        		</rich:column>
+        			
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.adress}</f:facet>
+        			#{user.adresse}
+        		</rich:column>
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.phone}</f:facet>
+        			#{user.tel}
+        		</rich:column>
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.email}</f:facet>
+        			#{user.email}
+        		</rich:column> 
+        		<rich:column>
+        			<f:facet name="header">#{uiMessages.myProfile}</f:facet>
+        			<h:panelGroup rendered="#{userBean.user.patron}">
+        				<rich:inplaceSelect id="profil" value="#{user.role}" onchange="updateUser(#{rich:component('profil')}.getValue(),#{key})" >
+        					<f:selectItem itemLabel="#{uiMessages.user}" itemValue="user"></f:selectItem>
+							<f:selectItem itemLabel="#{uiMessages.gerant}" itemValue="gerant"/>
+							<f:selectItem itemLabel="#{uiMessages.boss}" itemValue="patron"/>
+        				</rich:inplaceSelect>
+        			</h:panelGroup>
+        			<h:panelGroup rendered="#{userBean.user.gerant}">
+        			#{user.role}
+        			</h:panelGroup>
+        		</rich:column>
+        		<rich:column id="status">
+        			<f:facet name="header">#{uiMessages.status}</f:facet>
+        			<h:panelGroup rendered="#{!user.banned}">
+        				<h:graphicImage value="/images/accept.png" width="16" height="16" style="display:inline-block;vertical-align:middle;"/>
+        				#{uiMessages.actif}
+        			</h:panelGroup>
+        			<h:panelGroup rendered="#{user.banned}">
+        				<h:graphicImage value="/images/cancel.png" width="16" height="16" style="display:inline-block;vertical-align:middle;"/>
+        				#{uiMessages.bloque}
+        			</h:panelGroup>
+        		</rich:column>
+        		<rich:column rendered="#{userBean.user.role=='patron'}" id="action">
+        			<f:facet name="header">#{uiMessages.action}</f:facet>
+        			<h:panelGroup rendered="#{! user.banned}">
+        				<a4j:commandLink status="savingStatus" render="allUsers,script" limitRender="true" execute="@this" action="#{userManagerBean.banUser}" id="bloquer" style="height:24px;padding-left:4px;padding-right:4px;font-weight:bold;">
+        					<h:panelGroup>
+		        				<h:graphicImage value="/images/cancel.png" width="16" height="16" style="display:inline-block;vertical-align:middle;"/>
+		        				#{uiMessages.bloquer}
+        					</h:panelGroup>
+        					<a4j:param assignTo="#{userManagerBean.selectedUserIndex}" name="index" value="#{key}"></a4j:param>
+        				</a4j:commandLink>
+        			</h:panelGroup>
+        			<h:panelGroup rendered="#{user.banned}">
+        				<a4j:commandLink status="savingStatus" render="allUsers,script" limitRender="true" execute="@this" action="#{userManagerBean.unBanUser}" id="debloquer" style="height:24px;padding-left:4px;padding-right:4px;font-weight:bold;" styleClass="">
+        					<h:panelGroup>
+		        				<h:graphicImage value="/images/accept.png" width="16" height="16" style="display:inline-block;vertical-align:middle;"/>
+		        				#{uiMessages.debloquer}
+        					</h:panelGroup>
+        					<a4j:param assignTo="#{userManagerBean.selectedUserIndex}" name="index" value="#{key}"></a4j:param>
+        				</a4j:commandLink>
+        			</h:panelGroup>
+        		</rich:column>
+        		<f:facet name="footer">
+        			<rich:dataScroller renderIfSinglePage="false"></rich:dataScroller>
+        		</f:facet>
+        	</rich:dataTable>
+        </rich:panel>
+        
+        <h:panelGroup rendered="#{userBean.user.role=='patron'}" layout="block" style="text-align:center;margin-top:10px;">
+        	<a4j:commandButton image="/images/add24.png" execute="@none" style="display:inline-block;vertical-align:middle;"
+        	oncomplete="$('#new-user-block').toggle();"></a4j:commandButton>
+        	<b>#{uiMessages.addUser}</b>
+        </h:panelGroup>
+        
+        <div id="new-user-block" style="display:none;">
+        <rich:panel>
+        <h:panelGroup layout="block" id="newUser" style="margin-top:10px;">
+        	<h:panelGrid columns="7" id="new-user-data">
+				<h:outputLabel value="#{uiMessages.username}" for="username" styleClass="msg-label"/>
+				<h:panelGrid columns="1">
+					<h:inputText value="#{userManagerBean.user.username}" id="username" required="true" validator="#{validatorBean.validateUsername}"
+					requiredMessage="#{uiMessages.required}">											
+						<f:validateLength minimum="3"></f:validateLength>
+						<a4j:ajax event="change" limitRender="true" render="usernameMsg" execute="@this"></a4j:ajax>						
+					</h:inputText>
+					<rich:message for="username" id="usernameMsg"></rich:message>
+				</h:panelGrid>
+				<h:outputLabel value="#{uiMessages.password}" for="password" styleClass="msg-label"/>
+				<h:panelGrid columns="1">
+					<h:inputSecret required="true" requiredMessage="#{uiMessages.required}" value="#{userManagerBean.user.password}" id="password">												
+						<a4j:ajax event="change" execute="@this" limitRender="true" render="passwordMsg"></a4j:ajax>
+					</h:inputSecret>
+					<rich:message for="password" id="passwordMsg"></rich:message>											
+				</h:panelGrid>
+				<h:outputLabel value="#{uiMessages.role}" for="role" styleClass="msg-label"/>
+				<h:panelGrid columns="1">
+					<h:selectOneRadio id="role" value="#{userManagerBean.user.role}" required="true" requiredMessage="#{uiMessages.required}">											
+						<f:selectItem itemLabel="#{uiMessages.user}" itemValue="user"></f:selectItem>
+						<f:selectItem itemLabel="#{uiMessages.gerant}" itemValue="gerant"/>
+						<f:selectItem itemLabel="#{uiMessages.boss}" itemValue="patron"/>
+					</h:selectOneRadio>
+					<rich:message for="role" id="roleMsg"></rich:message>
+				</h:panelGrid>
+				<a4j:commandButton render="newUser,reponse,user-panel,script" action="#{userManagerBean.addNewuser}" value="#{uiMessages.save}" styleClass="radiusBorder5" style="height:24px;padding-left:4px;padding-right:4px;font-weight:bold;" limitRender="true"
+				status="savingStatus" oncomplete="if (#{not empty userManagerBean.message}) {showMessage('resultUserMessage');$('#new-user-block').toggle();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"></a4j:commandButton>
+			</h:panelGrid>
+        </h:panelGroup>
+        </rich:panel>
+        </div>
+    </rich:panel>
+
+</ui:composition>

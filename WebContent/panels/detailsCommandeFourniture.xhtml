@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:popupPanel id="detailCommandeFourniturePanel" autosized="true">
+		<f:facet name="header">#{uiMessages.commandeDetails}</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup layout="block">
+				<h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"
+				onclick="#{rich:component('detailCommandeFourniturePanel')}.hide();" style="cursor:pointer"/>
+			</h:panelGroup>
+		</f:facet>
+		
+		
+		<fieldset style="display:inline-block;vertical-align:middle; width:62%;">
+			<legend>#{uiMessages.orderSummary}</legend>
+			<h:panelGrid columns="2" columnClasses=",orange" style="font-weight: bold;">
+				
+				<h:outputText value="#{uiMessages.commandeNumero}" />
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.idCommande}" /> 
+				<h:outputText value="#{uiMessages.orderedBy}" />
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.userName}" /> 
+				<h:outputText value="#{uiMessages.toSupplier}" />
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.fournisseurName}" />
+				<h:outputText value="#{uiMessages.date}" />
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.dateCommande}" />
+				<h:outputText value="#{uiMessages.orderedProducts}" />
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.itemCount}" />
+				<h:outputText value="#{uiMessages.prixCommande}" /> 
+				<h:outputText value="#{commandeFournitureBean.selectedCommande.prixTotal} FBU" />
+				
+			</h:panelGrid>
+		</fieldset>
+		<div style="display:inline-block;width:32%;vertical-align:middle;text-align:center;">
+			<h:graphicImage value="/images/pending.png" style="width:32px; height:32px;display:block; text-align:center;margin:auto;" rendered="#{not commandeBean.selectedOrder.delivered}"/>
+			<h:graphicImage value="/images/accept-24.png" style="width:32px; height:32px;display:block; text-align:center;margin:auto;" rendered="#{commandeBean.selectedOrder.delivered}"/>
+			<h:graphicImage value="/images/info.png" style="width:16px; height:16px;padding-right:2px;"/>
+			<h:outputText value="#{uiMessages.orderIncomplete}" style="text-align:center;font-size:1.1em;" rendered="#{not commandeFournitureBean.selectedCommande.delivered}"/>
+			<h:outputText value="#{uiMessages.orderDelivered}" style="text-align:center;font-size:1.1em;" rendered="#{commandeFournitureBean.selectedCommande.delivered}"/>
+		</div>
+		
+		<fieldset>
+			<legend>#{uiMessages.commandeDetails}</legend>
+			<h:form>
+				
+				<rich:dataTable style="width:100%;margin:auto;text-align:center" id="tabledetail" value="#{commandeFournitureBean.selectedCommande.allProduitsCommande}" var="medic" rows="10" rowKeyVar="key"
+				rowClasses="odd, even" columnClasses="nameMedicColumn" onrowmouseover="this.className='hovered'" onrowmouseout="(#{key}%2)==0?this.className='odd':this.className='even'">
+					<f:facet name="header">#{uiMessages.orderedProducts}</f:facet>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_nomMedicament}</f:facet>
+						#{medic.nomMedicament}
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.type}</f:facet>
+						#{medic.typeMedic}
+						
+					</rich:column>
+					
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_quantiteMedicament}</f:facet>
+						#{medic.quantiteAchete}
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_prixUnitaire} 100%</f:facet>
+						#{medic.prixAchat}
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">#{uiMessages.tab_prixTotal} 100%</f:facet>
+						#{medic.prixTotalAchat}
+					</rich:column>
+					
+					<f:facet name="footer">
+						<h3 style="text-align:right">
+					 	
+					 	<span style="color:white;">#{uiMessages.tab_prixTotal}:</span> #{commandeFournitureBean.selectedCommande.prixTotal} FBU					 
+					 	</h3>
+						<rich:dataScroller renderIfSinglePage="false"></rich:dataScroller>
+					</f:facet>
+				</rich:dataTable>
+				
+			</h:form>
+		</fieldset>
+	</rich:popupPanel>
+	
+</ui:composition>

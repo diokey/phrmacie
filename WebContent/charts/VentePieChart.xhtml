@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"> 
+
+<h:head>
+	<f:loadBundle basename="ui_messages_#{locale.selectedLanguage}" var="uiMessages"/>
+</h:head>
+	
+		<h:form>
+    	<a4j:outputPanel id="chart-container">
+		<jsflot:resources></jsflot:resources>
+	    <jsflot:flotChart id="valueTimeChart"
+	        value="#{chartBean.chartSeries}"
+	        actionListener="#{chartBean.chartActionListener}"
+	        testChartDraggedAction="#{chartBean.chartDraggedListener}"
+	        chartDraggable="#{chartBean.chartData.chartDraggable}"
+	        chartClickable="#{chartBean.chartData.chartClickable}"
+	        chartZoomable="#{chartBean.chartData.chartZoomable}"
+	        reRender="clickedPanel"
+	        showLines="#{chartBean.chartData.showLines}"
+	        fillLines="#{chartBean.chartData.fillLines}"
+	        showDataPoints="#{chartBean.chartData.showDataPoints}"
+	        legendColumns="#{chartBean.chartData.legendColumns}"
+	        legendOpacity="#{chartBean.chartData.legendOpacity}"
+	        legendPosition="#{chartBean.chartData.legendPosition}"
+	        legendColor="#{chartBean.chartData.legendColor}"
+	        height="#{chartBean.chartData.height}"
+	        width="#{chartBean.chartData.width}"
+	        showTooltip="#{chartBean.chartData.showTooltip}"
+	        tooltipPosition="#{chartBean.chartData.tooltipPosition}"
+	        tooltipFollowMouse="#{chartBean.chartData.tooltipFollowMouse}"
+	        mode="#{chartBean.chartData.mode}"
+	        timeFormat="#{chartBean.chartData.timeFormat}"
+	        title="#{chartBean.chartData.title}"
+	        subtitle="#{chartBean.chartData.subtitle}"
+	        chartType="#{chartBean.chartData.chartType}"
+	        showXaxisLabels="#{chartBean.chartData.showXaxisLabels}"
+	        xaxisTitle="#{chartBean.chartData.xaxisTitle}"
+	        xaxisTitleRotation="#{chartBean.chartData.xaxisTitleRotation}"
+	        xaxisLabelRotation="#{chartBean.chartData.xaxisLabelRotation}"
+	        showYaxisLabels="#{chartBean.chartData.showYaxisLabels}"
+	        yaxisTitle="#{chartBean.chartData.yaxisTitle}"
+	        yaxisTitleRotation="#{chartBean.chartData.yaxisTitleRotation}"
+	        yaxisLabelRotation="#{chartBean.chartData.yaxisLabelRotation}"
+	        numberOfXAxisTicks="#{chartBean.chartData.numberOfXAxisTicks}"
+	        xaxisMinValue="#{chartBean.chartData.xaxisMinValue}"
+	        xaxisMaxValue="#{chartBean.chartData.xaxisMaxValue}"
+	        numberOfYAxisTicks="#{chartBean.chartData.numberOfYAxisTicks}"
+	        yaxisMinValue="#{chartBean.chartData.yaxisMinValue}"
+	        markers="#{chartBean.chartData.markers}"
+	        markerPosition="#{chartBean.chartData.markerPosition}"
+	        yaxisMaxValue="#{chartBean.chartData.yaxisMaxValue}"
+	        crosshair="#{chartBean.chartData.crosshair}">
+	    </jsflot:flotChart>
+	    </a4j:outputPanel> 
+		</h:form>
+	 
+</ui:composition>

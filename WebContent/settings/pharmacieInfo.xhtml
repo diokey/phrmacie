@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;">
+		
+		<style type="text/css">
+						
+			#pharma-grid .rf-ii-lbl{
+				font-size: 14px;
+				color: #ef7e05;
+			}
+			
+			#pharma-grid .data-label {
+				padding-top:5px;
+				padding-bottom: 15px;
+			}
+			
+		</style>
+		<h:panelGroup layout="block">
+		    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+		    		<p style="padding:6px;font-weight:bold;">
+		    			#{uiMessages.companyinfoHeader}
+		    			<br clear="all"/>
+		    			
+		    		</p>
+		</h:panelGroup> 
+		
+		<fieldset id="pharma-grid">
+				<legend>#{uiMessages.pharmacieInfo}</legend>
+				
+				<h:panelGrid rowClasses="row">
+					<h:outputLabel value="#{uiMessages.nomPharmacie}" for="nomPharmacie"/>
+					<h:panelGroup layout="block" styleClass="data-label">
+						<rich:inplaceInput title="#{uiMessages.doubleclicktomodify}" value="#{settingsBean.owner.nomOwner}" id="nomPharmacie" defaultLabel="#{uiMessages.pharmacienameholder}" showControls="true"
+						editEvent="dblclick" saveOnBlur="true" inputWidth="200" style="font-size:large;color:#ef7e05"
+						required="true" requiredMessage="#{uiMessages.required}" valueChangeListener="#{settingsBean.updateNomPharmacie}">
+							<a4j:ajax render="nomPharmacieMsg,nomPharmacie" event="change" execute="@this" limitRender="true"></a4j:ajax>
+						</rich:inplaceInput>
+						<rich:messages for="nomPharmacie" id="nomPharmacieMsg"></rich:messages>
+					</h:panelGroup>					
+					<h:outputLabel value="#{uiMessages.bp}" for="bpPharmacie"/>
+					<h:panelGroup layout="block" styleClass="data-label">
+						<rich:inplaceInput title="#{uiMessages.doubleclicktomodify}" value="#{settingsBean.owner.bp}" id="bpPharmacie" defaultLabel="#{uiMessages.pharmaciebpholder}" showControls="true"
+						editEvent="dblclick" saveOnBlur="true" inputWidth="220" valueChangeListener="#{settingsBean.updateBp}">
+							<a4j:ajax render="bpPharmacie" event="change" execute="@this" limitRender="true"></a4j:ajax>
+						</rich:inplaceInput>
+					</h:panelGroup>
+					<h:outputLabel value="#{uiMessages.phone}" for="telPharmacie"/>
+					<h:panelGroup layout="block" styleClass="data-label">
+						<rich:inplaceInput title="#{uiMessages.doubleclicktomodify}" value="#{settingsBean.owner.tel}" id="telPharmacie" defaultLabel="#{uiMessages.pharmacietelholder}" showControls="true"
+						editEvent="dblclick" saveOnBlur="true" inputWidth="200" valueChangeListener="#{settingsBean.updateTel}">
+							<a4j:ajax render="telPharmacie" event="change" execute="@this" limitRender="true"></a4j:ajax>
+						</rich:inplaceInput>
+					</h:panelGroup>
+				</h:panelGrid>
+		</fieldset>
+	</rich:panel>
+</ui:composition>

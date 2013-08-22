@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	<script type="text/javascript">
+	
+		function showControls() {
+			$('#controls-button').fadeIn('slow');
+		}
+
+		function hideControls() {
+			$('#controls-button').fadeOut('slow');
+		}
+		
+	</script>
+	<rich:panel styleClass="settings-container" style="background:white; overflow:auto;">
+		<a4j:status name="validatingStatus">
+			<f:facet name="start">
+   				<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+   					<h:panelGroup layout="block" style="display:inline-block;">
+    					<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> Validating...					       				
+  					</h:panelGroup>
+   				</div>
+			</f:facet>        		
+        </a4j:status>
+      	<a4j:status name="annulerStatus">
+    		<f:facet name="start">
+	       		<div style="position:absolute;right:10px; border:1px solid black; background-color:yellow; border-radius:6px;">
+	       			<h:panelGroup layout="block" style="display:inline-block;margin:auto; text-align:center;">
+		    			<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.canceling}					       				
+	      			</h:panelGroup>
+	       		</div>
+    		</f:facet>        		
+      	</a4j:status>
+		<h:panelGroup layout="block">
+    		<h:graphicImage value="/images/info.png" style="float:left;padding:2px;"/>
+    		<p style="padding:6px;font-weight:bold;">
+    			#{uiMessages.assureurAddEdit}
+    			<br clear="all"/>		    			
+    		</p>
+		</h:panelGroup> 
+		<a4j:region >
+		<h:panelGroup layout="block" id="partener-form-region">
+		<fieldset class="partener-info">
+			<legend>#{uiMessages.addPartener}</legend>
+			
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.name}" for="nomAss"/>
+					<h:inputText value="#{settingsBean.assureur.nomAssureurLong}" valueChangeListener="#{settingsBean.fillNomCourt}" size="30" id="nomAss" 
+					validator="#{settingsBean.validateNomLong}" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" render="nomAssMsg,nomCourt,nomCourtMsg" limitRender="true" execute="@this"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="nomAss" id="nomAssMsg" style="display:inline-block"></rich:message>
+					<br />
+					<span class="small">#{uiMessages.partenerNameHelper}</span><br />
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.nomCourt}" />
+					<h:inputText value="#{settingsBean.assureur.nomAssureur}" size="30" id="nomCourt" 
+					validator="#{settingsBean.validateNomCourt}" required="true" requiredMessage="#{uiMessages.required}">
+						<a4j:ajax event="blur" render="nomCourtMsg" limitRender="true" execute="@this"></a4j:ajax>
+					</h:inputText>
+					<rich:message for="nomCourt" id="nomCourtMsg" style="display:inline-block"></rich:message>
+					<br />
+					<span class="small">#{uiMessages.nomCourtDesc}</span><br />
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.phone}" />
+					<h:inputText value="#{settingsBean.assureur.tel}" size="30"/><br />
+					<span class="small">#{uiMessages.phone}</span><br />
+				</h:panelGroup>
+				<h:panelGroup layout="block" styleClass="form-item">
+					<h:outputLabel value="#{uiMessages.bp}" />
+					<h:inputText value="#{settingsBean.assureur.bp}" size="30"/><br />
+					<span class="small">#{uiMessages.bp} </span><br />
+				</h:panelGroup>
+        			
+        		
+        		<h:panelGroup layout="block" style="margin:auto; text-align:center">
+					<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.resetAssureur}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" execute="@this" status="annulerStatus" render="partener-form-region" limitRender="true">
+	        		</a4j:commandButton>
+	        		<a4j:commandButton value="#{uiMessages.save}" action="#{settingsBean.saveAssureur}" styleClass="radiusBorder5" oncomplete="zebraStyle();resetSettingMessage(); if (#{not empty settingsBean.message}) {showMessage('settingsMessage');$('#partener-info').fadeIn();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="partener-form-region,assure-panel,settings-panel,settings-reponse,assureur-table" execute="@region" limitRender="true">
+	        		</a4j:commandButton>        		
+        		</h:panelGroup>
+        		
+        		<div id="partener-info" style="display:none;">
+        			
+        			<h:graphicImage value="/images/help.png" onclick="$('.bulle').fadeIn('slow');" style="display:inline-block; vertical-align:middle"/>
+	        		<div class="bulle" style="display:inline-block; vertical-align:middle">
+	        			<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16"/></div>
+	        			<div class="fleche-bulle"></div>
+	        			<p>
+	        				#{uiMessages.assureurHelper}
+	        			 </p>
+        				<ul>
+        					<li><a4j:commandLink onclick="#{rich:component('settings-tab')}.switchToItem('prix-assureur');createScrollableDiv();" execute="@this" render="assure-panel">#{uiMessages.priceForAssureur}</a4j:commandLink></li>
+        					<li><a4j:commandLink onclick="#{rich:component('settings-tab')}.switchToItem('assure');createScrollableDiv();" execute="@this" render="settings-panel">#{uiMessages.servicesAssured} #{uiMessages.cetAssureur}</a4j:commandLink></li>
+        				</ul>        			
+	        		
+	        		</div>
+	        	</div>
+        		
+		</fieldset>
+		</h:panelGroup>
+		</a4j:region>
+		<br clear="all"/>
+		<a4j:region>
+		<fieldset>
+			<legend>#{uiMessages.parterners}</legend>
+			<rich:dataTable styleClass="zebra-style" value="#{settingsBean.assureurs}" var="assureur" style="width:100%;" id="assureur-table" noDataLabel="#{uiMessages.noDataLabel}">
+				<f:facet name="header">#{uiMessages.parternerList}</f:facet>
+				<rich:column>
+					<f:facet name="header">
+						#{uiMessages.name}
+					</f:facet>
+					<rich:inplaceInput id="partenaire-col" value="#{assureur.nomAssureurLong}" required="true" requiredMessage="#{uiMessages.required}"
+					validator="#{settingsBean.validateNomLong}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+						<a4j:ajax event="change" render="partenaire-col-msg" limitRender="true" execute="@this" oncomplete="showControls()"></a4j:ajax>
+					</rich:inplaceInput>
+					<rich:message for="partenaire-col" id="partenaire-col-msg"></rich:message>
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						#{uiMessages.nomCourt}
+					</f:facet>
+					<rich:inplaceInput value="#{assureur.nomAssureur}" id="nom-court-col" required="true" requiredMessage="#{uiMessages.required}"
+					validator="#{settingsBean.validateNomCourt}" defaultLabel="#{uiMessages.doubleclicktomodify}">
+						<a4j:ajax event="change" limitRender="true" execute="@this" render="nom-court-col-msg" oncomplete="showControls()"></a4j:ajax>
+					</rich:inplaceInput>
+					<rich:message for="nom-court-col" id="nom-court-col-msg"></rich:message>
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						#{uiMessages.phone}
+					</f:facet>
+					<rich:inplaceInput value="#{assureur.tel}" id="tel-col" required="false"
+					defaultLabel="#{uiMessages.doubleclicktomodify}">
+						<a4j:ajax event="change" limitRender="true" oncomplete="showControls()"></a4j:ajax>
+					</rich:inplaceInput>
+					
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						#{uiMessages.bp}
+					</f:facet>
+					<rich:inplaceInput value="#{assureur.bp}" id="bp-col" required="false"
+					defaultLabel="#{uiMessages.doubleclicktomodify}">
+						<a4j:ajax event="change" limitRender="true" oncomplete="showControls()"></a4j:ajax>
+					</rich:inplaceInput>	
+						
+				</rich:column>
+			</rich:dataTable>
+			<br />
+			<div id="controls-button" style="display:none;">
+				<h:panelGroup layout="block" style="text-align:center;">
+					<a4j:commandButton immediate="true" value="#{uiMessages.annuler}" styleClass="radiusBorder5" action="#{settingsBean.resetAllAssureur}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+	        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" execute="@this" status="annulerStatus" render="assure-panel,assureur-table" limitRender="false" oncomplete="hideControls()">
+	        		</a4j:commandButton>
+					<a4j:commandButton immediate="true" value="#{uiMessages.save}" action="#{settingsBean.updateAllAssureur}" styleClass="radiusBorder5" oncomplete="if (#{not empty settingsBean.message}) {showMessage('settingsMessage');resetSettingMessage();hideControls();}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="assure-panel,settings-panel,settings-reponse,assureur-table" execute="@this" limitRender="false">
+		        	</a4j:commandButton> 
+				</h:panelGroup>
+			</div>
+		</fieldset>
+		</a4j:region>
+		
+	</rich:panel>
+</ui:composition>

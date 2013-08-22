@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+
+			<a4j:status name="savingStatus">
+        		<f:facet name="start">
+        			<div class="statusBlock">
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+		       				<h:graphicImage value="/images/savingimage.gif" styleClass="imgStatus"/> #{uiMessages.saving} 
+		       				<h:graphicImage value="/images/dots-preload.gif" styleClass="imgStatus"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet> 
+        		<f:facet name="error">
+        			<div class="statusBlock">
+        				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16" title="#{uiMessages.close}"/></div>
+        				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;">
+	       					<h:graphicImage value="/images/stop.png" width="24" height="24" styleClass="imgStatus"/>
+	        				<h:outputText value="#{uiMessages.error}" style="color:red"/>
+       					</h:panelGroup>
+        			</div>
+        		</f:facet>        		
+        	</a4j:status>
+        	<div class="auto-close statusBlock" style="display:none;" id="addUserMessage">
+       				<div class="close"><h:graphicImage value="/images/supprimer.png" width="16" height="16" title="Close"/></div>
+       				<h:panelGroup layout="block" style="margin:auto; text-align:center; padding:10px;" id="user-reponse">
+	       				<h:graphicImage value="#{userBean.messageIcon}" width="24" height="24" styleClass="imgStatus"/> 
+	       				<h:outputText value="#{userBean.message}" style="font-weight:bold;"/>
+       				</h:panelGroup>       				
+       		</div>
+        	
+			<rich:panel styleClass="rf-ddm-lbl rf-ddm-unsel" id="update-panel">
+				<h:panelGroup layout="block" rendered="#{userBean.user.newUser}">
+					<h3>#{uiMessages.welcome}</h3>
+					
+					<p style="padding:5px;">
+						<h:graphicImage value="/images/warning.png" style="float:left;" />
+						<h:outputText value="#{uiMessages.newUserWelcomeMsg}" escape="false"/>
+					</p>
+				</h:panelGroup>
+				<h:panelGroup layout="block" rendered="#{! userBean.user.newUser}">
+					<h3>#{uiMessages.profileUpdate}</h3>
+					<h:graphicImage value="/images/info.png" style="float:left;" />
+					<p style="padding:10px;">
+						<h:outputText value="#{uiMessages.profileUpdateDesc}" escape="false"/>
+					</p>
+				</h:panelGroup>	
+				
+					<fieldset style="margin:10px;">	
+						<legend>#{uiMessages.accountInfo}</legend>				
+						<h:panelGrid columns="2">
+							<h:outputLabel value="#{uiMessages.username}" for="username"/>
+							<h:panelGrid columns="2">
+								<h:inputText disabled="true" value="#{userBean.user.username}" id="username" required="true" requiredMessage="#{uiMessages.required}" validatorMessage="#{uiMessages.valueShort}">
+									
+									<f:validateLength minimum="3"></f:validateLength>
+									<a4j:ajax event="blur" limitRender="true" render="usernameMsg"></a4j:ajax>
+								</h:inputText>
+								<rich:message for="username" id="usernameMsg"></rich:message>
+							</h:panelGrid>
+							<h:outputLabel value="#{uiMessages.password}" for="password"/>
+							<h:panelGrid columns="2">
+								<h:inputSecret value="#{userBean.user.password}" id="password" required="#{userBean.user.newUser}" requiredMessage="#{uiMessages.valueShort}" validatorMessage="#{uiMessages.valueShort}">
+									<a4j:ajax event="blur" limitRender="true" render="passwordMsg"></a4j:ajax>
+								</h:inputSecret>
+								<rich:message for="password" id="passwordMsg"></rich:message>
+							</h:panelGrid>
+						</h:panelGrid>
+					</fieldset>
+					<fieldset style="margin:10px;">
+						<legend>#{uiMessages.personalInfo}</legend>
+						<h:panelGrid>
+							<h:outputLabel value="#{uiMessages.name}" for="nom"/>
+							<h:inputText id="nom" value="#{userBean.user.nom}" maxlength="24"/>
+							<h:outputLabel value="#{uiMessages.surname}" for="prenom"/>
+							<h:inputText id="prenom" value="#{userBean.user.prenom}" maxlength="24"/>
+							<h:outputLabel value="#{uiMessages.cni}" for="cni"/>
+							<h:inputText id="cni" value="#{userBean.user.cni}" maxlength="12"/>
+							<h:outputLabel value="#{uiMessages.adress}" for="adresse"/>
+							<h:inputText id="adresse" value="#{userBean.user.adresse}" maxlength="32"/>						
+							<h:outputLabel value="#{uiMessages.phone}" for="tel"/>
+							<h:inputText id="tel" value="#{userBean.user.tel}" maxlength="24"/>
+							<h:outputLabel value="#{uiMessages.email}" for="email"/>
+							<h:inputText id="email" value="#{userBean.user.email}" maxlength="24">
+								
+							</h:inputText>
+							
+						</h:panelGrid>
+					</fieldset>
+					<h:panelGroup layout="block" style="margin:auto; text-align:center">
+		        		<a4j:commandButton action="#{userBean.updateUser}" value="#{uiMessages.update}" styleClass="radiusBorder5" oncomplete="if (#{not empty userBean.message}) {showMessage('addUserMessage');renderclosecontrol()}" onmouseover="this.style.color='#ef7e05'" onmouseout="this.style.color='white'"
+		        		style="height:32px;margin-left:5px;padding-left:14px;padding-right:14px;font-size:medium" status="savingStatus" render="user-reponse,closecontrol,user-info,update-panel">
+		        		</a4j:commandButton>        		
+        			</h:panelGroup>
+        			
+        			<a4j:jsFunction name="renderclosecontrol" render="closecontrol">
+        				<a4j:param name="param1" assignTo="#{controllerBean.close}" value="true"></a4j:param>
+        			</a4j:jsFunction>
+				
+			</rich:panel>
+		
+</ui:composition>

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"> 
+
+	
+	<script type="text/javascript">
+		function showPopUp(component) {
+			var windowWidth = $(window).width();
+			var windowHeight = $(window).height();
+			$('#mainPopUp_content .flechehaut').removeAttr('style');
+			$('#mainPopUp_content .flechehaut').css('display','block').css('left',leftFlechPos-10+'px');
+			component.show('',{left:40,top:80,height:windowHeight-120, width:windowWidth-80});
+			
+		}
+
+	</script>
+	<a4j:poll interval="2000" execute="@this" enabled="true" limitRender="true" render="messagecount"></a4j:poll>
+    <!-- BEGIN DOCK 1 ============================================================ -->
+	<div id="dock">
+		<div class="dock-container" style="left: 450px; width: 500px; ">
+			<a4j:commandLink styleClass="dock-item" style="width: 50px; left: 0px; "><h:graphicImage value="/images/home.png" alt="home"/><span style="display: none; ">#{uiMessages.home}</span>
+				
+			</a4j:commandLink> 
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 50px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/addMedic.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});"><h:graphicImage value="/images/calendar.png" alt="calendar" /><span style="display: none; ">#{uiMessages.medics}</span>
+				
+			</a4j:commandLink> 
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 100px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/Import.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});createScrollableDiv();"><h:graphicImage value="/images/portfolio.png" alt="portfolio" /><span style="display: none; ">#{uiMessages.importer}</span>
+				
+			</a4j:commandLink> 
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 150px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/settings.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});createScrollableDiv();"><h:graphicImage value="/images/music.png" alt="music" /><span style="display: none; ">#{uiMessages.data}</span>
+				
+			</a4j:commandLink>
+			 
+			<a4j:commandLink status="loading" limitRender="false" styleClass="dock-item" style="width: 50px; left: 200px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/commandeFourniture.xhtml')" oncomplete="reloadCommands();setUpUI();showPopUp(#{rich:component('mainPopUp')});"><h:graphicImage value="/images/link.png" alt="links" /><span style="display: none; ">#{uiMessages.fourniture}</span>
+			</a4j:commandLink>
+			 
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 250px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/messages.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});setUpUI();"><h:graphicImage value="/images/email.png" alt="email" /><span style="display: none; ">#{uiMessages.message}</span> 
+				<h:panelGroup layout="block" id="messagecount" styleClass="email-counter">
+					<h:outputText value="#{notificationBean.newMessageCount}" />
+				</h:panelGroup>
+			</a4j:commandLink>
+			
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 300px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/annulationVente.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});setUpUI();"><h:graphicImage value="/images/history.png" alt="History" /><span style="display: none; ">#{uiMessages.annulation}</span> 
+				
+			</a4j:commandLink>
+			
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 350px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/historiqueMedicament.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});"><h:graphicImage value="/images/rss.png" alt="Historique" /><span style="display: none; ">#{uiMessages.historique}</span>
+			</a4j:commandLink>
+			
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 400px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/manageUsers.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});"><h:graphicImage value="/images/users.png" alt="rss" /><span style="display: none; ">#{uiMessages.users}</span>
+			</a4j:commandLink> 
+			
+			<a4j:commandLink status="loading" limitRender="true" styleClass="dock-item" style="width: 50px; left: 450px; cursor:pointer" onclick="leftFlechPos=$(this).offset().left; changemainPopUp('/panels/annulationVente.xhtml')" oncomplete="showPopUp(#{rich:component('mainPopUp')});"><h:graphicImage value="/images/video.png" alt="Video" /><span style="display: none; ">#{uiMessages.tutorial}</span>
+			</a4j:commandLink>
+			
+		</div><!-- end div .dock-container -->
+	</div><!-- end div .dock #dock -->
+	<!-- END DOCK 1 ============================================================ -->
+ 	
+</ui:composition>
