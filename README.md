@@ -3,10 +3,10 @@ Pharmacy Management app
 This is an application for Phamaracy Management. It manages inventory, sells management, Providers and Paterners.
 
 This application was originaly developed for Pharmacies in Burundi. It handles most of Burundi insurances company providers including
-1. Independent customers
-2. Mutuelle
-2. Solitec
-3. Others
+1 Independent customers
+2 Mutuelle
+3 Solitec
+4 Others
 
 ## Requirements
 
